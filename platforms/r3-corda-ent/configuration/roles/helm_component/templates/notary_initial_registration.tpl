@@ -8,7 +8,7 @@ metadata:
 spec:
   releaseName: {{ component_name }}
   chart:
-    git: {{ org.gitops.git_ssh }}
+    git: {{ org.gitops.git_url }}
     ref: {{ org.gitops.branch }}
     path: {{ charts_dir }}/notary-initial-registration
   values:
@@ -71,7 +71,7 @@ spec:
         p2pPort: {{ notary_service.p2p.ambassador | default('10002') }}
         external_url_suffix: {{ org.external_url_suffix }}
         p2pAddress: {{ component_name }}.{{ org.external_url_suffix }}:{{ notary_service.p2p.ambassador | default('10002') }}
-      jarPath: /opt/cenm/bin
+      jarPath: /opt/corda
       configPath: etc
       cordaJar:
         memorySize: 1524

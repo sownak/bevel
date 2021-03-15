@@ -1,14 +1,18 @@
 ############################################################################################
 - name: "Check or Wait for node pod to be up"
   include_role:
-    name: "{{ playbook_dir }}/../../r3-corda/configuration/roles/check/node_component"
+    name: "{{ playbook_dir }}/../../../platforms/shared/configuration/roles/check/helm_component"
   vars:
     component_type: "Pod"
-    component_name: "{{ node.name }}"
+    namespace: "{{ component_ns }}"
+    component_name: "{{ node.name | lower }}"
+    kubernetes: "{{ organization_data.k8s }}"
+    label_selectors:
+      - app = {{ component_name }}
   loop: "{{ organization_data.services.peers }}"
   loop_control:
     loop_var: node
-  when: component_type == 'node' and node.springboot is defined
+  when: node.springboot is defined
 
 # Create corda webserver value file for the peer nodes
 - name: "Create webserver values file for peer organizations"
@@ -25,7 +29,7 @@
   loop: "{{ organization_data.services.peers }}"
   loop_control:
     loop_var: node
-  when: component_type == 'node' and node.springboot is defined and network['type'] == 'corda'
+  when: node.springboot is defined and network['type'] == 'corda'
 
 # Create corda webserver value file for the peer nodes
 - name: "Create webserver values file for peer organizations"
@@ -43,7 +47,7 @@
   loop: "{{ organization_data.services.peers }}"
   loop_control:
     loop_var: node
-  when: component_type == 'node' and node.springboot is defined and network['type'] == 'corda-enterprise'
+  when: node.springboot is defined and network['type'] == 'corda-enterprise'
 
 # Push the webserver deployment files to repository
 - name: "Push the created deployment files to repository"
@@ -51,11 +55,10 @@
     name: "{{ playbook_dir }}/../../../platforms/shared/configuration/roles/git_push"
   vars:
     GIT_DIR: "{{ playbook_dir }}/../../../"
-    GIT_REPO: "{{ component_gitops.git_push_url }}"
+    GIT_REPO: "{{ component_gitops.git_repo }}"
     GIT_USERNAME: "{{ component_gitops.username }}"
     GIT_EMAIL: "{{ component_gitops.email }}"
     GIT_PASSWORD: "{{ component_gitops.password }}"
     GIT_BRANCH: "{{ component_gitops.branch }}"
     GIT_RESET_PATH: "platforms/r3-corda/configuration"
     msg: "[ci skip] Pushing deployment files for corda webserver"
-  when: component_type == 'node'

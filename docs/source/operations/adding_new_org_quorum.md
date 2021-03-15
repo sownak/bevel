@@ -85,16 +85,8 @@ network:
       - "https://store.test.quorum.blockchaincloudpoc.com:8443"
       - "https://warehouse.test.quorum.blockchaincloudpoc.com:8443"
     ##### Following keys are used only to add new Node(s) to existing network.
-    staticnodes:                # Existing network static nodes need to be provided like below
-    # The below urls are formed by the enode://(peerid)@(peer.name).(org.external_url_suffix):(ambassador p2p port)?discport=0&raftport=(ambassador RAFT port)
-    # peerid is generated in the automation
-      - enode://293ce022bf114b14520ad97349a1990180973885cc2afb6f4196b490397e164fabc87900736e4b685c5f4cf31479021ba0d589e58bd0ea6792ebbfd5eb0348af@carrier.test.quorum.blockchaincloudpoc.com:15011?discport=0&raftport=15012
-      - enode://4e7a1a15ef6a9bbf30f8b2a6b927f4941c9e80aeeeed14cfeeea619f93256b41ef9994b9a8af371f394c2a6de9bc6930e142c0350399a22081c518ab2d27f92a@manufacturer.test.quorum.blockchaincloudpoc.com:15021?discport=0&raftport=15022
-    genesis:                    # Existing network's genesis.json file in base64 format like below
-    #     ewogICAgImFsbG9jIjogewogICAgICAgICIwOTg2Nzk2ZjM0ZDhmMWNkMmI0N2M3MzQ2YTUwYmY2
-    #     OWFhOWM1NzcyIjogewogICAgICAgICAgICAiYmFsYW5jZSI6ICIxMDAwMDAwMDAwMDAwMDAwMDAw
-    #     MDAwMDAwMDAwIgogICAgICAgIH0sCiAgICAgICAgImY2MjkyNTQ1YWVjNTkyMDU4MzQ
-    # geth account details
+    staticnodes:                # Existing network's static nodes file path needs to be given
+    genesis:                    # Existing network's genesis.json file path needs to be given 
     # make sure that the account is unlocked prior to adding a new node
     bootnode:
       #name of the node 
@@ -129,15 +121,16 @@ network:
       # Git Repo details which will be used by GitOps/Flux.
       # Do not check-in git_access_token
       gitops:
-        git_ssh: "ssh://git@github.com/<username>/blockchain-automation-framework.git"         # Gitops ssh url for flux value files 
+        git_protocol: "https" # Option for git over https or ssh
+        git_url: "https://github.com/<username>/blockchain-automation-framework.git"         # Gitops https or ssh url for flux value files 
         branch: "develop"           # Git branch where release is being made
         release_dir: "platforms/quorum/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
         chart_source: "platforms/quorum/charts"     # Relative Path where the Helm charts are stored in Git repo
-        git_push_url: "github.com/<username>/blockchain-automation-framework.git"   # Gitops https URL for git push 
+        git_repo: "github.com/<username>/blockchain-automation-framework.git"   # Gitops git repository URL for git push 
         username: "git_username"          # Git Service user who has rights to check-in in all branches
         password: "git_access_token"          # Git Server user password
         email: "git_email"                # Email to use in git config
-        private_key: "path_to_private_key"          # Path to private key file which has write-access to the git repo
+        private_key: "path_to_private_key"          # Optional (required when protocol is ssh) : Path to private key file which has write-access to the git repo
       # The participating nodes are named as peers
       services:
         peers:
@@ -163,12 +156,13 @@ network:
            
 
 ```
-Three new sections are added to the network.yaml
-| Field       | Description                                              |
-|-------------|----------------------------------------------------------|
-| staticnodes | Existing network's static nodes need to be provided as an array.|
-| genesis | Existing network's genesis.json needs to be provided in base64.|
-| bootnode | Bootnode account details.|
+Below three new sections are added to the network.yaml
+
+| Field                            | Description                                        |
+|----------------------------------|----------------------------------------------------|
+| staticnodes                      | Existing network's static nodes file path needs to be given                               |
+| genesis                              | Existing network's genesis.json file path needs to be given  |
+| bootnode                          | Bootnode account details.                         |
 
 
 The `network.config.bootnode` field contains:

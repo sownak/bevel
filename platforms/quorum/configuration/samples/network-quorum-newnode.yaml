@@ -14,7 +14,8 @@ network:
     ## Any additional Ambassador ports can be given below, must be comma-separated without spaces, this is valid only if proxy='ambassador'
     #  These ports are enabled per cluster, so if you have multiple clusters you do not need so many ports
     #  This sample uses a single cluster, so we have to open 4 ports for each Node. These ports are again specified for each organization below
-    ambassadorPorts: 15010,15011,15012,15013,15020,15021,15022,15023,15030,15031,15032,15033,15040,15041,15042,15043  
+    ambassadorPorts: 15010,15011,15012,15013,15020,15021,15022,15023,15030,15031,15032,15033,15040,15041,15042,15043
+    loadBalancerSourceRanges: # (Optional) Default value is '0.0.0.0/0', this value can be changed to any other IP adres or list (comma-separated without spaces) of IP adresses, this is valid only if proxy='ambassador'
     retry_count: 20                 # Retry count for the checks on Kubernetes cluster
     external_dns: enabled           # Should be enabled if using external-dns for automatic route configuration
   
@@ -94,15 +95,16 @@ network:
       # Git Repo details which will be used by GitOps/Flux.
       # Do not check-in git_access_token
       gitops:
-        git_ssh: "ssh://git@github.com/<username>/blockchain-automation-framework.git"         # Gitops ssh url for flux value files 
+        git_protocol: "https" # Option for git over https or ssh
+        git_url: "https://github.com/<username>/blockchain-automation-framework.git"         # Gitops https or ssh url for flux value files 
         branch: "develop"           # Git branch where release is being made
         release_dir: "platforms/quorum/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
         chart_source: "platforms/quorum/charts"     # Relative Path where the Helm charts are stored in Git repo
-        git_push_url: "github.com/<username>/blockchain-automation-framework.git"   # Gitops https URL for git push 
+        git_repo: "github.com/<username>/blockchain-automation-framework.git"   # Gitops git repository URL for git push 
         username: "git_username"          # Git Service user who has rights to check-in in all branches
         password: "git_access_token"          # Git Server user password
         email: "git_email"                # Email to use in git config
-        private_key: "path_to_private_key"          # Path to private key file which has write-access to the git repo
+        private_key: "path_to_private_key"          # Optional (required when protocol is ssh) : Path to private key file which has write-access to the git repo
       # The participating nodes are named as peers
       services:
         peers:

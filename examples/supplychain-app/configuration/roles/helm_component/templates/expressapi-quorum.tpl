@@ -8,7 +8,7 @@ metadata:
 spec:
   chart:
     path: {{ component_gitops.chart_source }}/expressapp-quorum
-    git: "{{ component_gitops.git_ssh }}"
+    git: "{{ component_gitops.git_url }}"
     ref: "{{ component_gitops.branch }}"
   releaseName: {{ name }}{{ network.type }}-expressapi
   values:
@@ -39,6 +39,7 @@ spec:
         node_subject: {{ peer_data.subject }}
         node_organization: {{ organization_data.unit }}
         node_organization_unit: {{ organization_data.unit | lower }}
+        protocol: {{ network.config.consensus }}
     proxy:
       provider: {{ network.env.proxy }}
       name: {{ organization_data.name }}

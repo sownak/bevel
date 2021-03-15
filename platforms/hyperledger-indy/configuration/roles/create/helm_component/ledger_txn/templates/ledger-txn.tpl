@@ -9,7 +9,7 @@ spec:
   releaseName: {{ component_name }}-{{ identity_name }}-transaction
   chart:
     path: {{ gitops.chart_source }}/{{ chart }}
-    git: {{ gitops.git_ssh }}
+    git: {{ gitops.git_url }}
     ref: {{ gitops.branch }}
   values:
     metadata:
@@ -17,6 +17,10 @@ spec:
       namespace: {{ component_ns }}
     network:
       name: {{ network.name }}
+    genesis:
+      pool: {{ genesis.pool | indent(width=8) | b64encode }}
+      domain: {{ genesis.domain | indent(width=8) | b64encode }}
+      add_org: {{ genesis.add_org | default(false) }}
     image:
       cli:
         name: {{ component_name }}
