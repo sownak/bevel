@@ -31,7 +31,18 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/76157062?v=4",
       "profile": "https://github.com/alvaropicazo",
       "contributions": [
-        "maintenance"
+        "maintenance",
+        "code"
+      ]
+    },
+    {
+      "login": "suvajit-sarkar",
+      "name": "suvajit-sarkar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/55580532?v=4",
+      "profile": "https://github.com/suvajit-sarkar",
+      "contributions": [
+        "code",
+        "doc"
       ]
     }
   ],
