@@ -44,10 +44,21 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "sownak",
+      "name": "Sownak Roy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20537268?v=4",
+      "profile": "https://github.com/sownak",
+      "contributions": [
+        "infra",
+        "test",
+        "code"
+      ]
     }
   ],
   "projectName": "blockchain-automation-framework",
-  "projectOwner": "hyperledger-labs",
+  "projectOwner": "sownak",
   "repoType": "github",
   "repoHost": "https://github.com"
 }
