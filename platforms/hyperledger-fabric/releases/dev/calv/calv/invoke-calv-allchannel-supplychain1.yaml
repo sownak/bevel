@@ -1,0 +1,51 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: invoke-calv-allchannel-supplychain1
+  namespace: calv-net
+  annotations:
+    fluxcd.io/automated: "false"
+spec:
+  releaseName: invoke-calv-allchannel-supplychain1
+  chart:
+    git: https://github.com/alvaropicazo/blockchain-automation-framework.git
+    ref: feature-614
+    path: platforms/hyperledger-fabric/charts/invoke_chaincode
+  values:
+    metadata:
+      namespace: calv-net
+      network:
+        version: 2.2.0
+      add_organization: false
+      images:
+        fabrictools: hyperledger/fabric-tools:2.2.0
+        alpineutils: index.docker.io/hyperledgerlabs/alpine-utils:1.0
+    peer:
+      name: peer0
+      address: peer0.calv-net:7051
+      localmspid: calvMSP
+      loglevel: debug
+      tlsstatus: true
+    vault:
+      role: vault-role
+      address: http://vault.internal.dev2.aws.blockchaincloudpoc-develop.com:20001
+      authpath: calv-net-auth
+      adminsecretprefix: secret/crypto/peerOrganizations/calv-net/users/admin 
+      orderersecretprefix: secret/crypto/peerOrganizations/calv-net/orderer
+      serviceaccountname: vault-auth
+      imagesecretname: regcred
+      tls: false
+    orderer:
+      address: orderer60.hf.dev2.aws.blockchaincloudpoc-develop.com:8443
+    chaincode:
+      builder: hyperledger/fabric-ccenv:2.2.0
+      name: supplychain
+      version: 1
+      invokearguments: '\"init\",\"\"'
+      endorsementpolicies:  ''
+    channel:
+      name: allchannel
+    endorsers:
+        creator: calv-net
+        name:  calv  
+        corepeeraddress:  peer0.calv-net.hf.dev2.aws.blockchaincloudpoc-develop.com:8443 
