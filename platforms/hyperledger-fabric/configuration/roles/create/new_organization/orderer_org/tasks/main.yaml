@@ -1,0 +1,18 @@
+############################################################################################
+# This task creates the generate_block.sh file for new organizations
+- name: "Create create-orderer.sh script file for new orderer"
+  template:
+    src: "orderer_org.tpl"
+    dest: "./build/create-orderer.sh"
+  vars:
+    component_name: "{{ org.name | lower }}"
+    os: "{{ fabric.os }}"
+    arch: "{{ fabric.arch }}"
+    version: "{{ network.version }}"
+
+
+# This task calls nested_create_cli to generate the cli value files for the orderer organization
+- name: Call create_orderer.yaml to add the new orderer to the existing network
+  include_tasks: create_orderer.yaml
+  vars:
+    orderer: "{{ org.services.orderers | first }}"
