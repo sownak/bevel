@@ -17,13 +17,12 @@ rm -r temp
 
 configtxlator proto_decode --input {{ channel_name }}_config_block.pb --type common.Block | jq .data.data[0].payload.data.config > {{ channel_name }}_config_block.json
 
-jq -s '.[0] * {"channel_group":{"groups":{"Orderer":{"groups": {"Orderer1Org":.[1]}}}}}' {{ channel_name }}_config_block.json ./config.json.json >& config1.json
-jq -s '.[0] * {"channel_group":{"groups":{"Consortiums":{"groups":{"SupplyChainConsortium":{"groups": {"Orderer1MSP":.[1]}}}}}}}' config1.json ./config.json.json >& config2.json
-cert=`base64 ${ORDERER_CA} | sed ':a;N;$!ba;s/\n//g'`
-cat config2.json | jq '.channel_group.groups.Orderer.values.ConsensusType.value.metadata.consenters += [{"client_tls_cert": "'$cert'", "host": "orderer.example1.com", "port": 7050, "server_tls_cert": "'$cert'"}] ' > modified_config.json
+jq -s '.[0] * {"channel_group":{"groups":{"Orderer":{"groups": {"secalvMSP":.[1]}}}}}' {{ channel_name }}_config_block.json ./config.json >& config1.json
+cert=`base64 /opt/gopath/src/github.com/hyperledger/fabric/crypto/orderer/tls/ca.crt | sed ':a;N;$!ba;s/\n//g'`
+cat config1.json | jq '.channel_group.groups.Orderer.values.ConsensusType.value.metadata.consenters += [{"client_tls_cert": "'$cert'", "host": "orderer60.hf.dev2.aws.blockchaincloudpoc-develop.com", "port": 8443, "server_tls_cert": "'$cert'"},{"client_tls_cert": "'$cert'", "host": "orderer61.hf.dev2.aws.blockchaincloudpoc-develop.com", "port": 8443, "server_tls_cert": "'$cert'"},{"client_tls_cert": "'$cert'", "host": "orderer62.hf.dev2.aws.blockchaincloudpoc-develop.com", "port": 8443, "server_tls_cert": "'$cert'"}] ' > modified_config.json
 echo "converting the channel_config.json and channel_modified_config.json to .pb files"
 configtxlator proto_encode --input {{ channel_name }}_config_block.json --type common.Config --output {{ channel_name }}_config.pb
-configtxlator proto_encode --input modified_config.json.json --type common.Config --output {{ channel_name }}_updated_config.pb
+configtxlator proto_encode --input modified_config.json --type common.Config --output {{ channel_name }}_updated_config.pb
 echo "calculate the delta between these two config protobufs using configtxlator"
 configtxlator compute_update --channel_id {{ channel_name }} --original {{ channel_name }}_config.pb --updated {{ channel_name }}_updated_config.pb --output {{ channel_name }}_diff_config.pb
 echo "decode the channel_update.pb to json to add headers."
