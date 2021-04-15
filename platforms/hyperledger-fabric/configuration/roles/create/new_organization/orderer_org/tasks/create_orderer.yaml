@@ -3,40 +3,40 @@
 ############################################################################################
 
 # Create the value file for creater org first peer
-- name: "create valuefile for cli {{ orderer.name }}-{{ org.name }}-{{ channel_name }}"
+- name: "create valuefile for cli {{ orderer.name }}-{{ ord.name }}-{{ channel_name }}"
   include_role:
     name: k8_component
   vars:
-    component_type_name: "{{ org.name | lower }}"
+    component_type_name: "{{ ord.name | lower }}"
     component_type: "orderer_cli_job"    
-    component_name: "cli-{{ channel_name }}-{{ org.name }}-{{ orderer.name }}"
+    component_name: "cli-{{ channel_name }}-{{ ord.name }}-{{ orderer.name }}"
     orderer_name: "{{ orderer.name }}"
-    component_ns: "{{ org.name | lower}}-net"
-    git_url: "{{ org.gitops.git_url }}"
-    git_branch: "{{ org.gitops.branch }}"
-    charts_dir: "{{ org.gitops.chart_source }}"
-    vault: "{{ org.vault }}"
+    component_ns: "{{ ord.name | lower}}-net"
+    git_url: "{{ ord.gitops.git_url }}"
+    git_branch: "{{ ord.gitops.branch }}"
+    charts_dir: "{{ ord.gitops.chart_source }}"
+    vault: "{{ ord.vault }}"
     fabrictools_image: "hyperledger/fabric-tools:{{ network.version }}"
     alpine_image: "{{ docker_url }}/alpine-utils:1.0"
     channel_name: "{{ channel_name }}"
-    storage_class: "{{ org.name }}sc"
-    release_dir: "{{playbook_dir}}/../../../{{org.gitops.release_dir}}"
-    orderer_component: "{{ orderer.name | lower }}.{{ org.name | lower }}-net"
-    orderer_address: "{{ orderer.name | lower }}.{{ org.external_url_suffix }}:8443"
+    storage_class: "{{ ord.name }}sc"
+    release_dir: "{{playbook_dir}}/../../../{{ord.gitops.release_dir}}"
+    orderer_component: "{{ orderer.name | lower }}.{{ ord.name | lower }}-net"
+    orderer_address: "{{ orderer.name | lower }}.{{ ord.external_url_suffix }}:8443"
 
 
 # Start the cli using the value file created in the previous step
 - name: "start cli"
   shell: |
-    KUBECONFIG={{ org.k8s.config_file }} helm upgrade --install -f {{playbook_dir}}/../../../{{org.gitops.release_dir}}/{{ org.name }}/orderer_cli_job.yaml {{ orderer.name }}-{{ org.name }}-cli {{playbook_dir}}/../../../{{org.gitops.chart_source}}/fabric_cli
+    KUBECONFIG={{ ord.k8s.config_file }} helm upgrade --install -f {{playbook_dir}}/../../../{{ord.gitops.release_dir}}/{{ ord.name }}/orderer_cli_job.yaml {{ orderer.name }}-{{ ord.name }}-cli {{playbook_dir}}/../../../{{ord.gitops.chart_source}}/fabric_cli
 
 # waiting for fabric cli
 - name: "Check if fabric cli is present"
   k8s_info:
     kind: Pod
-    namespace: "{{ org.name }}-net"
-    kubeconfig: "{{ org.k8s.config_file }}"
-    context: "{{ org.k8s.context }}"
+    namespace: "{{ ord.name }}-net"
+    kubeconfig: "{{ ord.k8s.config_file }}"
+    context: "{{ ord.k8s.context }}"
     label_selectors:
       - app = cli
   register: get_cli
@@ -58,24 +58,24 @@
 # from orderer cli
 - name: fetch, modify, update and copy the configuration block from the blockchain
   shell: |
-    export PEER_CLI=$(KUBECONFIG={{ org.k8s.config_file }} kubectl get po -n {{ org.name }}-net | grep "cli" | head -n 1 | awk '{print $1}')
-    KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ org.name }}-net ${PEER_CLI} -- peer channel fetch config {{ channel_name }}_config_block.pb -o {{ ordererAddress }} -c {{ channel_name }} --tls --cafile ${ORDERER_CA}
-    KUBECONFIG={{ kubernetes.config_file }} kubectl cp ./build/create-orderer.sh {{ org.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/create-orderer.sh
-    KUBECONFIG={{ kubernetes.config_file }} kubectl cp ./build/channel-artifacts/{{ channel_name | lower}}-orderer {{ org.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/orderer
-    KUBECONFIG={{ kubernetes.config_file }} kubectl cp ./build/channel-artifacts/{{ channel_name | lower }}.json {{ org.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/config.json
-    KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ org.name }}-net ${PEER_CLI} -- chmod 777 ./create-orderer.sh
-    KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ org.name }}-net ${PEER_CLI} --  sh ./create-orderer.sh
-    KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ org.name }}-net ${PEER_CLI} -- peer channel update -f {{ channel_name }}_diff_config_envelope.pb -o {{ ordererAddress }} -c {{ channel_name }} --tls --cafile ${ORDERER_CA}
-    KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ org.name }}-net ${PEER_CLI} -- peer channel fetch config {{ channel_name }}_config_block_latest.pb -o {{ ordererAddress }} -c {{ channel_name }} --tls --cafile ${ORDERER_CA}
-    KUBECONFIG={{ kubernetes.config_file }} kubectl cp {{ org.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/{{ channel_name | lower }}_config_block_latest.pb ./build/{{ channel_name | lower }}_config_block.pb
-    KUBECONFIG={{ kubernetes.config_file }} kubectl cp {{ org.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/{{ channel_name | lower }}_updated_config.json ./build/{{ channel_name | lower }}_config_block_with_added_content.json  
+    export PEER_CLI=$(KUBECONFIG={{ ord.k8s.config_file }} kubectl get po -n {{ ord.name }}-net | grep "cli" | head -n 1 | awk '{print $1}')
+    KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ ord.name }}-net ${PEER_CLI} -- peer channel fetch config {{ channel_name }}_config_block.pb -o {{ ordererAddress }} -c {{ channel_name }} --tls --cafile ${ORDERER_CA}
+    KUBECONFIG={{ kubernetes.config_file }} kubectl cp ./build/create-orderer.sh {{ ord.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/create-orderer.sh
+    KUBECONFIG={{ kubernetes.config_file }} kubectl cp ./build/channel-artifacts/{{ channel_name | lower}}-orderer {{ ord.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/orderer
+    KUBECONFIG={{ kubernetes.config_file }} kubectl cp ./build/channel-artifacts/{{ channel_name | lower }}.json {{ ord.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/config.json
+    KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ ord.name }}-net ${PEER_CLI} -- chmod 777 ./create-orderer.sh
+    KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ ord.name }}-net ${PEER_CLI} --  sh ./create-orderer.sh
+    KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ ord.name }}-net ${PEER_CLI} -- peer channel update -f {{ channel_name }}_diff_config_envelope.pb -o {{ ordererAddress }} -c {{ channel_name }} --tls --cafile ${ORDERER_CA}
+    KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ ord.name }}-net ${PEER_CLI} -- peer channel fetch config {{ channel_name }}_config_block_latest.pb -o {{ ordererAddress }} -c {{ channel_name }} --tls --cafile ${ORDERER_CA}
+    KUBECONFIG={{ kubernetes.config_file }} kubectl cp {{ ord.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/{{ channel_name | lower }}_config_block_latest.pb ./build/{{ channel_name | lower }}_config_block.pb
+    KUBECONFIG={{ kubernetes.config_file }} kubectl cp {{ ord.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/{{ channel_name | lower }}_updated_config.json ./build/{{ channel_name | lower }}_config_block_with_added_content.json  
   environment:
     ORDERER_CA: "/opt/gopath/src/github.com/hyperledger/fabric/crypto/orderer/tls/ca.crt"
   vars: 
-    kubernetes: "{{ org.k8s }}"
-    ordererAddress: "{{ orderer.name | lower }}.{{ org.external_url_suffix }}:8443"
+    kubernetes: "{{ ord.k8s }}"
+    ordererAddress: "{{ orderer.name | lower }}.{{ ord.external_url_suffix }}:8443"
 
 # Delete the orderer cli   
-- name: "delete cli {{ orderer.name }}-{{ org.name }}-cli"
+- name: "delete cli {{ orderer.name }}-{{ ord.name }}-cli"
   shell: |
-    KUBECONFIG={{ org.k8s.config_file }} helm uninstall {{ orderer.name }}-{{ org.name }}-cli
+    KUBECONFIG={{ ord.k8s.config_file }} helm uninstall {{ orderer.name }}-{{ ord.name }}-cli

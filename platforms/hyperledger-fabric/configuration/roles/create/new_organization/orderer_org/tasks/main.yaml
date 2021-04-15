@@ -15,4 +15,9 @@
 - name: Call create_orderer.yaml to add the new orderer to the existing network
   include_tasks: create_orderer.yaml
   vars:
-    orderer: "{{ org.services.orderers | first }}"
+    orderer: "{{ ord.services.orderers | first }}"
+  loop: "{{ network.organizations }}"
+  loop_control:
+    loop_var: ord
+  when: ord.type == 'orderer' and ord.org_status == 'existing' 
+  
