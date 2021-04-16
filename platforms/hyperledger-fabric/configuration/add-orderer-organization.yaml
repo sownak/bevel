@@ -138,10 +138,10 @@
         profile_name: "{{ item.channel_name }}"
       loop: "{{ network['channels'] }}"
 
-    # This role adds the new org to the existing consortium and updates the block  
+    # This role adds the new org to the existing consortium and updates the block with syschannel 
     
     - include_role:
-        name: "create/new_organization/orderer_org"
+        name: "create/new_organization/orderer_org/syschannel"
       vars:
         build_path: "./build"
         orderers: "{{ org.services.orderers }}"
@@ -152,6 +152,16 @@
       loop_control:
         loop_var: org
       when: org.type == 'orderer' and org.org_status == 'new' 
+
+    # This role adds the new org to the existing chnanel and updates the block with the application channel
+    
+    - include_role:
+        name: "create/new_organization/orderer_org/appchannel"
+      vars:
+        build_path: "./build"
+        participants: "{{ item.participants }}"
+        docker_url: "{{ network.docker.url }}"
+      loop: "{{ network['channels'] }}"
 
     # This role creates value file for zk-kafka (if kafka consensus is chosen) and orderer
     - name: Create all orderers

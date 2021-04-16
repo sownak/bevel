@@ -19,5 +19,22 @@
   loop: "{{ network.organizations }}"
   loop_control:
     loop_var: ord
-  when: ord.type == 'orderer' and ord.org_status == 'existing' 
+  when: ord.type == 'orderer' and ord.org_status == 'existing'
+
+
+# This task calls nested_create_cli to generate the cli for the new orderer for the signing of the block
+- name: Call create_orderer.yaml to add the new orderer to the existing network
+  include_tasks: sign_orderer.yaml
+  vars:
+    orderer: "{{ org.services.orderers | first }}"
+  when: org.type == 'orderer' and org.org_status == 'new'    
   
+# This task updates the block by the existing orderer
+- name: Call create_orderer.yaml to add the new orderer to the existing network
+  include_tasks: update_orderer.yaml
+  vars:
+    orderer: "{{ ord.services.orderers | first }}"
+  loop: "{{ network.organizations }}"
+  loop_control:
+    loop_var: ord
+  when: ord.type == 'orderer' and ord.org_status == 'existing'     

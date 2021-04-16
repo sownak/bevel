@@ -53,22 +53,45 @@
   register: result
   when: add_new_org == 'true'
 
+# creating new file for the conserters
+- name: Creating new consenters file
+  file:
+    path: "{{ build_path }}/channel-artifacts/{{ channel_name | lower}}-{{ ord.name }}-net.json"
+    state: touch
+
+# Create the values for orderer update
+- name: "adding orderers information to the file"
+  shell: |
+    if [ -s {{ build_path }}/channel-artifacts/{{ channel_name | lower}}-{{ org.name }}-net.json ]
+    then
+        echo -n "," >> {{ build_path }}/channel-artifacts/{{ channel_name | lower}}-{{ org.name }}-net.json  
+    fi
+    if [ {{ network.env.proxy }} == 'none' ]
+    then
+        echo -n "{\"client_tls_cert\":\"'$cert'\",\"host\":\"{{ new_orderer.uri.split(":")[0] | to_json }}\",\"port\":{{ new_orderer.uri.split(":")[1] | to_json }},\"server_tls_cert\":\"'$cert'\"}" >> {{ build_path }}/channel-artifacts{{ channel_name | lower}}-{{ org.name }}-net.json
+    else
+        echo -n "{\"host\":\"{{ new_orderer.uri.split(":")[0] | to_json }}\",\"port\":{{ new_orderer.uri.split(":")[1] | to_json }}}" >> {{ build_path }}/channel-artifacts{{ channel_name | lower}}-{{ org.name }}-net.json
+    fi
+  loop: "{{ network.orderers }}"
+  loop_control:
+    loop_var: new_orderer
+  when: new_orderer.org_name == {{ org.name }}  
+
 ############################################################################################
 # This task fetch , modify, update and copy the configuration block from the blockchain with the new orderer information
 # from orderer cli
-- name: fetch, modify, update and copy the configuration block from the blockchain
+- name: fetch, modify, sign and copy the configuration block from the blockchain
   shell: |
     export PEER_CLI=$(KUBECONFIG={{ ord.k8s.config_file }} kubectl get po -n {{ ord.name }}-net | grep "cli" | head -n 1 | awk '{print $1}')
     KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ ord.name }}-net ${PEER_CLI} -- peer channel fetch config {{ channel_name }}_config_block.pb -o {{ ordererAddress }} -c {{ channel_name }} --tls --cafile ${ORDERER_CA}
     KUBECONFIG={{ kubernetes.config_file }} kubectl cp ./build/create-orderer.sh {{ ord.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/create-orderer.sh
     KUBECONFIG={{ kubernetes.config_file }} kubectl cp ./build/channel-artifacts/{{ channel_name | lower}}-orderer {{ ord.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/orderer
     KUBECONFIG={{ kubernetes.config_file }} kubectl cp ./build/channel-artifacts/{{ channel_name | lower }}.json {{ ord.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/config.json
+    KUBECONFIG={{ kubernetes.config_file }} kubectl cp ./build/channel-artifacts/{{ channel_name | lower}}-{{ org.name }}-net.json {{ ord.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/config_consenters.json
     KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ ord.name }}-net ${PEER_CLI} -- chmod 777 ./create-orderer.sh
     KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ ord.name }}-net ${PEER_CLI} --  sh ./create-orderer.sh
     KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ ord.name }}-net ${PEER_CLI} -- peer channel update -f {{ channel_name }}_diff_config_envelope.pb -o {{ ordererAddress }} -c {{ channel_name }} --tls --cafile ${ORDERER_CA}
-    KUBECONFIG={{ kubernetes.config_file }} kubectl exec -n {{ ord.name }}-net ${PEER_CLI} -- peer channel fetch config {{ channel_name }}_config_block_latest.pb -o {{ ordererAddress }} -c {{ channel_name }} --tls --cafile ${ORDERER_CA}
-    KUBECONFIG={{ kubernetes.config_file }} kubectl cp {{ ord.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/{{ channel_name | lower }}_config_block_latest.pb ./build/{{ channel_name | lower }}_config_block.pb
-    KUBECONFIG={{ kubernetes.config_file }} kubectl cp {{ ord.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/{{ channel_name | lower }}_updated_config.json ./build/{{ channel_name | lower }}_config_block_with_added_content.json  
+    KUBECONFIG={{ kubernetes.config_file }} kubectl cp {{ ord.name }}-net/${PEER_CLI}:/opt/gopath/src/github.com/hyperledger/fabric/peer/{{ channel_name }}_diff_config_envelope.pb ./build/{{ channel_name | lower }}_config_block.pb
   environment:
     ORDERER_CA: "/opt/gopath/src/github.com/hyperledger/fabric/crypto/orderer/tls/ca.crt"
   vars: 
