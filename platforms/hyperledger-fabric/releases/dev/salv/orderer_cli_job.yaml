@@ -11,14 +11,14 @@ vault:
   address: http://vault.internal.dev2.aws.blockchaincloudpoc-develop.com:20001
   authpath: salv-net-auth
   adminsecretprefix: secret/crypto/ordererOrganizations/salv-net/users/admin
-  orderersecretprefix: secret/crypto/ordererOrganizations/salv-net/orderers/orderer61.salv-net
+  orderersecretprefix: secret/crypto/ordererOrganizations/salv-net/orderers/orderer60.salv-net
   serviceaccountname: vault-auth
   imagesecretname: regcred
   tls: false
 peer:
-  name: orderer61
+  name: orderer60
   localmspid: secalvMSP
   tlsstatus: true
-  address: orderer61.hf.dev2.aws.blockchaincloudpoc-develop.com:8443
+  address: orderer60.hf.dev2.aws.blockchaincloudpoc-develop.com:8443
 orderer:
-  address: orderer61.hf.dev2.aws.blockchaincloudpoc-develop.com:8443
+  address: orderer60.hf.dev2.aws.blockchaincloudpoc-develop.com:8443
