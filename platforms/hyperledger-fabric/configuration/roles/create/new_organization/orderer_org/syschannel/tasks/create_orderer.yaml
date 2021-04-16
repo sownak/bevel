@@ -75,7 +75,7 @@
   loop: "{{ network.orderers }}"
   loop_control:
     loop_var: new_orderer
-  when: new_orderer.org_name == {{ org.name }}  
+  when: new_orderer.org_name == org.name
 
 ############################################################################################
 # This task fetch , modify, update and copy the configuration block from the blockchain with the new orderer information

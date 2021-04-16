@@ -116,7 +116,7 @@
         kubernetes: "{{ item.k8s }}"
         vault: "{{ item.vault }}"
       loop: "{{ network['organizations'] }}"
-      when: item.type == 'orderer'
+      when: item.type == 'orderer' and item.org_status == 'new'
 
     # Creating channel artifacts and putting them in vault
     # This role creates configtx.yaml file as the requirements mentioned in network.yaml
@@ -160,6 +160,8 @@
       vars:
         build_path: "./build"
         participants: "{{ item.participants }}"
+        channel_name: "{{ item.channel_name | lower}}"
+        system_channel: "syschannel"
         docker_url: "{{ network.docker.url }}"
       loop: "{{ network['channels'] }}"
 
@@ -179,7 +181,7 @@
         charts_dir: "{{ item.gitops.chart_source }}"
         values_dir: "{{playbook_dir}}/../../../{{item.gitops.release_dir}}/{{ item.name | lower }}"
       loop: "{{ network['organizations'] }}"
-      when: item.type == 'orderer'  
+      when: item.type == 'orderer' and item.org_status == 'new' 
 
   vars: #These variables can be overriden from the command line
     privilege_escalate: false           #Default to NOT escalate to root privledges

@@ -5,6 +5,8 @@
     src: "orderer_app_org.tpl"
     dest: "./build/create-orderer-app.sh"
   vars:
+    new_org_query: "organizations[?org_status=='new']"
+    org: "{{ network | json_query(new_org_query) | first }}"
     component_name: "{{ org.name | lower }}"
     os: "{{ fabric.os }}"
     arch: "{{ fabric.arch }}"
@@ -15,35 +17,44 @@
 - name: Call create_orderer.yaml to add the new orderer to the existing network
   include_tasks: create_orderer.yaml
   vars:
+    peer: "{{ participant.peers | first }}"
+    org_ord: "organizations[?org_status=='existing']"
     orderer: "{{ ord.services.orderers | first }}"
-    new_org_query: "organizations[?org_status=='new']"
-    ord: "{{ network | json_query(new_org_query) | first }}"
+    ord: "{{ network | json_query(org_ord) | first }}"
+    org_query: "organizations[?name=='{{participant.name}}']"
+    org: "{{ network | json_query(org_query) | first }}"
   loop: "{{ participants }}"
   loop_control:
     loop_var: participant
-  when: participant.type == 'peer' participant ord.org_status == 'existing' participant.type == 'creator'
+  when: participant.type == 'peer' and participant.org_status == 'existing' and participant.type == 'creator'
 
 
 # This task calls nested_create_cli to generate the cli for the new orderer for the signing of the block
 - name: Call create_orderer.yaml to add the new orderer to the existing network
   include_tasks: sign_orderer.yaml
   vars:
-    orderer: "{{ org.services.orderers | first }}"
-    new_org_query: "organizations[?org_status=='new']"
-    org: "{{ network | json_query(new_org_query) | first }}"
+    peer: "{{ participant.peers | first }}"
+    org_ord: "organizations[?org_status=='existing']"
+    orderer: "{{ ord.services.orderers | first }}"
+    ord: "{{ network | json_query(org_ord) | first }}"
+    org_query: "organizations[?name=='{{participant.name}}']"
+    org: "{{ network | json_query(org_query) | first }}"
   loop: "{{ participants }}"
   loop_control:
     loop_var: participant
-  when: participant.type == 'peer' participant ord.org_status == 'existing' participant.type == 'creator'  
+  when: participant.type == 'peer' and participant.org_status == 'existing' and participant.type != 'creator'  
   
 # This task updates the block by the existing orderer
 - name: Call create_orderer.yaml to add the new orderer to the existing network
   include_tasks: update_orderer.yaml
   vars:
+    peer: "{{ participant.peers | first }}"
+    org_ord: "organizations[?org_status=='existing']"
     orderer: "{{ ord.services.orderers | first }}"
-    new_org_query: "organizations[?org_status=='new']"
-    ord: "{{ network | json_query(new_org_query) | first }}"
+    ord: "{{ network | json_query(org_ord) | first }}"
+    org_query: "organizations[?name=='{{participant.name}}']"
+    org: "{{ network | json_query(org_query) | first }}"
   loop: "{{ participants }}"
   loop_control:
     loop_var: participant
-  when: participant.type == 'peer' participant ord.org_status == 'existing' participant.type == 'creator'
+  when: participant.type == 'peer' and participant.org_status == 'existing' and participant.type == 'creator'

@@ -18,10 +18,9 @@ rm -r temp
 configtxlator proto_decode --input {{ channel_name }}_config_block.pb --type common.Block | jq .data.data[0].payload.data.config > {{ channel_name }}_config_block.json
 
 jq -s '.[0] * {"channel_group":{"groups":{"Application":{"groups": {"{{ org.name }}MSP":.[1]}}}}}' {{ channel_name }}_config_block.json ./config.json >& config1.json
-cert=`base64 /opt/gopath/src/github.com/hyperledger/fabric/crypto/orderer/tls/ca.crt | sed ':a;N;$!ba;s/\n//g'`
 echo "converting the channel_config.json and channel_modified_config.json to .pb files"
 configtxlator proto_encode --input {{ channel_name }}_config_block.json --type common.Config --output {{ channel_name }}_config.pb
-configtxlator proto_encode --input modified_config.json --type common.Config --output {{ channel_name }}_updated_config.pb
+configtxlator proto_encode --input config1.json --type common.Config --output {{ channel_name }}_updated_config.pb
 echo "calculate the delta between these two config protobufs using configtxlator"
 configtxlator compute_update --channel_id {{ channel_name }} --original {{ channel_name }}_config.pb --updated {{ channel_name }}_updated_config.pb --output {{ channel_name }}_diff_config.pb
 echo "decode the channel_update.pb to json to add headers."
