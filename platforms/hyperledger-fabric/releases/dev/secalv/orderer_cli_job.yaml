@@ -1,0 +1,24 @@
+metadata:
+  namespace: secalv-net
+  images:
+    fabrictools: hyperledger/fabric-tools:2.2.0
+    alpineutils: index.docker.io/hyperledgerlabs/alpine-utils:1.0
+storage:
+  class: secalvsc
+  size: 256Mi
+vault:
+  role: vault-role
+  address: http://vault.internal.dev2.aws.blockchaincloudpoc-develop.com:20001
+  authpath: secalv-net-auth
+  adminsecretprefix: secret/crypto/ordererOrganizations/secalv-net/users/admin
+  orderersecretprefix: secret/crypto/ordererOrganizations/secalv-net/orderers/orderer61.secalv-net
+  serviceaccountname: vault-auth
+  imagesecretname: regcred
+  tls: false
+peer:
+  name: orderer61
+  localmspid: secalvMSP
+  tlsstatus: true
+  address: orderer61.hf.dev2.aws.blockchaincloudpoc-develop.com:8443
+orderer:
+  address: orderer61.hf.dev2.aws.blockchaincloudpoc-develop.com:8443
