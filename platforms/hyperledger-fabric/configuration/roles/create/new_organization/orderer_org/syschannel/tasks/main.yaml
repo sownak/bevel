@@ -10,8 +10,18 @@
     arch: "{{ fabric.arch }}"
     version: "{{ network.version }}"
 
-
-# This task calls nested_create_cli to generate the cli value files for the orderer organization
+# This task fetches the genesis block from the vault
+- name: Fetching the genesis block from vault 
+  shell: |
+    vault kv get -field=genesisBlock {{ vault.secret_path | default('secret') }}/crypto/ordererOrganizations > genesis.block.base64  
+    mv genesis.block.base64 ./build/channel-artifacts/
+  environment:
+    VAULT_ADDR: "{{ org.vault.url }}"
+    VAULT_TOKEN: "{{ org.vault.root_token }}"
+  tags:
+    - molecule-idempotence-notest
+ 
+ # This task calls nested_create_cli to generate the cli value files for the orderer organization
 - name: Call create_orderer.yaml to add the new orderer to the existing network
   include_tasks: create_orderer.yaml
   vars:
