@@ -3,10 +3,10 @@ name: bevel_CI
 # Triggers the workflow on push or pull request events
 on:
   push:
-    branches: [main]
+    branches: [main,develop]
 
   pull_request:
-    branches: [main]
+    branches: [main,develop]
 
 jobs:
   DCI-Lint:
