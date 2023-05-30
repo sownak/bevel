@@ -26,33 +26,21 @@ jobs:
       - name: Install additional Helm repos
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
-      - name: Package and upload Helm charts
+      - name: Shared charts
+        uses: helm/chart-releaser-action@v1.5.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          CR_VERSION: "1.5.0"
-        run: |
-          curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/v${CR_VERSION}/chart-releaser_${CR_VERSION}_linux_amd64.tar.gz"
-          tar -xzf cr.tar.gz cr
-          rm cr.tar.gz
-          owner=$(cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY")
-          repo=$(cut -d '/' -f 2 <<< "$GITHUB_REPOSITORY")
-
-          # package chart
-          ./cr package platforms/shared/charts/
-
-          # upload chart to Github Releases
-          ./cr upload \
-              --owner "$owner" \
-              --git-repo "$repo" \
-              --release-name-template "{{ .Version }}"
-
-          # update index and push to Github Pages
-          git config user.email "$owner@users.noreply.github.com"
-          git config user.name "$owner"
-          ./cr index \
-              --owner "$owner" \
-              --git-repo "$repo" \
-              --release-name-template "{{ .Version }}" \
-              --index-path ./index.yaml \
-              --charts-repo https://$owner.github.io/$repo \
-              --push
+        with:
+          charts_dir: platforms/shared/charts
+      - name: Substrate charts
+        uses: helm/chart-releaser-action@v1.5.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          charts_dir: platforms/substrate/charts
+      - name: Besu charts
+        uses: helm/chart-releaser-action@v1.5.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          charts_dir: platforms/hyperledger-besu/charts
