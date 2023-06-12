@@ -31,6 +31,7 @@ Fabric operations
     operations/deploy_fabric_operations_console
     operations/refresh_certs_fabric
     operations/upgrade_fabricnetwork_1.4.x_2.2.x
+    operations/setup_cactus_connector_fabric
     
 Corda operations
 -----------------------
@@ -53,6 +54,7 @@ Besu operations
     operations/adding_new_validator_node_besu
     operations/adding_new_validator_org_besu
     operations/besu_permissioning
+    operations/setup_cactus_connector_besu
     
 Indy operations
 ------------------------
