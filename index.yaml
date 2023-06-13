@@ -230,7 +230,36 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/node_orion-0.2.0/node_orion-0.2.0.tgz
     version: 0.2.0
+  node_quorum:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-06-13T08:39:53.641997454Z"
+    description: A Helm chart to deploy Quorum nodes.
+    digest: 779d9c055f8172eea822829791fc3b63eb3031c4486f8e32bf16f80c60ea9182
+    name: node_quorum
+    urls:
+    - https://github.com/sownak/bevel/releases/download/node_quorum-0.14.1/node_quorum-0.14.1.tgz
+    version: 0.14.1
+  node_quorum_member:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-06-13T08:39:53.818806444Z"
+    description: A Helm chart to deploy Quorum non-validator nodes.
+    digest: 062ee9e02b0507fa8f8bff07c63693eaf924c876af1503e39b1a6261a27e5cb0
+    name: node_quorum_member
+    urls:
+    - https://github.com/sownak/bevel/releases/download/node_quorum_member-0.14.1/node_quorum_member-0.14.1.tgz
+    version: 0.14.1
   node_tessera:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-06-13T08:39:54.017487754Z"
+    description: A Helm chart to deploy Tessera transaction manager
+    digest: e35f08a0425c1cddb15878bbbe472a3fd98e721b8dbfaa433bf3f83ed485883f
+    name: node_tessera
+    urls:
+    - https://github.com/sownak/bevel/releases/download/node_tessera-0.14.1/node_tessera-0.14.1.tgz
+    version: 0.14.1
   - apiVersion: v1
     appVersion: 21.7.3
     created: "2023-06-01T19:16:06.699867803Z"
@@ -330,6 +359,16 @@ entries:
     - https://github.com/sownak/bevel/releases/download/tessera_key_mgmt-1.0.0/tessera_key_mgmt-1.0.0.tgz
     version: 1.0.0
   - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-06-13T08:39:54.211339571Z"
+    description: A Helm3 chart for generating certificates and keys required by Tessera
+      transaction manager
+    digest: c295f14e9393193f3264c15d1d6db04dc722ea0f6a53720ecd5d8a549cd4c4ca
+    name: tessera_key_mgmt
+    urls:
+    - https://github.com/sownak/bevel/releases/download/tessera_key_mgmt-0.14.1/tessera_key_mgmt-0.14.1.tgz
+    version: 0.14.1
+  - apiVersion: v1
     appVersion: 21.7.3
     created: "2023-06-01T19:16:07.09551821Z"
     description: A Helm3 chart for generating Tessera crypto
@@ -378,4 +417,4 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/zkkafka-0.13.0/zkkafka-0.13.0.tgz
     version: 0.13.0
-generated: "2023-06-01T19:16:07.095577811Z"
+generated: "2023-06-13T08:39:54.211422873Z"
