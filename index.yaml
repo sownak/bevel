@@ -81,6 +81,26 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/create_channel-0.13.0/create_channel-0.13.0.tgz
     version: 0.13.0
+  doorman:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-07-20T09:46:19.740657942Z"
+    description: 'R3-corda-os: Deploys the doorman service.'
+    digest: 9715f17bf465e94f657aeef17579291fa6401497c3fea01ce7e94882b98e0e40
+    name: doorman
+    urls:
+    - https://github.com/sownak/bevel/releases/download/doorman-0.14.1/doorman-0.14.1.tgz
+    version: 0.14.1
+  doorman-tls:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-07-20T09:46:19.93559633Z"
+    description: 'R3-corda-os: Deploys the doorman with TLS connection enabled.'
+    digest: b1f6aa76051ed63701c4572349f2036ef851a6d26cb7237d4a8d474564aebeca
+    name: doorman-tls
+    urls:
+    - https://github.com/sownak/bevel/releases/download/doorman-tls-0.14.1/doorman-tls-0.14.1.tgz
+    version: 0.14.1
   fabric-connector:
   - apiVersion: v2
     appVersion: 1.1.3
@@ -102,6 +122,16 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/fabric_cli-0.13.0/fabric_cli-0.13.0.tgz
     version: 0.13.0
+  generate-certs:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-07-20T09:46:20.155397932Z"
+    description: 'R3-corda-os: Generates the ca-certificates.'
+    digest: c35488f7b38046e7701b3cc0e6d62373ae386e99f3e130222903e62b34c52758
+    name: generate-certs
+    urls:
+    - https://github.com/sownak/bevel/releases/download/generate-certs-0.14.1/generate-certs-0.14.1.tgz
+    version: 0.14.1
   generate_ambassador_certs:
   - apiVersion: v1
     appVersion: "2.0"
@@ -131,6 +161,16 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/generate_cacerts-0.13.0/generate_cacerts-0.13.0.tgz
     version: 0.13.0
+  h2:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-07-20T09:46:20.359912365Z"
+    description: 'R3-corda-os: Deploys H2 DB.'
+    digest: e4fef3c57e5726110a18cb6681b53f70155f9c7881e5b2d8f260b3c5eefc8112
+    name: h2
+    urls:
+    - https://github.com/sownak/bevel/releases/download/h2-0.14.1/h2-0.14.1.tgz
+    version: 0.14.1
   install_chaincode:
   - apiVersion: v1
     appVersion: "2.0"
@@ -171,6 +211,67 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/join_channel-0.13.0/join_channel-0.13.0.tgz
     version: 0.13.0
+  mongodb:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-07-20T09:46:20.557328794Z"
+    description: 'R3-corda-os: Deploys MongoDB, used for doorman and networkmap.'
+    digest: bdcbd1e578d65edf621d2a0bef6ebf687c51cf6a3a160f4ecf6115a1e17bb81c
+    name: mongodb
+    urls:
+    - https://github.com/sownak/bevel/releases/download/mongodb-0.14.1/mongodb-0.14.1.tgz
+    version: 0.14.1
+  mongodb-tls:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-07-20T09:46:20.775371896Z"
+    description: 'R3-corda-os: Deploys mongodb with tls enabled, used for doorman
+      and networkmap.'
+    digest: 5eb119096bdd58804209a718d6d091a6a37508810f427d9803538d77ac327f22
+    name: mongodb-tls
+    urls:
+    - https://github.com/sownak/bevel/releases/download/mongodb-tls-0.14.1/mongodb-tls-0.14.1.tgz
+    version: 0.14.1
+  nms:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-07-20T09:46:20.973130744Z"
+    description: 'R3-corda-os: Deploys networkmap service without TLS.'
+    digest: f177d343f4e70e27c78ee3620e9096355109536cae535e80388accffe25ee5c5
+    name: nms
+    urls:
+    - https://github.com/sownak/bevel/releases/download/nms-0.14.1/nms-0.14.1.tgz
+    version: 0.14.1
+  nms-tls:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-07-20T09:46:21.210734959Z"
+    description: 'R3-corda-os: Deploys networkmap sevice with TLS.'
+    digest: 37c97778655359c8aa4228d5069cdcdcef531a1ceb01ea424e045340c8fadbe4
+    name: nms-tls
+    urls:
+    - https://github.com/sownak/bevel/releases/download/nms-tls-0.14.1/nms-tls-0.14.1.tgz
+    version: 0.14.1
+  node:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-07-20T09:46:21.443087175Z"
+    description: 'R3-corda-os: Deploys the r3corda node.'
+    digest: 137e1956aa1e3e66cfdbe31964b74393d007aa8513fa029fd94f5610aecf563e
+    name: node
+    urls:
+    - https://github.com/sownak/bevel/releases/download/node-0.14.1/node-0.14.1.tgz
+    version: 0.14.1
+  node-initial-registration:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-07-20T09:46:21.634327952Z"
+    description: 'R3-corda-os: Job for initial node registration.'
+    digest: 28337295c0a274fc8dd1d62495579e16e3a02911f5833e6df5655aaf4d2288e5
+    name: node-initial-registration
+    urls:
+    - https://github.com/sownak/bevel/releases/download/node-initial-registration-0.14.1/node-initial-registration-0.14.1.tgz
+    version: 0.14.1
   node_besu:
   - apiVersion: v1
     appVersion: 21.10.6
@@ -299,6 +400,26 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/node_validator-0.2.0/node_validator-0.2.0.tgz
     version: 0.2.0
+  notary:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-07-20T09:46:21.85722263Z"
+    description: 'R3-corda-os: Deploys the notary node.'
+    digest: 2b3a9e2394af267b1e4ca4c71f7c9bdc3492d0e0b9c253e0db96db8bb7b31edc
+    name: notary
+    urls:
+    - https://github.com/sownak/bevel/releases/download/notary-0.14.1/notary-0.14.1.tgz
+    version: 0.14.1
+  notary-initial-registration:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-07-20T09:46:23.095615069Z"
+    description: 'R3-corda-os: Job for initial notary node registration.'
+    digest: 2a1e897dc9e6d4644ac0024265c9737d871cb5023e35e601d66da09fbc313d71
+    name: notary-initial-registration
+    urls:
+    - https://github.com/sownak/bevel/releases/download/notary-initial-registration-0.14.1/notary-initial-registration-0.14.1.tgz
+    version: 0.14.1
   operations_console:
   - apiVersion: v1
     appVersion: "2.0"
@@ -417,4 +538,4 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/zkkafka-0.13.0/zkkafka-0.13.0.tgz
     version: 0.13.0
-generated: "2023-06-13T08:39:54.211422873Z"
+generated: "2023-07-20T09:46:23.095652271Z"
