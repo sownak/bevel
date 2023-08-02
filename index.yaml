@@ -3,6 +3,15 @@ entries:
   anchorpeer:
   - apiVersion: v1
     appVersion: "2.0"
+    created: "2023-08-02T16:25:41.683324579Z"
+    description: 'Hyperledger Fabric: Updates the anchorpeer details.'
+    digest: 7495405c55760febd7ed26354bd1e19141e791f7f66baf5bf191a89b5ff67a94
+    name: anchorpeer
+    urls:
+    - https://github.com/sownak/bevel/releases/download/anchorpeer-0.14.1/anchorpeer-0.14.1.tgz
+    version: 0.14.1
+  - apiVersion: v1
+    appVersion: "2.0"
     created: "2023-05-30T14:37:34.055035378Z"
     description: A Helm chart for updating the anchorpeer details
     digest: 4db403052745d855eade705f3ecbd6fddd3bbb3c264ae136b15e75e600ff613d
@@ -11,6 +20,15 @@ entries:
     - https://github.com/sownak/bevel/releases/download/anchorpeer-0.13.0/anchorpeer-0.13.0.tgz
     version: 0.13.0
   approve_chaincode:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-08-02T16:25:41.808582905Z"
+    description: 'Hyperledger Fabric: Approves the chaincode.'
+    digest: a53c169bc9ff0658154305e1c3731152604df0a8fe4aafbacd3a58957c7a8219
+    name: approve_chaincode
+    urls:
+    - https://github.com/sownak/bevel/releases/download/approve_chaincode-0.14.1/approve_chaincode-0.14.1.tgz
+    version: 0.14.1
   - apiVersion: v1
     appVersion: "2.0"
     created: "2023-05-30T14:37:34.18928862Z"
@@ -44,6 +62,15 @@ entries:
   ca:
   - apiVersion: v1
     appVersion: "2.0"
+    created: "2023-08-02T16:25:41.939496718Z"
+    description: 'Hyperledger Fabric: Deploys a CA server.'
+    digest: cfa787ece6ffad9d5adc98cfb6916759b65fb06a7f16f6d88954a27f90f7924e
+    name: ca
+    urls:
+    - https://github.com/sownak/bevel/releases/download/ca-0.14.1/ca-0.14.1.tgz
+    version: 0.14.1
+  - apiVersion: v1
+    appVersion: "2.0"
     created: "2023-05-30T14:37:34.313786572Z"
     description: A Helm chart for CA server
     digest: c87996828227adb9df07552e8c14c5de90cc8aa6d7c0b2382765818976f4b438
@@ -52,6 +79,15 @@ entries:
     - https://github.com/sownak/bevel/releases/download/ca-0.13.0/ca-0.13.0.tgz
     version: 0.13.0
   catools:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-08-02T16:25:42.041872494Z"
+    description: 'Hyperledger Fabric: Deploys a Fabric CA tools.'
+    digest: 901863a207f9ee4c6587fdc3d583401b9d2cfea2ed8825660951ff10dd8c1f49
+    name: catools
+    urls:
+    - https://github.com/sownak/bevel/releases/download/catools-0.14.1/catools-0.14.1.tgz
+    version: 0.14.1
   - apiVersion: v1
     appVersion: "2.0"
     created: "2023-05-30T14:37:34.455745886Z"
@@ -64,6 +100,15 @@ entries:
   commit_chaincode:
   - apiVersion: v1
     appVersion: "2.0"
+    created: "2023-08-02T16:25:42.15775184Z"
+    description: 'Hyperledger Fabric: Commits a chaincode to a channel.'
+    digest: e79e1cf325f791505d178b0cedef0248311cf2b5cefc2768a123eef732f34015
+    name: commit_chaincode
+    urls:
+    - https://github.com/sownak/bevel/releases/download/commit_chaincode-0.14.1/commit_chaincode-0.14.1.tgz
+    version: 0.14.1
+  - apiVersion: v1
+    appVersion: "2.0"
     created: "2023-05-30T14:37:34.605758374Z"
     description: A Helm chart for chaincode instantiation on a peer
     digest: d75d4cc888cdf20109ff3751e9d9eb133e7654da665a355cef5ab9de0a9bca92
@@ -72,6 +117,15 @@ entries:
     - https://github.com/sownak/bevel/releases/download/commit_chaincode-0.13.0/commit_chaincode-0.13.0.tgz
     version: 0.13.0
   create_channel:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-08-02T16:25:42.252421133Z"
+    description: 'Hyperledger Fabric: Creates channel.'
+    digest: f05e5667178b4991bfafec2e8ba8e68e98702f027b44a188c2999d0c9e15fc2c
+    name: create_channel
+    urls:
+    - https://github.com/sownak/bevel/releases/download/create_channel-0.14.1/create_channel-0.14.1.tgz
+    version: 0.14.1
   - apiVersion: v1
     appVersion: "2.0"
     created: "2023-05-30T14:37:34.724454772Z"
@@ -101,7 +155,27 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/doorman-tls-0.14.1/doorman-tls-0.14.1.tgz
     version: 0.14.1
+  external_chaincode:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-08-02T16:25:42.375828863Z"
+    description: 'Hyperledger Fabric: Deploys external chaincode server.'
+    digest: cd7b11661cf9ce6e304ccb79cf7f9cef972fea14254862e212246140ece7b311
+    name: external_chaincode
+    urls:
+    - https://github.com/sownak/bevel/releases/download/external_chaincode-0.14.1/external_chaincode-0.14.1.tgz
+    version: 0.14.1
   fabric-connector:
+  - apiVersion: v2
+    appVersion: 1.1.3
+    created: "2023-08-02T16:25:42.480583933Z"
+    description: 'Hyperledger Fabric: Deploys Cactus Fabric Connector.'
+    digest: 799b3b2ad980f3b710bc45f3f79adc0d3105c279955216118e632a1e2e2ebb0c
+    name: fabric-connector
+    type: application
+    urls:
+    - https://github.com/sownak/bevel/releases/download/fabric-connector-0.14.1/fabric-connector-0.14.1.tgz
+    version: 0.14.1
   - apiVersion: v2
     appVersion: 1.1.3
     created: "2023-05-30T14:37:34.850741041Z"
@@ -113,6 +187,15 @@ entries:
     - https://github.com/sownak/bevel/releases/download/fabric-connector-0.13.0/fabric-connector-0.13.0.tgz
     version: 0.13.0
   fabric_cli:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-08-02T16:25:42.586140902Z"
+    description: 'Hyperledger Fabric: Deploys Fabric Cli.'
+    digest: e76ef1fbd8a117dc013c964d996390d4acbc54b19c47cb0ab3705b1ee6274bc7
+    name: fabric_cli
+    urls:
+    - https://github.com/sownak/bevel/releases/download/fabric_cli-0.14.1/fabric_cli-0.14.1.tgz
+    version: 0.14.1
   - apiVersion: v1
     appVersion: "2.0"
     created: "2023-05-30T14:37:34.993411461Z"
@@ -154,6 +237,15 @@ entries:
   generate_cacerts:
   - apiVersion: v1
     appVersion: "2.0"
+    created: "2023-08-02T16:25:42.699537054Z"
+    description: 'Hyperledger Fabric: Generates CA Server certs.'
+    digest: 817e9fb25645ca7986d43bdfe7dc1f0f2eaf3729ec4ce49d978a2907dd3877e7
+    name: generate_cacerts
+    urls:
+    - https://github.com/sownak/bevel/releases/download/generate_cacerts-0.14.1/generate_cacerts-0.14.1.tgz
+    version: 0.14.1
+  - apiVersion: v1
+    appVersion: "2.0"
     created: "2023-05-30T14:37:35.10895293Z"
     description: A Helm chart for ca server configuration
     digest: 6f4e690c1fa665b9fa7b4d70d4ed6a55b41a5286aaffad8454102373134fb91f
@@ -174,6 +266,15 @@ entries:
   install_chaincode:
   - apiVersion: v1
     appVersion: "2.0"
+    created: "2023-08-02T16:25:42.866473388Z"
+    description: 'Hyperledger Fabric: Installs chaincode on a peer.'
+    digest: a2e9c49119d04073e21b0f2f3b3c315006dfb60d35eaae719f3677ed02c3967c
+    name: install_chaincode
+    urls:
+    - https://github.com/sownak/bevel/releases/download/install_chaincode-0.14.1/install_chaincode-0.14.1.tgz
+    version: 0.14.1
+  - apiVersion: v1
+    appVersion: "2.0"
     created: "2023-05-30T14:37:35.251627451Z"
     description: A Helm chart for chaincode installation on a peer
     digest: 8a1ebb99d73a04eb81c8cdc205044a90814b75ff9f36011ac6e0c6ef88a234f6
@@ -181,7 +282,26 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/install_chaincode-0.13.0/install_chaincode-0.13.0.tgz
     version: 0.13.0
+  install_external_chaincode:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-08-02T16:25:42.994106509Z"
+    description: 'Hyperledger Fabric: Installs external chaincode.'
+    digest: 60b121491db064416b45b5eb24defab0d48d5371f1633cd74e527317af4a7997
+    name: install_external_chaincode
+    urls:
+    - https://github.com/sownak/bevel/releases/download/install_external_chaincode-0.14.1/install_external_chaincode-0.14.1.tgz
+    version: 0.14.1
   instantiate_chaincode:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-08-02T16:25:43.11670544Z"
+    description: 'Hyperledger Fabric: Instantiates chaincode on a peer.'
+    digest: bffb98f671bceca294fc901fac75580b21d1362bca5ba258164abb5a79585909
+    name: instantiate_chaincode
+    urls:
+    - https://github.com/sownak/bevel/releases/download/instantiate_chaincode-0.14.1/instantiate_chaincode-0.14.1.tgz
+    version: 0.14.1
   - apiVersion: v1
     appVersion: "2.0"
     created: "2023-05-30T14:37:35.371851463Z"
@@ -194,6 +314,15 @@ entries:
   invoke_chaincode:
   - apiVersion: v1
     appVersion: "2.0"
+    created: "2023-08-02T16:25:43.223534906Z"
+    description: 'Hyperledger Fabric: Invokes chaincode on a peer.'
+    digest: 9a88eddb11aecaa45525f72d935e6088a394800d0b8955ff22d140f07c5aa398
+    name: invoke_chaincode
+    urls:
+    - https://github.com/sownak/bevel/releases/download/invoke_chaincode-0.14.1/invoke_chaincode-0.14.1.tgz
+    version: 0.14.1
+  - apiVersion: v1
+    appVersion: "2.0"
     created: "2023-05-30T14:37:35.489867755Z"
     description: A Helm chart for chaincode invocation on a peer
     digest: 4fdbd1bfc9c4740b1c243b51f3cbc882716d09ae608d09df02bfbb077c879a33
@@ -202,6 +331,15 @@ entries:
     - https://github.com/sownak/bevel/releases/download/invoke_chaincode-0.13.0/invoke_chaincode-0.13.0.tgz
     version: 0.13.0
   join_channel:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-08-02T16:25:43.323507788Z"
+    description: 'Hyperledger Fabric: Joins the peer to the channel.'
+    digest: 8a2362ef25ae791772d1f80ddf8789a5bf981beafd6f5641b4e2545709118c68
+    name: join_channel
+    urls:
+    - https://github.com/sownak/bevel/releases/download/join_channel-0.14.1/join_channel-0.14.1.tgz
+    version: 0.14.1
   - apiVersion: v1
     appVersion: "2.0"
     created: "2023-05-30T14:37:35.624111797Z"
@@ -423,6 +561,15 @@ entries:
   operations_console:
   - apiVersion: v1
     appVersion: "2.0"
+    created: "2023-08-02T16:25:43.460902087Z"
+    description: 'Hyperledger Fabric: Deploys Fabric Operations Console.'
+    digest: 2a395a64cdaacc463ee5cc23679396b7f67f24bf6649f3263c47928cf169c204
+    name: operations_console
+    urls:
+    - https://github.com/sownak/bevel/releases/download/operations_console-0.14.1/operations_console-0.14.1.tgz
+    version: 0.14.1
+  - apiVersion: v1
+    appVersion: "2.0"
     created: "2023-05-30T14:37:35.769998847Z"
     description: A Helm chart for Fabric Operations Console
     digest: 8f317534d645b17e5a8b51acdb7960780aa639ebcf5d82d736fa76f74cdb77a2
@@ -431,6 +578,15 @@ entries:
     - https://github.com/sownak/bevel/releases/download/operations_console-0.13.0/operations_console-0.13.0.tgz
     version: 0.13.0
   orderernode:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-08-02T16:25:43.574172539Z"
+    description: 'Hyperledger Fabric: Deploys orderer node.'
+    digest: 6646333eca1010750728b2520077a4c79ebfcb4a749792c1b0a9011673188397
+    name: orderernode
+    urls:
+    - https://github.com/sownak/bevel/releases/download/orderernode-0.14.1/orderernode-0.14.1.tgz
+    version: 0.14.1
   - apiVersion: v1
     appVersion: "2.0"
     created: "2023-05-30T14:37:35.892252979Z"
@@ -460,6 +616,15 @@ entries:
     - https://github.com/hyperledger/bevel/releases/download/orion_key_mgmt-0.14.0/orion_key_mgmt-0.14.0.tgz
     version: 0.14.0
   peernode:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-08-02T16:25:43.689828085Z"
+    description: 'Hyperledger Fabric: Deploys peer node.'
+    digest: 11ecafa2dc18d2f58eb9eeafcbad4546dcb3efa7ce5c59a3160cf154df8f088f
+    name: peernode
+    urls:
+    - https://github.com/sownak/bevel/releases/download/peernode-0.14.1/peernode-0.14.1.tgz
+    version: 0.14.1
   - apiVersion: v1
     appVersion: "2.0"
     created: "2023-05-30T14:37:36.031909771Z"
@@ -501,6 +666,15 @@ entries:
   upgrade_chaincode:
   - apiVersion: v1
     appVersion: "2.0"
+    created: "2023-08-02T16:25:43.817540706Z"
+    description: 'Hyperledger Fabric: Upgrades chaincode on a peer.'
+    digest: fbe3ccfa77c593149da1d4fefdbe27d831ebc4cf3bd24fd48b26c339c176131f
+    name: upgrade_chaincode
+    urls:
+    - https://github.com/sownak/bevel/releases/download/upgrade_chaincode-0.14.1/upgrade_chaincode-0.14.1.tgz
+    version: 0.14.1
+  - apiVersion: v1
+    appVersion: "2.0"
     created: "2023-05-30T14:37:36.143436407Z"
     description: A Helm chart for chaincode upgrade on a peer
     digest: 721df131274eb12bba021966331c70f0aafbc53f2a577449cf18168db6e95193
@@ -521,6 +695,15 @@ entries:
   verify_chaincode:
   - apiVersion: v1
     appVersion: "2.0"
+    created: "2023-08-02T16:25:43.938380841Z"
+    description: 'Hyperledger Fabric: Verifies chaincode.'
+    digest: f502e00f4b730b6521cba837b136bdeb5d8f93727c3088b450148343e40a0c10
+    name: verify_chaincode
+    urls:
+    - https://github.com/sownak/bevel/releases/download/verify_chaincode-0.14.1/verify_chaincode-0.14.1.tgz
+    version: 0.14.1
+  - apiVersion: v1
+    appVersion: "2.0"
     created: "2023-05-30T14:37:36.394612747Z"
     description: A Helm chart for chaincode verify a peer
     digest: b186c83c0abf48930012aec709444adab78a71cdfb17c9e79b5e7cc8f8057df6
@@ -531,6 +714,15 @@ entries:
   zkkafka:
   - apiVersion: v1
     appVersion: "2.0"
+    created: "2023-08-02T16:25:44.048088701Z"
+    description: 'Hyperledger Fabric: Deploys zookeeper & kafka.'
+    digest: ae8db5efaf234d0dc5f49829825192205db87729b5b14f0bbf406f989e9fe47c
+    name: zkkafka
+    urls:
+    - https://github.com/sownak/bevel/releases/download/zkkafka-0.14.1/zkkafka-0.14.1.tgz
+    version: 0.14.1
+  - apiVersion: v1
+    appVersion: "2.0"
     created: "2023-05-30T14:37:36.512731648Z"
     description: A Helm chart for zookeeper & kafka
     digest: 5763294a8164d3ae4ff7df55662cae1522c61602e4dcb3a8a6b4653995c18b81
@@ -538,4 +730,4 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/zkkafka-0.13.0/zkkafka-0.13.0.tgz
     version: 0.13.0
-generated: "2023-07-20T09:46:23.095652271Z"
+generated: "2023-08-02T16:25:44.048287801Z"
