@@ -4,8 +4,8 @@
 #  SPDX-License-Identifier: Apache-2.0
 ##############################################################################################
 
-apiVersion: v2
-appVersion: "0.2.3"
-description: A Helm chart for Image Automation using Flux V2
-name: flux-imageautomation
-version: 0.2.3
+apiVersion: v1
+appVersion: "2.0"
+description: "Shared: Deploys a StorageClass that can be used to provision persistent volumes for nodes."
+name: bevel-storageclass
+version: '0.15.0'
