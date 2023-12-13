@@ -15,13 +15,13 @@ spec:
         kind: GitRepository
         name: flux-{{ network.env.type }}
         namespace: flux-{{ network.env.type }}
-      chart: {{ charts_dir }}/ca    
+      chart: {{ charts_dir }}/fabric-ca-server  
   values:
     metadata:
       namespace: {{ component_name | e }}
       images:
-        alpineutils: {{ alpine_image }}
-        ca: {{ ca_image }}
+        alpineutils: {{ docker_url }}/{{ alpine_image }}
+        ca: {{ docker_url }}/{{ ca_image[network.version] }}
 {% if network.env.annotations is defined %}
     deployment:
       annotations:

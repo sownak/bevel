@@ -11,7 +11,7 @@ network:
   # Network level configuration specifies the attributes required for each organization
   # to join an existing network.
   type: fabric
-  version: 2.2.2                 # currently tested 1.4.8 and 2.2.2
+  version: 2.2.2                 # currently tested 1.4.8, 2.2.2 and 2.5.4
 
   frontend: enabled #Flag for frontend to enabled for nodes/peers
 
@@ -68,6 +68,8 @@ network:
   - channel:
     consortium: SupplyChainConsortium
     channel_name: AllChannel
+    osn_creator_org: # Organization name, whose orderers will create the channel. This field is only used with version 2.5
+      name: supplychain 
     chaincodes:
       - "chaincode_name"
     orderers: 

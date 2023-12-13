@@ -15,7 +15,7 @@ spec:
         kind: GitRepository
         name: flux-{{ network.env.type }}
         namespace: flux-{{ network.env.type }}
-      chart: {{ charts_dir }}/peernode    
+      chart: {{ charts_dir }}/fabric-peernode    
   values:
 {% if network.upgrade is defined %}
     upgrade: {{ network.upgrade }}
@@ -23,9 +23,10 @@ spec:
     metadata:
       namespace: {{ peer_ns }}
       images:
-        couchdb: {{ couchdb_image }}
-        peer: {{ peer_image }}
-        alpineutils: {{ alpine_image }}
+        couchdb:  {{ docker_url }}/{{ couchdb_image[network.version] }}
+        peer:  {{ docker_url }}/{{ peer_image[network.version] }}
+        alpineutils: {{ docker_url }}/{{ alpine_image }}
+
 {% if network.env.annotations is defined %}
     annotations:  
       service:

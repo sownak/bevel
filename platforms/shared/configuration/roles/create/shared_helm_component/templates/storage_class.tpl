@@ -6,7 +6,7 @@ volumeBindingMode: Immediate
 {% if cloud_provider == "aws" %}
 provisioner: kubernetes.io/aws-ebs
 {% elif cloud_provider == "gcp" %}
-provisioner: gce.csi.google.com
+provisioner: pd.csi.storage.gke.io
 {% elif cloud_provider == "minikube" %}
 provisioner: k8s.io/minikube-hostpath
 {% endif %}
@@ -16,5 +16,4 @@ allowedTopologies:
       - key: failure-domain.beta.kubernetes.io/zone
         values:
           - "{{ region }}a"
-          - "{{ region }}b"
 {% endif %}

@@ -15,7 +15,7 @@ spec:
         kind: GitRepository
         name: flux-{{ network.env.type }}
         namespace: flux-{{ network.env.type }}
-      chart: {{ charts_dir }}/catools
+      chart: {{ charts_dir }}/fabric-catools
   values:
     metadata:
       namespace: {{ component_name }}
@@ -47,11 +47,10 @@ spec:
     replicaCount: 1
 
     image:
-      repository: hyperledger/fabric-ca-tools
-      tag: 1.2.1
+      alpineutils: {{ docker_url }}/{{ alpine_image }}
+      catools: {{ docker_url }}/{{ ca_tools_image }}
       pullPolicy: IfNotPresent
-      alpineutils: {{ alpine_image }}
-      
+    
     storage:
       storageclassname: {{ sc_name }}
       storagesize: 512Mi
