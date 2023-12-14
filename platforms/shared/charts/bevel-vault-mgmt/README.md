@@ -54,7 +54,7 @@ bevel-vault-mgmt/
 - `templates/`: This directory contains the template files for generating Kubernetes resources.
 - `helpers.tpl`: A template file used for defining custom labels in the Helm chart.
 - `configmap.yaml`: The file defines a ConfigMap that stores the base64-encoded content of the "genesis.json" file under the key "genesis.json.base64" in the specified namespace.
-- `job.yaml`: This file defines the Kubernetes job resource to configure the store and allow its use for the storage of Cryptographic materials. Create the secret path, authpath, policies and roles.
+- `job.yaml`: This file defines the Kubernetes job resource to configure the store and allow its use for the storage of Cryptographic materials. Create the secret path, authPath, policies and roles.
 - `serviceAccount.yaml`: This file defines a kubernetes Service Account and ClusterRoleBinding, which will be created on job execution.
 - `Chart.yaml`: Provides metadata about the chart, such as its name, version, and description.
 - `README.md`: This file provides information and instructions about the Helm chart.
@@ -69,14 +69,14 @@ The [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/sh
 ---
 
 
-### Metadata
+### Images
 
 
 | Name                  | Description                                                           | Default Value                                     |
 | ----------------------| ----------------------------------------------------------------------| --------------------------------------------------|
 | name                  | Organization's name                                                   | org1                                              |
-| namespace             | Organization's namespace                                              | org1-net                                          |
-| images.alpineutils    | valid image name and version to read certificates from vault server   | index.docker.io/hyperledgerlabs/alpine-utils:1.0  |
+| alpineutils    | valid image name and version to read certificates from vault server   | index.docker.io/hyperledgerlabs/alpine-utils:1.0  |
+| pullSecret           | Provide the docker secret name in the namespace                           | ""            |
 | labels                | Custom labels                                                         | ""                                                |
 
 
@@ -87,11 +87,10 @@ The [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/sh
 | ------------------------- | --------------------------------------------------------------------------| ------------- |
 | role                      | Role used for authentication with Vault                                   | vault-role    |
 | address                   | Address/URL of the Vault server.                                          | ""            |
-| authpath                  | Authentication path for Vault                                             | ""            |
+| authPath                  | Authentication path for Vault                                             | ""            |
 | policy                    | Provide the vault policy name                                             | ""            |
-| policydata                | Provide the vault policy file contents in json format                     | ""            |
-| secret_path               | Provide the value for vault secretprefix                                  | secretv2      |
-| imagesecretname           | Provide the docker secret name in the namespace                           | ""            |
+| policyData                | Provide the vault policy file contents in json format                     | ""            |
+| secretPath               | Provide the value for vault secretprefix                                  | secretv2      |
 | tls                       | Enable or disable TLS for vault communication if value present or not     | ""            |
 
 
