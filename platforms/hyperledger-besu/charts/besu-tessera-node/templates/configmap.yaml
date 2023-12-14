@@ -86,7 +86,7 @@ data:
           ],
           "keyData": [
               {
-                  "hashicorpVaultSecretEngineName": "{{ $.Values.vault.secretengine }}",
+                  "hashicorpVaultsecretengineName": "{{ $.Values.vault.secretEngine }}",
                   "hashicorpVaultSecretName": "{{ $.Values.vault.tmsecretpath }}",
                   "hashicorpVaultPrivateKeyId": "privateKey",
                   "hashicorpVaultPublicKeyId": "publicKey"

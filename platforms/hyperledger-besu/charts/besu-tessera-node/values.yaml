@@ -100,17 +100,17 @@ vault:
   #Eg. address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9000
   address:
   #Provide the secret engine.
-  #Eg. secretengine: secretsv2
-  secretengine: secretsv2 
+  #Eg. secretEngine: secretsv2
+  secretEngine: secretsv2 
   #Provide the Vault secret path from where secrets will be read
-  #Eg. secretprefix: secret/org1/crypto/node1
-  secretprefix: 
+  #Eg. secretPrefix: data/org1/crypto/node1
+  secretPrefix: 
   #Provide the Vault secret path from where transaction manager secrets will be read
-  #Eg. secretprefix: secret/org1/crypto/node1/tm
+  #Eg. secretPrefix: data/org1/crypto/node1/tm
   tmsecretpath: 
   #Provide the serviceaccount which is verified with Vault
-  #Eg. serviceaccountname: vault-auth
-  serviceaccountname: vault-auth
+  #Eg. serviceAccountName: vault-auth
+  serviceAccountName: vault-auth
   #Provide the key name from where besu secrets will be read
   #Eg. keyname: data
   keyname: data 
@@ -124,8 +124,8 @@ vault:
   #Eg. role: vault-role
   role: vault-role
   #Provide the Vault auth-path which is created for the namespace
-  #Eg. authpath: besunode1
-  authpath: besunode1
+  #Eg. authPath: besunode1
+  authPath: besunode1
   #Provide the type of vault
   #Eg. type: hashicorp
   type: hashicorp

@@ -72,16 +72,16 @@ spec:
       ambassadorSecret: {{ peer.name }}-ambassador-certs
     vault:
       address: {{ vault.url }}
-      secretengine: {{ vault.secret_path | default('secretsv2') }}
+      secretEngine: {{ vault.secret_path | default('secretsv2') }}
       tmsecretpath: {{ component_ns }}/crypto/{{ peer.name }}/tm
-      secretprefix: data/{{ component_ns }}/crypto/{{ peer.name }}
-      serviceaccountname: vault-auth
+      secretPrefix: data/{{ component_ns }}/crypto/{{ peer.name }}
+      serviceAccountName: vault-auth
       keyname: credentials
       type: {{ vault.type | default("hashicorp") }}
       tm_keyname: tm
       tlsdir: tls
       role: vault-role
-      authpath: besu{{ org.name | lower }}
+      authPath: besu{{ org.name | lower }}
 {% if network.env.proxy == 'ambassador' %}
     proxy:
       provider: "ambassador"

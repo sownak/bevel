@@ -60,7 +60,7 @@ spec:
         {{- end }}
         {{- end }}
     spec:
-      serviceAccountName: {{ .Values.vault.serviceaccountname }}
+      serviceAccountName: {{ .Values.vault.serviceAccountName }}
       hostname: {{ .Values.tessera.name }}
       imagePullSecrets:
           - name: {{ .Values.images.imagePullSecret }}
@@ -92,11 +92,11 @@ spec:
         - name: VAULT_ADDR
           value: {{ .Values.vault.address }}
         - name: VAULT_SECRET_ENGINE
-          value: {{ $.Values.vault.secretengine }}
+          value: {{ $.Values.vault.secretEngine }}
         - name: VAULT_SECRET_PREFIX
-          value: {{ .Values.vault.secretprefix }}
+          value: {{ .Values.vault.secretPrefix }}
         - name: KUBERNETES_AUTH_PATH
-          value: {{ .Values.vault.authpath }}
+          value: {{ .Values.vault.authPath }}
         - name: VAULT_APP_ROLE
           value: {{ .Values.vault.role }}
         - name: VAULT_TYPE
@@ -281,7 +281,7 @@ spec:
           - name: VAULT_ADDR
             value: {{ $.Values.vault.address }}
           - name: KUBERNETES_AUTH_PATH
-            value: {{ $.Values.vault.authpath }}
+            value: {{ $.Values.vault.authPath }}
           - name: VAULT_APP_ROLE
             value: {{ $.Values.vault.role }}
         volumeMounts:

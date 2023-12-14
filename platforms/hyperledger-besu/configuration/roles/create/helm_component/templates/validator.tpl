@@ -78,13 +78,13 @@ spec:
 
     vault:
       address: {{ vault.url }}
-      secretengine: {{ vault.secret_path | default('secretsv2') }}
-      secretprefix: data/{{ component_ns }}/crypto/{{ peer.name }}
-      serviceaccountname: vault-auth
+      secretEngine: {{ vault.secret_path | default('secretsv2') }}
+      secretPrefix: data/{{ component_ns }}/crypto/{{ peer.name }}
+      serviceAccountName: vault-auth
       keyname: data
       tlsdir: tls
       role: vault-role
-      authpath: besu{{ name }}
+      authPath: besu{{ name }}
       type: {{ vault.type | default("hashicorp") }}
 
     genesis: {{ genesis }}

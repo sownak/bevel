@@ -168,12 +168,12 @@ The [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/hy
 | ------------------------- | --------------------------------------------------------------------------| ------------- |
 | serviceAccountName        | Provide the already created service account name autheticated to vault    | vault-auth    |
 | address                   | Address/URL of the Vault server.                                          | ""            |
-| secretengine              | Provide the secret engine.                                                | secretsv2     |
+| secretEngine              | Provide the secret engine.                                                | secretsv2     |
 | secretPrefix              | Provide the vault path where the nodekey is stored                                             | ""     |
 | keyname                   | Provide the name of the folder containing the nodekey                                             | data  |
 | tmdir                    | Provide the name of the folder containing the tm crypto validator                  | tm            |
 | tlsdir                    | Provide the name of the folder containing the tls crypto for besu validator                  | tls            |
-| authpath                  | Authentication path for Vault                                             | besunode1  |
+| authPath                  | Authentication path for Vault                                             | besunode1  |
 | role                      | Role used for authentication with Vault                                   | vault-role    |
 | type        | Provide the type of vault    | hashicorp    |
 

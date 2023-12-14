@@ -89,8 +89,8 @@ The [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/hy
 | Name                      | Description                                                               | Default Value |
 | ------------------------- | --------------------------------------------------------------------------| ------------- |
 | address                   | Address/URL of the Vault server.                                          | ""            |
-| secretengine              | Provide the secret engine.                                                | secretsv2     |
-| authpath                  | Authentication path for Vault                                             | besunode1  |
+| secretEngine              | Provide the secret engine.                                                | secretsv2     |
+| authPath                  | Authentication path for Vault                                             | besunode1  |
 | role                      | Role used for authentication with Vault                                   | vault-role    |
 | serviceAccountName        | Provide the already created service account name autheticated to vault    | vault-auth    |
 | type        | Provide the type of vault    | hashicorp    |

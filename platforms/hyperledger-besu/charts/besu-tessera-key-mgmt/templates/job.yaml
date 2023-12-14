@@ -43,7 +43,7 @@ spec:
       restartPolicy: OnFailure
       imagePullSecrets:
         - name: "{{ $.Values.image.pullSecret }}"
-      serviceAccountName: {{ $.Values.vault.serviceaccountname }}
+      serviceAccountName: {{ $.Values.vault.serviceAccountName }}
       volumes:
         - name: vault-token
           emptyDir:
@@ -59,13 +59,13 @@ spec:
             - name: VAULT_ADDR
               value: {{ $.Values.vault.address }}
             - name: VAULT_SECRET_ENGINE
-              value: {{ $.Values.vault.secretengine }}
+              value: {{ $.Values.vault.secretEngine }}
             - name: VAULT_KEY_PREFIX
               value: "{{ $.Values.vault.keyprefix }}" 
             - name: PEER_NAME
               value: {{ $.Values.peer.name }}            
             - name: KUBERNETES_AUTH_PATH
-              value: {{ $.Values.vault.authpath }}
+              value: {{ $.Values.vault.authPath }}
             - name: VAULT_APP_ROLE
               value: {{ $.Values.vault.role }}
             - name: VAULT_SECRET_PREFIX
@@ -98,13 +98,13 @@ spec:
           - name: VAULT_ADDR
             value: {{ $.Values.vault.address }}
           - name: VAULT_SECRET_ENGINE
-            value: {{ $.Values.vault.secretengine }}
+            value: {{ $.Values.vault.secretEngine }}
           - name: VAULT_KEY_PREFIX
             value: "{{ $.Values.vault.keyprefix }}" 
           - name: PEER_NAME
             value: {{ $.Values.peer.name }}            
           - name: KUBERNETES_AUTH_PATH
-            value: {{ $.Values.vault.authpath }}
+            value: {{ $.Values.vault.authPath }}
           - name: VAULT_APP_ROLE
             value: {{ $.Values.vault.role }}
           - name: VAULT_SECRET_PREFIX

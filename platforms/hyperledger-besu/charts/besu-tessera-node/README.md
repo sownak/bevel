@@ -130,16 +130,16 @@ The [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/hy
 | Name                      | Description                                                               | Default Value |
 | ------------------------- | --------------------------------------------------------------------------| ------------- |
 | address                   | Address/URL of the Vault server.                                          | ""            |
-| secretengine              | Provide the secret engine.                                                | secretsv2     |
+| secretEngine              | Provide the secret engine.                                                | secretsv2     |
 | secretPrefix              | Provide the Vault secret path from where secrets will be read                                             | ""    |
 | tmsecretpath              | Provide the Vault secret path from where transaction manager secrets will be read                                             | ""     |
-| serviceaccountname        | Provide the already created service account name autheticated to vault    | vault-auth    |
+| serviceAccountName        | Provide the already created service account name autheticated to vault    | vault-auth    |
 | address                   | Address/URL of the Vault server.                                          | ""            |
 | keyname                   | Provide the key name from where besu secrets will be read                                             | data  |
 | tm_keyname                    | Provide the key name from where transaction-manager secrets will be read                  | transaction            |
 | tlsdir                    | Provide the name of the folder containing the tls crypto for besu validator                  | tls            |
 | role                      | Role used for authentication with Vault                                   | vault-role    |
-| authpath                  | Authentication path for Vault                                             | besunode1  |
+| authPath                  | Authentication path for Vault                                             | besunode1  |
 | type        | Provide the type of vault    | hashicorp    |
 
 

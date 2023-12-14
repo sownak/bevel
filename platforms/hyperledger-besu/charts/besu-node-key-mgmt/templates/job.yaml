@@ -46,7 +46,7 @@ spec:
       restartPolicy: OnFailure
       imagePullSecrets:
         - name: "{{ $.Values.image.pullSecret }}"
-      serviceAccountName: {{ $.Values.vault.serviceaccountname }}
+      serviceAccountName: {{ $.Values.vault.serviceAccountName }}
       volumes:
         - name: node-crypto
           emptyDir:
@@ -63,11 +63,11 @@ spec:
         - name: VAULT_ADDR
           value: {{ $.Values.vault.address }}
         - name: VAULT_SECRET_ENGINE
-          value: {{ $.Values.vault.secretengine }}
+          value: {{ $.Values.vault.secretEngine }}
         - name: VAULT_TYPE
           value: "{{ $.Values.vault.type }}"
         - name: KUBERNETES_AUTH_PATH
-          value: {{ .Values.vault.authpath }}
+          value: {{ .Values.vault.authPath }}
         - name: VAULT_APP_ROLE
           value: {{ $.Values.vault.role }}
         command: ["sh", "-c"]
@@ -164,9 +164,9 @@ spec:
           - name: VAULT_ADDR
             value: {{ $.Values.vault.address }}
           - name: VAULT_SECRET_ENGINE
-            value: {{ $.Values.vault.secretengine }}
+            value: {{ $.Values.vault.secretEngine }}
           - name: KUBERNETES_AUTH_PATH
-            value: {{ $.Values.vault.authpath }}
+            value: {{ $.Values.vault.authPath }}
           - name: VAULT_APP_ROLE
             value: {{ $.Values.vault.role }}
           - name: MOUNT_PATH

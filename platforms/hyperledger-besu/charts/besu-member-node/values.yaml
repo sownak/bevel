@@ -147,10 +147,10 @@ vault:
   # Eg. address: http://vault.example.com:8200
   address:
   #Provide the secret engine.
-  #Eg. secretengine: secretsv2
-  secretengine: secretsv2
+  #Eg. secretEngine: secretsv2
+  secretEngine: secretsv2
   # Provide the vault path where the nodekey is stored
-  # Eg. secretprefix: secret/warehouse-bes/crypto/warehouse
+  # Eg. secretPrefix: data/warehouse-bes/crypto/warehouse
   secretPrefix: 
   # Provide the name of the folder containing the nodekey
   # Eg. keyname: data
@@ -161,9 +161,9 @@ vault:
   # Provide the name of the folder containing the tls crypto
   # Eg. tlsdir: tls
   tlsdir: tls
-  # Provide the authpath configured to be used.
-  # Eg. authpath: besuwarehouse
-  authpath: besunode1
+  # Provide the authPath configured to be used.
+  # Eg. authPath: besuwarehouse
+  authPath: besunode1
   # Provide the vault role used.
   # Eg. role: vault-role
   role: vault-role

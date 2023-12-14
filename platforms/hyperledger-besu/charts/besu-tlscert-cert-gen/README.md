@@ -67,69 +67,33 @@ The [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/hy
 ## Parameters
 ---
 
-### Metadata
-
-| Name            | Description                                                                  | Default Value |
-| ----------------| ---------------------------------------------------------------------------- | ------------- |
-| namespace       | Provide the namespace                                                  | default       |
-| name            | Provide the name for besu-ambassador-certs job release                 | besu-ambassador-certs            |
-
 ### Image
 
 | Name                     | Description                                                                                | Default Value   |
 | ------------------------ | -------------------------------------------------------                                    | --------------- |
 | alpineutils        | Provide the alpine utils image, which is used by all containers of this job  | ghcr.io/hyperledger/bevel-alpine:latest              |
-| imagePullSecret          | Provide the docker-registry secret created and stored in kubernetes cluster as a secret    | regcred         |
 | pullPolicy               | Pull policy to be used for the Docker image                                                | IfNotPresent    |
 
-### Network
+### Settings
 | Name                     | Description                                                                                | Default Value   |
 | ------------------------ | -------------------------------------------------------                                    | --------------- |
-| tmtls               | Provide the value from tm_tls. This enables TLS for the transaction manager and Besu node.                 | True |
-
-### Node
-
-| Name                     | Description                                                                                | Default Value   |
-| ------------------------ | -------------------------------------------------------                                    | --------------- |
-| name               | Provide the name of the node.                 | node1   |
-| clientport         | Provide tm client ports               | 8888   |
-
+| tmTls               | Set value to true when transaction manager like tessera uses tls. This enables TLS for the transaction manager and Besu node.                 | True |
+| certSubject             | Mention the subject for TLS       | ""            |
+| publicDNSName           | Provides the name for public domain                       | ""            |
+| privateDNSName          | Provides the name for private domain                      | ""            |
+| tesseraDNSName       | provides the name for domain domain_name tessera endpoint | ""            |
 
 ### Vault
 
 | Name                      | Description                                                               | Default Value |
 | ------------------------- | --------------------------------------------------------------------------| ------------- |
 | address                   | Address/URL of the Vault server.                                          | ""            |
-| secretengine              | Provide the secret engine.                                                | secretsv2     |
-| authpath                  | Authentication path for Vault                                             | besunode1  |
-| rootcasecret              | Provide the vault path where the root certificates are stored                  | ""           |
-| ambassadortlssecret       | Provide the vault path where the ambassador certificates are stored                  | ""            |
+| secretEngine              | Provide the secret engine.                                                | secretsv2     |
+| authPath                  | Authentication path for Vault                                             | besunode1  |
+| secretPrefix       | Provide the vault path where the ambassador certificates are stored                  | ""            |
 | role                      | Role used for authentication with Vault                                   | vault-role    |
 | serviceAccountName        | Provide the already created service account name autheticated to vault    | vault-auth    |
 | type        | Provide the type of vault    | hashicorp    |
-
-### Subjects
-
-| Name                      | Description                        | Default Value |
-| ------------------------- | ---------------------------------- | ------------- |
-| ambassadortls             | Mention the subject for ambassador tls       | ""            |
-
-### OpenSSL Vars
-
-| Name                      | Description                                              | Default Value |
-| --------------------------| ----------------------------------------------------------| ------------- |
-| domain_name_pub           | Provides the name for public domain                       | ""            |
-| domain_name_priv          | Provides the name for private domain                      | ""            |
-| domain_name_tessera       | provides the name for domain domain_name tessera endpoint | ""            |
-
-
-### Healthcheck
-
-
-| Name                        | Description                                                                   | Default Value |
-| ----------------------------| ------------------------------------------------------------------------------| ------------- |
-| retries                     |  Provide the threshold number of retries in fetching certificates from vault      | 10             |
-| sleepTimeAfterError         | Provide the wait interval in seconds in fetching certificates from vault   | 2             |
 
 <a name = "deployment"></a>
 ## Deployment

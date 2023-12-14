@@ -7,11 +7,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ $.Values.metadata.name }}"
-  namespace: "{{ $.Values.metadata.namespace }}"
+  name: "{{ include "besu-tlscert-cert-gen.name" . }}"
+  namespace: "{{ .Release.Namespace }}"
   labels:
-    app: "{{ $.Values.metadata.name }}"
-    app.kubernetes.io/name: "{{ $.Values.metadata.name }}"
+    app: ""{{ include "besu-tlscert-cert-gen.name" . }}""
+    app.kubernetes.io/name: ""{{ include "besu-tlscert-cert-gen.name" . }}""
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -27,8 +27,8 @@ spec:
   template:
     metadata:
       labels:
-        app: "{{ $.Values.metadata.name }}"
-        app.kubernetes.io/name: "{{ $.Values.metadata.name }}"
+        app: ""{{ include "besu-tlscert-cert-gen.name" . }}""
+        app.kubernetes.io/name: ""{{ include "besu-tlscert-cert-gen.name" . }}""
         helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
         app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -42,8 +42,10 @@ spec:
     spec:
       restartPolicy: OnFailure
       imagePullSecrets:
-        - name: "{{ $.Values.image.pullSecret }}"
-      serviceAccountName: {{ $.Values.vault.serviceaccountname }}
+      {{- if .Values.image.pullSecret }}
+        - name: {{ .Values.image.pullSecret }}
+      {{- end }}
+      serviceAccountName: {{ $.Values.vault.serviceAccountName }}
       volumes:
       - name: certificates
         emptyDir:
@@ -60,17 +62,13 @@ spec:
         - name: VAULT_ADDR
           value: {{ $.Values.vault.address }}
         - name: VAULT_SECRET_ENGINE
-          value: {{ $.Values.vault.secretengine }}
-        - name: VAULT_SECRET_ROOTCA
-          value: {{ $.Values.vault.rootcasecret }}
-        - name: VAULT_SECRET_AMBASSADORTLS
-          value: {{ $.Values.vault.ambassadortlssecret }}
+          value: {{ $.Values.vault.secretEngine }}
+        - name: VAULT_SECRET_PREFIX
+          value: {{ $.Values.vault.secretPrefix }}
         - name: KUBERNETES_AUTH_PATH
-          value: {{ $.Values.vault.authpath }}
+          value: {{ $.Values.vault.authPath }}
         - name: VAULT_APP_ROLE
           value: {{ $.Values.vault.role }}
-        - name: NODE_NAME
-          value: {{ $.Values.node.name }}
         - name: VAULT_TYPE
           value: "{{ $.Values.vault.type }}"
         - name: MOUNT_PATH
@@ -90,42 +88,13 @@ spec:
           OUTPUT_PATH=${MOUNT_PATH}/check_certs;
           mkdir -p ${OUTPUT_PATH}
 
-          # Obtain the rootCA certificates from the Vault if exists
-          vault_secret_key="${VAULT_SECRET_ENGINE}/${VAULT_SECRET_ROOTCA}"
-          echo "Checking certs in vault at path: ${vault_secret_key}"
-          vaultBevelFunc "readJson" ${vault_secret_key}
-
-          # Get the rootCA PEM and key from Vault
-          CA_PEM=$(echo ${VAULT_SECRET} | jq -r '.["rootca_pem"]')
-          CA_KEY=$(echo ${VAULT_SECRET} | jq -r '.["rootca_key"]')
-          
-          # If the CA_PEM variable is null, empty, or contains a parse error, then the certificates do not exist in Vault
-          if [ "$CA_PEM" == "null" ] || [[ "$CA_PEM" = "parse error"* ]] || [ "$CA_PEM" = "" ]
-          then
-            # Create a file to indicate that the rootCA certificates are absent
-            echo "Certficates absent in vault. Ignore error warning"
-            touch ${OUTPUT_PATH}/rootca_absent.txt
-          else
-            # Create a file to indicate that the rootCA certificates are present
-            echo "Certificates present in vault"
-            touch ${OUTPUT_PATH}/rootca_present.txt
-
-            # Create the rootCA directory.
-            ROOTCA_PATH=${MOUNT_PATH}/rootca
-            mkdir -p ${ROOTCA_PATH}
-
-            # Base64 decode the root CA PEM and key and save them to the rootCA directory
-            echo  $CA_PEM | base64 -d >> ${ROOTCA_PATH}/rootca.pem
-            echo  $CA_KEY | base64 -d >> ${ROOTCA_PATH}/rootca.key
-          fi
-
           # Obtain the ambassador TLS certificates from Vault if exists
-          vault_secret_key="${VAULT_SECRET_ENGINE}/${VAULT_SECRET_AMBASSADORTLS}"
+          vault_secret_key="${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}"
           echo "Checking certs in vault at path: ${vault_secret_key}"
           vaultBevelFunc "readJson" ${vault_secret_key}
 
           # Get the ambassador TLS data info from Vault
-          data_info=$(echo ${VAULT_SECRET} | jq -r '.["rootca_pem"]')
+          data_info=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorcrt"]')
 
           # If the data_info is null, empty, or contains a parse error, then the certificates do not exist in Vault
           if [ "$data_info" == "null" ] || [[ "$data_info" = "parse error"* ]] || [ "$data_info" = "" ]
@@ -154,123 +123,27 @@ spec:
         - name: VAULT_ADDR
           value: {{ $.Values.vault.address }}
         - name: VAULT_SECRET_ENGINE
-          value: {{ $.Values.vault.secretengine }}
-        - name: VAULT_SECRET_ROOTCA
-          value: {{ $.Values.vault.rootcasecret }}
-        - name: VAULT_SECRET_AMBASSADORTLS
-          value: {{ $.Values.vault.ambassadortlssecret }}
+          value: {{ $.Values.vault.secretEngine }}
+        - name: VAULT_SECRET_PREFIX
+          value: {{ $.Values.vault.secretPrefix }}
         - name: KUBERNETES_AUTH_PATH
-          value: {{ $.Values.vault.authpath }}
+          value: {{ $.Values.vault.authPath }}
         - name: VAULT_APP_ROLE
           value: {{ $.Values.vault.role }}
-        - name: NODE_NAME
-          value: {{ $.Values.node.name }}
         - name: TM_CLIENT_PORT
-          value: "{{ $.Values.node.clientport }}"
+          value: 8888
         - name: TM_TLS_ENABLED
-          value: "{{ $.Values.network.tmtls }}"
+          value: "{{ $.Values.settings.tmTls }}"
         - name: CERT_SUBJECT
-          value: "{{ $.Values.subject.ambassadortls }}"
-        - name: DOMAIN_NAME_PUB
-          value: "{{ $.Values.opensslVars.domain_name_pub }}"
-        - name: DOMAIN_NAME_PRIV
-          value: "{{ $.Values.opensslVars.domain_name_priv }}"
-        - name: DOMAIN_NAME_TESSERA
-          value: "{{ $.Values.opensslVars.domain_name_tessera }}"
+          value: "{{ $.Values.settings.certSubject }}"
+        - name: publicDNSName
+          value: "{{ $.Values.settings.publicDNSName }}"
+        - name: privateDNSName
+          value: "{{ $.Values.settings.privateDNSName }}"
+        - name: tesseraDNSName
+          value: "{{ $.Values.settings.tesseraDNSName }}"
         - name: COMPONENT_NS
-          value: "{{ $.Values.metadata.namespace }}"
-        - name: MOUNT_PATH
-          value: "/certificates"
-        command: ["sh", "-c"]
-        args:
-          - |-
-
-            # Set the directories path
-            CERTS_CHECKS_PATH=${MOUNT_PATH}/check_certs
-            AMBASSADORTLS_PATH=${MOUNT_PATH}/ambassadortls;
-            ROOTCA_PATH=${MOUNT_PATH}/rootca
-
-            # Create the ambassadortls directory if it doesn't exist
-            mkdir -p ${AMBASSADORTLS_PATH}
-
-            # Check if the rootca_absent.txt file exists
-            if [ -e ${CERTS_CHECKS_PATH}/rootca_absent.txt ]
-            then
-              # Create the rootca directory if it doesn't exist
-              mkdir -p ${ROOTCA_PATH}
-              cd ${ROOTCA_PATH}
-
-              # Generates the rootCA certificates
-              openssl genrsa -out rootca.key 2048
-              openssl req -x509 -new -nodes -key rootca.key -sha256 -days 1024 -out rootca.pem -subj "/${CERT_SUBJECT}"
-            fi;
-
-            # Check if either rootca_absent.txt or ambassadortls_absent.txt file exists
-            if [ -e ${CERTS_CHECKS_PATH}/rootca_absent.txt ] || [ -e ${CERTS_CHECKS_PATH}/ambassadortls_absent.txt ]
-            then
-              # Generates the openssl file for domain
-              cd ${AMBASSADORTLS_PATH}
-              echo "[req]
-                req_extensions = v3_req
-                distinguished_name = dn
-                [dn]
-                [ v3_req ]
-                basicConstraints = CA:FALSE
-                keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-                subjectAltName = @alt_names
-                [alt_names]
-                DNS.1 = ${DOMAIN_NAME_PUB}
-                DNS.2 = ${DOMAIN_NAME_PRIV}
-                DNS.3 = ${DOMAIN_NAME_TESSERA}
-                " > openssl${NODE_NAME}.conf
-              # Generates the ambassador tls certificates
-              openssl genrsa -out ${NODE_NAME}.key 2048
-              openssl req -new -nodes -key ${NODE_NAME}.key -days 1000 -out ${NODE_NAME}.csr -subj "/CN=${DOMAIN_NAME_PUB}" -config "openssl${NODE_NAME}.conf"
-              openssl x509 -req -in ${NODE_NAME}.csr -CA ${ROOTCA_PATH}/rootca.pem -CAkey ${ROOTCA_PATH}/rootca.key -CAcreateserial -out ${NODE_NAME}.pem -days 1000 -sha256 -extfile "openssl${NODE_NAME}.conf" -extensions v3_req
-              cat ${NODE_NAME}.pem > ${NODE_NAME}-certchain.pem
-              cat ${ROOTCA_PATH}/rootca.pem >> ${NODE_NAME}-certchain.pem
-            fi;
-            # Check if TM_TLS_ENABLED is true or ambassadortls_absent.txt file exists
-            if [ "$TM_TLS_ENABLED" == "true"  ] || [ -e ${CERTS_CHECKS_PATH}/ambassadortls_absent.txt ]
-            then
-              # Generate crypto for besu nodes and knownserver file
-              openssl genrsa -out ${NODE_NAME}-besu-node.key 2048
-              openssl req -new -key ${NODE_NAME}-besu-node.key -out ${NODE_NAME}-besu-node.csr -subj "/CN=${DOMAIN_NAME_PUB}"
-              openssl x509 -req -in ${NODE_NAME}-besu-node.csr -CA ${ROOTCA_PATH}/rootca.pem -CAkey ${ROOTCA_PATH}/rootca.key -CAcreateserial -out ${NODE_NAME}-besu-node.pem -days 500 -sha256
-              cat ${NODE_NAME}-besu-node.key ${NODE_NAME}-besu-node.pem > ${NODE_NAME}_certificates.pem
-              openssl pkcs12 -export -in ${NODE_NAME}_certificates.pem -out ${NODE_NAME}-besu-node.pkcs12 -password pass:changeme -name myAlias -noiter -nomaciter
-              echo "changeme" > ${NODE_NAME}-password
-              openssl x509 -in ${NODE_NAME}-certchain.pem -noout -fingerprint -sha256 > ${NODE_NAME}-certchain-sha256
-              export DIGEST=$(awk '{print $2}' ${NODE_NAME}-certchain-sha256 | sed -n 's/Fingerprint=\(.*\)/\1/p')
-              printf '%s\n' "${NODE_NAME}-tessera.${COMPONENT_NS}:${TM_CLIENT_PORT} $DIGEST" "${DOMAIN_NAME_PUB} $DIGEST" > ${NODE_NAME}-knownServer
-            fi;
-
-            touch ${MOUNT_PATH}/flag_finish.txt
-        volumeMounts:
-          - name: certificates
-            mountPath: /certificates
-      - name:  "store-certs"
-        image: "{{ $.Values.image.alpineutils }}"
-        imagePullPolicy: {{ $.Values.image.pullPolicy }}
-        env:
-        - name: VAULT_ADDR
-          value: {{ $.Values.vault.address }}
-        - name: VAULT_SECRET_ENGINE
-          value: {{ $.Values.vault.secretengine }}
-        - name: VAULT_SECRET_ROOTCA
-          value: {{ $.Values.vault.rootcasecret }}
-        - name: VAULT_SECRET_AMBASSADORTLS
-          value: {{ $.Values.vault.ambassadortlssecret }}
-        - name: KUBERNETES_AUTH_PATH
-          value: {{ $.Values.vault.authpath }}
-        - name: VAULT_APP_ROLE
-          value: {{ $.Values.vault.role }}
-        - name: NODE_NAME
-          value: {{ $.Values.node.name }}
-        - name: TM_TLS_ENABLED
-          value: "{{ $.Values.network.tmtls }}"
-        - name: VAULT_TYPE
-          value: "{{ $.Values.vault.type }}"
+          value: "{{ .Release.Namespace }}"
         - name: MOUNT_PATH
           value: "/certificates"
         command: ["sh", "-c"]
@@ -285,222 +158,196 @@ spec:
                 echo "$line\n";
               done < ${1} > ${2}/${NAME}.txt
             }
-
             # Source the bevel-vault.sh script to perform the Vault-CURD operations
             . /scripts/bevel-vault.sh
-
-            # Get the Vault token
-            echo "Getting the vault Token.."
-            vaultBevelFunc 'init'
-            
-            # Wait for the existence of a flag file 'flag_finish.txt' in the specified directory
-            while ! [ -f ${MOUNT_PATH}/flag_finish.txt ]
-            do
-              echo 'Waiting for generation of certificates'
-              sleep 2s
-            done
-
-            # Define paths for various directories and files
+            # Set the directories path
             CERTS_CHECKS_PATH=${MOUNT_PATH}/check_certs
-            ROOTCA_PATH=${MOUNT_PATH}/rootca
             AMBASSADORTLS_PATH=${MOUNT_PATH}/ambassadortls;
+            ROOTCA_PATH=${MOUNT_PATH}/rootca
             FORMAT_CERTIFICATE_PATH="/formatcertificate"
+
+            # Create the ambassadortls directory if it doesn't exist
+            mkdir -p ${AMBASSADORTLS_PATH}
+
+            # Check if either ambassadortls_absent file exists
+            if [ -e ${CERTS_CHECKS_PATH}/ambassadortls_absent.txt ]
+            then
+              # Create the rootca directory if it doesn't exist
+              mkdir -p ${ROOTCA_PATH}
+              cd ${ROOTCA_PATH}
+
+              # Generates the rootCA certificates
+              openssl genrsa -out rootca.key 2048
+              openssl req -x509 -new -nodes -key rootca.key -sha256 -days 1024 -out rootca.pem -subj "/${CERT_SUBJECT}"
+              # Generates the openssl file for domain
+              cd ${AMBASSADORTLS_PATH}
+              echo "[req]
+                req_extensions = v3_req
+                distinguished_name = dn
+                [dn]
+                [ v3_req ]
+                basicConstraints = CA:FALSE
+                keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+                subjectAltName = @alt_names
+                [alt_names]
+                DNS.1 = ${publicDNSName}
+                DNS.2 = ${privateDNSName}
+                DNS.3 = ${tesseraDNSName}
+                " > openssl.conf
+              # Generates the ambassador tls certificates
+              openssl genrsa -out node.key 2048
+              openssl req -new -nodes -key node.key -days 1000 -out node.csr -subj "/CN=${publicDNSName}" -config "openssl.conf"
+              openssl x509 -req -in node.csr -CA ${ROOTCA_PATH}/rootca.pem -CAkey ${ROOTCA_PATH}/rootca.key -CAcreateserial -out node.pem -days 1000 -sha256 -extfile "openssl.conf" -extensions v3_req
+              cat node.pem > certchain.pem
+              cat ${ROOTCA_PATH}/rootca.pem >> certchain.pem
+            fi;
+            # Check if TM_TLS_ENABLED is true or ambassadortls_absent.txt file exists
+            if [ "$TM_TLS_ENABLED" == "true"  ] || [ -e ${CERTS_CHECKS_PATH}/ambassadortls_absent.txt ]
+            then
+              # Generate crypto for besu nodes and knownserver file
+              openssl genrsa -out besu-node.key 2048
+              openssl req -new -key besu-node.key -out besu-node.csr -subj "/CN=${publicDNSName}"
+              openssl x509 -req -in besu-node.csr -CA ${ROOTCA_PATH}/rootca.pem -CAkey ${ROOTCA_PATH}/rootca.key -CAcreateserial -out besu-node.pem -days 500 -sha256
+              cat besu-node.key besu-node.pem > besu_certificates.pem
+              openssl pkcs12 -export -in besu_certificates.pem -out besu-node.pkcs12 -password pass:changeme -name myAlias -noiter -nomaciter
+              echo "changeme" > besu-password
+              openssl x509 -in certchain.pem -noout -fingerprint -sha256 > besu-certchain-sha256
+              export DIGEST=$(awk '{print $2}' besu-certchain-sha256 | sed -n 's/Fingerprint=\(.*\)/\1/p')
+              printf '%s\n' "tessera.${COMPONENT_NS}:${TM_CLIENT_PORT} $DIGEST" "${publicDNSName} $DIGEST" > besu-knownServer
+            fi;
 
             # Create necessary subdirectories for certificate storage
             mkdir -p ${FORMAT_CERTIFICATE_PATH}/rootca
             mkdir -p ${FORMAT_CERTIFICATE_PATH}/ambassadortls
 
-            # Check the existence of certain flag files to determine if certificates are written
-            if [ -e ${CERTS_CHECKS_PATH}/rootca_present.txt ]; then ROOTCA_CERT_WRITTEN=true; else ROOTCA_CERT_WRITTEN=false; fi
-            if [ -e ${CERTS_CHECKS_PATH}/ambassadortls_present.txt ]; then AMBASSADORTLS_CERT_WRITTEN=true; else AMBASSADORTLS_CERT_WRITTEN=false; fi
+            # Get the Vault token
+            echo "Getting the vault Token.."
+            vaultBevelFunc 'init'
 
-            # Initialize a counter variable
-            COUNTER=1
+            # Check if either the ambassadortls certificates are absent
+            if [ -e ${CERTS_CHECKS_PATH}/ambassadortls_absent.txt ]
+            then
+              # Encode the certificate and key files in base64 format
+              base64 ${ROOTCA_PATH}/rootca.key > ${ROOTCA_PATH}/encode_rootca.key
+              base64 ${ROOTCA_PATH}/rootca.pem > ${ROOTCA_PATH}/encode_rootca.pem
+              base64 ${AMBASSADORTLS_PATH}/certchain.pem > ${AMBASSADORTLS_PATH}/encode_certchain.pem
+              base64 ${AMBASSADORTLS_PATH}/node.key > ${AMBASSADORTLS_PATH}/encode_node.key
 
-            # Set up a loop that will run until the COUNTER is less than or equal to the specified number of retries
-            while [ "$COUNTER" -le {{ $.Values.healthcheck.retries }} ]
-            do
-              # Check if either the rootca or ambassadortls certificates are absent and not yet written
-              if ([ -e ${CERTS_CHECKS_PATH}/rootca_absent.txt ] && [ "$ROOTCA_CERT_WRITTEN" =  "false" ]) || ([ -e ${CERTS_CHECKS_PATH}/ambassadortls_absent.txt ] && [ "$AMBASSADORTLS_CERT_WRITTEN" =  "false" ])
+              # Format the certificate files for saving in the vault
+              formatCertificate "${ROOTCA_PATH}/encode_rootca.key" "${FORMAT_CERTIFICATE_PATH}/rootca"
+              formatCertificate "${ROOTCA_PATH}/encode_rootca.pem" "${FORMAT_CERTIFICATE_PATH}/rootca"
+              formatCertificate "${AMBASSADORTLS_PATH}/encode_certchain.pem" "${FORMAT_CERTIFICATE_PATH}/ambassadortls"
+              formatCertificate "${AMBASSADORTLS_PATH}/encode_node.key" "${FORMAT_CERTIFICATE_PATH}/ambassadortls"
+
+              # Read the formatted certificate files
+              ROOTCAKEY_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/rootca/encode_rootca.key.txt)
+              ROOTCAPEM_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/rootca/encode_rootca.pem.txt)
+              AMBASSADORCRT_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/ambassadortls/encode_certchain.pem.txt)
+              AMBASSADORKEY_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/ambassadortls/encode_node.key.txt)
+
+              # Check if tmTls is enabled
+              if [ "$TM_TLS_ENABLED" == "true" ]
               then
-                # Encode the certificate and key files in base64 format
-                base64 ${ROOTCA_PATH}/rootca.key > ${ROOTCA_PATH}/encode_rootca.key
-                base64 ${ROOTCA_PATH}/rootca.pem > ${ROOTCA_PATH}/encode_rootca.pem
-                base64 ${AMBASSADORTLS_PATH}/${NODE_NAME}-certchain.pem > ${AMBASSADORTLS_PATH}/encode_${NODE_NAME}-certchain.pem
-                base64 ${AMBASSADORTLS_PATH}/${NODE_NAME}.key > ${AMBASSADORTLS_PATH}/encode_${NODE_NAME}.key
-
-                # Format the certificate files for saving in the vault
-                formatCertificate "${ROOTCA_PATH}/encode_rootca.key" "${FORMAT_CERTIFICATE_PATH}/rootca"
-                formatCertificate "${ROOTCA_PATH}/encode_rootca.pem" "${FORMAT_CERTIFICATE_PATH}/rootca"
-                formatCertificate "${AMBASSADORTLS_PATH}/encode_${NODE_NAME}-certchain.pem" "${FORMAT_CERTIFICATE_PATH}/ambassadortls"
-                formatCertificate "${AMBASSADORTLS_PATH}/encode_${NODE_NAME}.key" "${FORMAT_CERTIFICATE_PATH}/ambassadortls"
-
-                # Read the formatted certificate files
-                ROOTCAKEY_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/rootca/encode_rootca.key.txt)
-                ROOTCAPEM_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/rootca/encode_rootca.pem.txt)
-                AMBASSADORCRT_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/ambassadortls/encode_${NODE_NAME}-certchain.pem.txt)
-                AMBASSADORKEY_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/ambassadortls/encode_${NODE_NAME}.key.txt)
-
-                # Check if tm_tls is enabled
-                if [ "$TM_TLS_ENABLED" == "true" ]
-                then
-                  # Encode additional certificate files when tm_tls is true
-                  base64 ${AMBASSADORTLS_PATH}/${NODE_NAME}-besu-node.pkcs12 > ${AMBASSADORTLS_PATH}/encode_${NODE_NAME}-besu-node.pkcs12
-                  base64 ${AMBASSADORTLS_PATH}/${NODE_NAME}-password > ${AMBASSADORTLS_PATH}/encode_${NODE_NAME}-password
-                  base64 ${AMBASSADORTLS_PATH}/${NODE_NAME}-knownServer > ${AMBASSADORTLS_PATH}/encode_${NODE_NAME}-knownServer
-                  
-                  # Format the additional certificate files for saving in the vault
-                  formatCertificate "${AMBASSADORTLS_PATH}/encode_${NODE_NAME}-besu-node.pkcs12" "${FORMAT_CERTIFICATE_PATH}/ambassadortls"
-                  formatCertificate "${AMBASSADORTLS_PATH}/encode_${NODE_NAME}-password" "${FORMAT_CERTIFICATE_PATH}/ambassadortls"
-                  formatCertificate "${AMBASSADORTLS_PATH}/encode_${NODE_NAME}-knownServer" "${FORMAT_CERTIFICATE_PATH}/ambassadortls"
-
-                  # Read the additional formatted certificate files
-                  KEYSTORE_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/ambassadortls/encode_${NODE_NAME}-besu-node.pkcs12.txt)
-                  PASSWORD_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/ambassadortls/encode_${NODE_NAME}-password.txt)
-                  KNOWNSERVER_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/ambassadortls/encode_${NODE_NAME}-knownServer.txt)
-                  
-                  # Create a JSON file with the data to be saved in the vault when tm_tls is true
-                  echo "
-                  {
-                    \"data\":
-                      {
-                        \"rootca_pem\": \"${ROOTCAPEM_FORMAT}\",
-                        \"rootca_key\": \"${ROOTCAKEY_FORMAT}\",
-                        \"ambassadorcrt\": \"${AMBASSADORCRT_FORMAT}\",
-                        \"ambassadorkey\": \"${AMBASSADORKEY_FORMAT}\",
-                        \"keystore\": \"${KEYSTORE_FORMAT}\",
-                        \"password\": \"${PASSWORD_FORMAT}\",
-                        \"knownServer\": \"${KNOWNSERVER_FORMAT}\"
-                      }
-                  }" > payload.json
-                else
-                  # Create a JSON file with the data to be saved in the vault when tm_tls is false
-                  echo "
-                  {
-                    \"data\":
-                      {
-                        \"rootca_pem\": \"${ROOTCAPEM_FORMAT}\",
-                        \"rootca_key\": \"${ROOTCAKEY_FORMAT}\",
-                        \"ambassadorcrt\": \"${AMBASSADORCRT_FORMAT}\",
-                        \"ambassadorkey\": \"${AMBASSADORKEY_FORMAT}\"
-                      }
-                  }" > payload.json
-                fi;
+                # Encode additional certificate files when tmTls is true
+                base64 ${AMBASSADORTLS_PATH}/besu-node.pkcs12 > ${AMBASSADORTLS_PATH}/encode_besu-node.pkcs12
+                base64 ${AMBASSADORTLS_PATH}/besu-password > ${AMBASSADORTLS_PATH}/encode_besu-password
+                base64 ${AMBASSADORTLS_PATH}/besu-knownServer > ${AMBASSADORTLS_PATH}/encode_besu-knownServer
                 
-                # Copy the TLS certificates to the Vault
-                vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_AMBASSADORTLS}" 'payload.json'
+                # Format the additional certificate files for saving in the vault
+                formatCertificate "${AMBASSADORTLS_PATH}/encode_besu-node.pkcs12" "${FORMAT_CERTIFICATE_PATH}/ambassadortls"
+                formatCertificate "${AMBASSADORTLS_PATH}/encode_besu-password" "${FORMAT_CERTIFICATE_PATH}/ambassadortls"
+                formatCertificate "${AMBASSADORTLS_PATH}/encode_besu-knownServer" "${FORMAT_CERTIFICATE_PATH}/ambassadortls"
 
-                # Check if TLS certificates are written successfully and read them to validate
-                if [ "$TM_TLS_ENABLED" == "true" ]
-                then
-                  # Obtain TLS certificates from the Vault when tm_tls is true
-                  vaultBevelFunc 'readJson' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_AMBASSADORTLS}"
-
-                  # Extract TLS certificate and key information from the response obtained from the Vault
-                  CA_PEM=$(echo ${VAULT_SECRET} | jq -r '.["rootca_pem"]')
-                  CA_KEY=$(echo ${VAULT_SECRET} | jq -r '.["rootca_key"]')
-                  AMBASSADORCRT=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorcrt"]')
-                  AMBASSADORKEY=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorkey"]')
-                  KEYSTORE=$(echo ${VAULT_SECRET} | jq -r '.["keystore"]')
-                  PASSWORD=$(echo ${VAULT_SECRET} | jq -r '.["password"]')
-                  KNOWNSERVER=$(echo ${VAULT_SECRET} | jq -r '.["knownServer"]')
-
-                  # Check if any of the certificate and key fields are missing, empty or having any kind of error
-                  for field in "$CA_PEM" "$CA_KEY" "$AMBASSADORCRT" "$AMBASSADORKEY" "$KEYSTORE" "$PASSWORD" "$KNOWNSERVER"
-                  do
-                    if [ "$field" = "null"  ] || [[ "$field" = "parse error"* ]] || [ "$field" = "" ]
-                    then
-                      AMBASSADORTLS_CERT_WRITTEN=false
-                      break
-                    else
-                      AMBASSADORTLS_CERT_WRITTEN=true
-                    fi
-                  done
-                  echo "if code - Value of AMBASSADORTLS_CERT_WRITTEN:$AMBASSADORTLS_CERT_WRITTEN"
-                else
-                  # Obtain the TLS certificates from the Vault when tm_tls is false
-                  vaultBevelFunc 'readJson' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_AMBASSADORTLS}"
-
-                  # Extract TLS certificate and key information from the response obtained from the Vault
-                  CA_PEM=$(echo ${VAULT_SECRET} | jq -r '.["rootca_pem"]')
-                  CA_KEY=$(echo ${VAULT_SECRET} | jq -r '.["rootca_key"]')
-                  AMBASSADORCRT=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorcrt"]')
-                  AMBASSADORKEY=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorkey"]')
-                  
-                  # Check if any of the certificate and key fields are missing, empty or having any kind of error
-                  for field in "$CA_PEM" "$CA_KEY" "$AMBASSADORCRT" "$AMBASSADORKEY"
-                  do
-                    if [ "$field" = "null"  ] || [[ "$field" = "parse error"* ]] || [ "$field" = "" ]
-                    then
-                      AMBASSADORTLS_CERT_WRITTEN=false
-                      break
-                    else
-                      AMBASSADORTLS_CERT_WRITTEN=true
-                    fi
-                  done
-                fi;
-
-                # Delete the same JSON file that we created to perform the write operation in the vault
-                rm payload.json
-              fi;
-
-              # Check if the rootCA certificate is absent and not yet written to the Vault
-              if [ -e ${CERTS_CHECKS_PATH}/rootca_absent.txt ] && [ "$ROOTCA_CERT_WRITTEN" =  "false" ]
-              then
-                # Create a JSON payload with rootCA certificate and key data for Vault storage
+                # Read the additional formatted certificate files
+                KEYSTORE_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/ambassadortls/encode_besu-node.pkcs12.txt)
+                PASSWORD_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/ambassadortls/encode_besu-password.txt)
+                KNOWNSERVER_FORMAT=$(cat ${FORMAT_CERTIFICATE_PATH}/ambassadortls/encode_besu-knownServer.txt)
+                
+                # Create a JSON file with the data to be saved in the vault when tmTls is true
                 echo "
-                  {
-                    \"data\":
-                      {
-                        \"rootca_pem\": \"${ROOTCAPEM_FORMAT}\",
-                        \"rootca_key\": \"${ROOTCAKEY_FORMAT}\"
-                      }
-                  }" > payload.json
-                
-                # Write the rootCA certificates to the Vault
-                vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_ROOTCA}" 'payload.json'
-                
-                # Obtain rootCA certificates from the Vault if exists
-                vaultBevelFunc 'readJson' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_ROOTCA}"
+                {
+                  \"data\":
+                    {
+                      \"rootca_pem\": \"${ROOTCAPEM_FORMAT}\",
+                      \"rootca_key\": \"${ROOTCAKEY_FORMAT}\",
+                      \"ambassadorcrt\": \"${AMBASSADORCRT_FORMAT}\",
+                      \"ambassadorkey\": \"${AMBASSADORKEY_FORMAT}\",
+                      \"keystore\": \"${KEYSTORE_FORMAT}\",
+                      \"password\": \"${PASSWORD_FORMAT}\",
+                      \"knownServer\": \"${KNOWNSERVER_FORMAT}\"
+                    }
+                }" > payload.json
+              else
+                # Create a JSON file with the data to be saved in the vault when tmTls is false
+                echo "
+                {
+                  \"data\":
+                    {
+                      \"rootca_pem\": \"${ROOTCAPEM_FORMAT}\",
+                      \"rootca_key\": \"${ROOTCAKEY_FORMAT}\",
+                      \"ambassadorcrt\": \"${AMBASSADORCRT_FORMAT}\",
+                      \"ambassadorkey\": \"${AMBASSADORKEY_FORMAT}\"
+                    }
+                }" > payload.json
+              fi;
+              
+              # Copy the TLS certificates to the Vault
+              vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}" 'payload.json'
+
+              # Check if TLS certificates are written successfully and read them to validate
+              if [ "$TM_TLS_ENABLED" == "true" ]
+              then
+                # Obtain TLS certificates from the Vault when tmTls is true
+                vaultBevelFunc 'readJson' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}"
 
                 # Extract TLS certificate and key information from the response obtained from the Vault
                 CA_PEM=$(echo ${VAULT_SECRET} | jq -r '.["rootca_pem"]')
                 CA_KEY=$(echo ${VAULT_SECRET} | jq -r '.["rootca_key"]')
-                
+                AMBASSADORCRT=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorcrt"]')
+                AMBASSADORKEY=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorkey"]')
+                KEYSTORE=$(echo ${VAULT_SECRET} | jq -r '.["keystore"]')
+                PASSWORD=$(echo ${VAULT_SECRET} | jq -r '.["password"]')
+                KNOWNSERVER=$(echo ${VAULT_SECRET} | jq -r '.["knownServer"]')
+
                 # Check if any of the certificate and key fields are missing, empty or having any kind of error
-                for field in "$CA_PEM" "$CA_KEY"
+                for field in "$CA_PEM" "$CA_KEY" "$AMBASSADORCRT" "$AMBASSADORKEY" "$KEYSTORE" "$PASSWORD" "$KNOWNSERVER"
                 do
                   if [ "$field" = "null"  ] || [[ "$field" = "parse error"* ]] || [ "$field" = "" ]
                   then
-                    ROOTCA_CERT_WRITTEN=false
+                    AMBASSADORTLS_CERT_WRITTEN=false
                     break
                   else
-                    ROOTCA_CERT_WRITTEN=true
+                    AMBASSADORTLS_CERT_WRITTEN=true
                   fi
                 done
-
-                # Delete the same JSON file that we created to perform write operation in the vault
-                rm payload.json
-              fi
-              
-              # Check if both root CA and Ambassador TLS certificates are successfully written to the Vault
-              if [ "$ROOTCA_CERT_WRITTEN" = "true" ] && [ "$AMBASSADORTLS_CERT_WRITTEN" = "true" ]
-              then
-                echo "Certificates are successfully stored in vault"
-                break
+                echo "if code - Value of AMBASSADORTLS_CERT_WRITTEN:$AMBASSADORTLS_CERT_WRITTEN"
               else
-                echo "Certificates are not ready, sleeping for {{ $.Values.healthcheck.sleepTimeAfterError }} - $COUNTER "
-                sleep {{ $.Values.healthcheck.sleepTimeAfterError }}
-                COUNTER=`expr "$COUNTER" + 1`
-              fi
-            done
+                # Obtain the TLS certificates from the Vault when tmTls is false
+                vaultBevelFunc 'readJson' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}"
 
-            # Check if the maximum number of retries is reached
-            if [ "$COUNTER" -gt {{ $.Values.healthcheck.retries }} ]
-            then
-              echo "Retry attempted `expr $COUNTER - 1` times, Certificates have not been saved."
-              exit 1
+                # Extract TLS certificate and key information from the response obtained from the Vault
+                CA_PEM=$(echo ${VAULT_SECRET} | jq -r '.["rootca_pem"]')
+                CA_KEY=$(echo ${VAULT_SECRET} | jq -r '.["rootca_key"]')
+                AMBASSADORCRT=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorcrt"]')
+                AMBASSADORKEY=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorkey"]')
+                
+                # Check if any of the certificate and key fields are missing, empty or having any kind of error
+                for field in "$CA_PEM" "$CA_KEY" "$AMBASSADORCRT" "$AMBASSADORKEY"
+                do
+                  if [ "$field" = "null"  ] || [[ "$field" = "parse error"* ]] || [ "$field" = "" ]
+                  then
+                    AMBASSADORTLS_CERT_WRITTEN=false
+                    break
+                  else
+                    AMBASSADORTLS_CERT_WRITTEN=true
+                  fi
+                done
+              fi;
+
+              # Delete the same JSON file that we created to perform the write operation in the vault
+              rm payload.json
             fi;
+            
         volumeMounts:
           - name: certificates
             mountPath: /certificates
