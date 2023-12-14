@@ -22,15 +22,6 @@ entries:
     version: 0.15.0
   besu-tessera-key-mgmt:
   - apiVersion: v1
-    appVersion: "2.0"
-    created: "2023-06-13T08:39:54.017487754Z"
-    description: A Helm chart to deploy Tessera transaction manager
-    digest: e35f08a0425c1cddb15878bbbe472a3fd98e721b8dbfaa433bf3f83ed485883f
-    name: node_tessera
-    urls:
-    - https://github.com/sownak/bevel/releases/download/node_tessera-0.14.1/node_tessera-0.14.1.tgz
-    version: 0.14.1
-  - apiVersion: v1
     appVersion: 21.7.3
     created: "2023-11-08T20:44:03.148732745Z"
     description: 'Hyperledger Besu: Generates and stores Tessera cryptographic materials'
@@ -39,7 +30,25 @@ entries:
     urls:
     - https://github.com/hyperledger/bevel/releases/download/besu-tessera-key-mgmt-0.15.0/besu-tessera-key-mgmt-0.15.0.tgz
     version: 0.15.0
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-06-13T08:39:54.017487754Z"
+    description: A Helm chart to deploy Tessera transaction manager
+    digest: e35f08a0425c1cddb15878bbbe472a3fd98e721b8dbfaa433bf3f83ed485883f
+    name: node_tessera
+    urls:
+    - https://github.com/sownak/bevel/releases/download/node_tessera-0.14.1/node_tessera-0.14.1.tgz
+    version: 0.14.1
   besu-tessera-node:
+  - apiVersion: v1
+    appVersion: 21.7.3
+    created: "2023-11-08T20:44:03.293225659Z"
+    description: 'Hyperledger Besu: Deploys Tessera transaction manager nodes'
+    digest: 23797ca498c94aaa834798c2df607bc2c4c5f2d006ef1685681eeb95d771af8b
+    name: besu-tessera-node
+    urls:
+    - https://github.com/hyperledger/bevel/releases/download/besu-tessera-node-0.15.0/besu-tessera-node-0.15.0.tgz
+    version: 0.15.0
   - apiVersion: v1
     appVersion: "2.0"
     created: "2023-06-13T08:39:54.211339571Z"
@@ -50,15 +59,6 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/tessera_key_mgmt-0.14.1/tessera_key_mgmt-0.14.1.tgz
     version: 0.14.1
-  - apiVersion: v1
-    appVersion: 21.7.3
-    created: "2023-11-08T20:44:03.293225659Z"
-    description: 'Hyperledger Besu: Deploys Tessera transaction manager nodes'
-    digest: 23797ca498c94aaa834798c2df607bc2c4c5f2d006ef1685681eeb95d771af8b
-    name: besu-tessera-node
-    urls:
-    - https://github.com/hyperledger/bevel/releases/download/besu-tessera-node-0.15.0/besu-tessera-node-0.15.0.tgz
-    version: 0.15.0
   besu-tlscert-cert-gen:
   - apiVersion: v1
     appVersion: 0.15.0
@@ -90,4 +90,91 @@ entries:
     urls:
     - https://github.com/hyperledger/bevel/releases/download/besu_connector-0.15.0/besu_connector-0.15.0.tgz
     version: 0.15.0
-generated: "2023-11-08T20:44:03.832425168Z"
+  bevel-image-automation:
+  - apiVersion: v2
+    appVersion: 0.2.3
+    created: "2023-12-14T17:23:57.445453684Z"
+    description: Bevel Image Automation using Flux V2
+    digest: a1e48dafbfd80239c0d978f07c47625d8b2e904fb3f37d82759aecb2bde2de3b
+    name: bevel-image-automation
+    urls:
+    - https://github.com/sownak/bevel/releases/download/bevel-image-automation-0.2.3/bevel-image-automation-0.2.3.tgz
+    version: 0.2.3
+  bevel-scripts:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2023-12-14T17:23:57.583065167Z"
+    description: 'Shared: Create configmaps of scripts used in Bevel'
+    digest: ea6b4de783b33815c7c6e64d1eeb9967cf2dd8ddf444cf145356aaeba6fbe237
+    home: https://hyperledger-bevel.readthedocs.io/en/latest/
+    keywords:
+    - bevel
+    - hyperledger
+    - enterprise
+    - blockchain
+    - deployment
+    - accenture
+    maintainers:
+    - email: bevel@lists.hyperledger.org
+      name: Hyperledger Bevel maintainers
+    name: bevel-scripts
+    sources:
+    - https://github.com/hyperledger/bevel
+    urls:
+    - https://github.com/sownak/bevel/releases/download/bevel-scripts-0.15.1/bevel-scripts-0.15.1.tgz
+    version: 0.15.1
+  bevel-storageclass:
+  - apiVersion: v1
+    appVersion: "2.0"
+    created: "2023-12-14T17:23:57.715909948Z"
+    description: 'Shared: Deploys a StorageClass that can be used to provision persistent
+      volumes for nodes.'
+    digest: 2d34bc1233ef79b792e0d70b36ff8fc10e2ff55f3f034aca2e10c01e5bd02720
+    name: bevel-storageclass
+    urls:
+    - https://github.com/sownak/bevel/releases/download/bevel-storageclass-0.15.0/bevel-storageclass-0.15.0.tgz
+    version: 0.15.0
+  bevel-vault-mgmt:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2023-12-14T17:23:57.873129413Z"
+    description: Bevel Chart for vault and kubernetes configuration
+    digest: caa1f9f6e922352f3965990fdbe800ce3e326d9770b8095effbe795303bd1100
+    home: https://hyperledger-bevel.readthedocs.io/en/latest/
+    keywords:
+    - bevel
+    - hyperledger
+    - enterprise
+    - blockchain
+    - deployment
+    - accenture
+    maintainers:
+    - email: bevel@lists.hyperledger.org
+      name: Hyperledger Bevel maintainers
+    name: bevel-vault-mgmt
+    sources:
+    - https://github.com/hyperledger/bevel
+    urls:
+    - https://github.com/sownak/bevel/releases/download/bevel-vault-mgmt-0.15.1/bevel-vault-mgmt-0.15.1.tgz
+    version: 0.15.1
+  leteencrypt-cert:
+  - apiVersion: v2
+    created: "2023-12-14T17:23:58.038522665Z"
+    description: A Helm chart for creating TLS certificates using letencrypt CA
+    digest: dfdd2df96e6503d6e1987dc85fa2a9ced71dabf299e5e25136a8089a339f1d56
+    name: leteencrypt-cert
+    type: application
+    urls:
+    - https://github.com/sownak/bevel/releases/download/leteencrypt-cert-0.15.0/leteencrypt-cert-0.15.0.tgz
+    version: 0.15.0
+  letsencrypt-issuer:
+  - apiVersion: v2
+    created: "2023-12-14T17:23:58.164242749Z"
+    description: A Helm chart for creating clusterissuer
+    digest: 14173ac22e089ce4345d69bea74a722c1a8128050a97e2ed000ef2f87d1e06be
+    name: letsencrypt-issuer
+    type: application
+    urls:
+    - https://github.com/sownak/bevel/releases/download/letsencrypt-issuer-0.15.0/letsencrypt-issuer-0.15.0.tgz
+    version: 0.15.0
+generated: "2023-12-14T17:23:58.164275199Z"
