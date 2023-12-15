@@ -137,6 +137,28 @@ entries:
   bevel-vault-mgmt:
   - apiVersion: v2
     appVersion: latest
+    created: "2023-12-15T11:14:13.869870581Z"
+    description: Bevel Chart for vault and kubernetes configuration
+    digest: f0df68015bd6bfd00008ca49755110320b20468687b324459343e0caa2d77b1d
+    home: https://hyperledger-bevel.readthedocs.io/en/latest/
+    keywords:
+    - bevel
+    - hyperledger
+    - enterprise
+    - blockchain
+    - deployment
+    - accenture
+    maintainers:
+    - email: bevel@lists.hyperledger.org
+      name: Hyperledger Bevel maintainers
+    name: bevel-vault-mgmt
+    sources:
+    - https://github.com/hyperledger/bevel
+    urls:
+    - https://github.com/sownak/bevel/releases/download/bevel-vault-mgmt-0.15.2/bevel-vault-mgmt-0.15.2.tgz
+    version: 0.15.2
+  - apiVersion: v2
+    appVersion: latest
     created: "2023-12-14T17:23:57.873129413Z"
     description: Bevel Chart for vault and kubernetes configuration
     digest: caa1f9f6e922352f3965990fdbe800ce3e326d9770b8095effbe795303bd1100
@@ -177,4 +199,4 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/letsencrypt-issuer-0.15.0/letsencrypt-issuer-0.15.0.tgz
     version: 0.15.0
-generated: "2023-12-14T17:23:58.164275199Z"
+generated: "2023-12-15T11:14:13.869895548Z"
