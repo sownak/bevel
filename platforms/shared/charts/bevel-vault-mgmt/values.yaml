@@ -5,7 +5,7 @@
 ##############################################################################################
 
 cluster:
-  provider: local  # choose from: local | aws | azure
+  provider: aws  # choose from: local | aws | azure
   cloudNativeServices: false # set to true to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure)
   #Provide the kubernetes host url
   #Eg. kubernetes_url: https://10.3.8.5:6443
@@ -24,29 +24,27 @@ images:
 #Eg. labels:
 #      role: anchorpeer
 labels:
-
-vault:
-  # The name of the ServiceAccount that will be created.
-  serviceAccountName: vault-auth
-  #Provide the vaultrole for an organization
-  #Eg. vaultrole: org1-vault-role
-  role: vault-role
-  #Provide the vault server address
-  #Eg. vaultaddress: http://Vault-884963190.eu-west-1.elb.amazonaws.com
-  address:
-  #Provide the kubernetes auth backed configured in vault for an organization
-  #Eg. authPath: fra-demo-hlkube-cluster-org1
-  authPath:
-  #Provide the vault policy name
-  #Eg. policy: vault-crypto-orderer-net-org1-ro
-  policy:
-  #Provide the vault policy file contents in json format
-  #Eg. policy: {"policy":"path \" ... }
-  policyData:
-  #Provide the value for vault secretprefix
-  #Eg. secretPath: secretsv2
-  secretPath: secretsv2
-  #Kuberenetes secret for vault ca.cert
-  #Enable or disable TLS for vault communication if value present or not
-  #Eg. tls: vaultca
-  tls:
+# The name of the ServiceAccount that will be created.
+serviceAccountName: vault-auth
+#Provide the vaultrole for an organization
+#Eg. vaultrole: org1-vault-role
+role: vault-role
+#Provide the vault server address
+#Eg. address: http://Vault-884963190.eu-west-1.elb.amazonaws.com
+address:
+#Provide the kubernetes auth backed configured in vault for an organization
+#Eg. authPath: fra-demo-hlkube-cluster-org1
+authPath:
+#Provide the vault policy name
+#Eg. policy: vault-crypto-orderer-net-org1-ro
+policy:
+#Provide the vault policy file contents in json format
+#Eg. policy: {"policy":"path \" ... }
+policyData:
+#Provide the value for vault secretprefix
+#Eg. secretPath: secretsv2
+secretPath: secretsv2
+#Kuberenetes secret for vault ca.cert
+#Enable or disable TLS for vault communication if value present or not
+#Eg. tls: vaultca
+tls:
