@@ -347,11 +347,6 @@ spec:
               # Delete the same JSON file that we created to perform the write operation in the vault
               rm payload.json
             fi;
-
-            #Download kubectl. MOVE this to dockerfile
-            curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.23.0/bin/linux/amd64/kubectl
-            chmod +x ./kubectl
-            mv ./kubectl /usr/local/bin
             # Create tls secret with the certificates
             kubectl create secret tls {{ include "besu-tlscert-gen.name" . }}-tls-certs \
               --cert=${AMBASSADORTLS_PATH}/certchain.pem \
