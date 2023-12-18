@@ -3,15 +3,15 @@
 [//]: # (SPDX-License-Identifier: Apache-2.0)
 [//]: # (##############################################################################################)
 
-# besu-tlscert-cert-gen
+# besu-tlscert-gen
 
-This chart is a component of Hyperledger Bevel. The besu-tlscert-cert-gen chart generates the TLS certificates needed for accessing Besu and tessera nodes outside the cluster. If enabled, the certificates are then stored on the configured vault and also stored as Kuberneets secrtes. See [Bevel documentation](https://hyperledger-bevel.readthedocs.io/en/latest/) for details.
+This chart is a component of Hyperledger Bevel. The besu-tlscert-gen chart generates the TLS certificates needed for accessing Besu and tessera nodes outside the cluster. If enabled, the certificates are then stored on the configured vault and also stored as Kuberneets secrtes. See [Bevel documentation](https://hyperledger-bevel.readthedocs.io/en/latest/) for details.
 
 ## TL;DR
 
 ```bash
 helm repo add bevel https://hyperledger.github.io/bevel
-helm install my-release bevel/besu-tlscert-cert-gen
+helm install my-release bevel/besu-tlscert-gen
 ```
 
 ## Prerequisitess
@@ -31,7 +31,7 @@ To install the chart with the release name `my-release`:
 
 ```bash
 helm repo add bevel https://hyperledger.github.io/bevel
-helm install my-release bevel/besu-tlscert-cert-gen
+helm install my-release bevel/besu-tlscert-gen
 ```
 
 The command deploys the chart on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.

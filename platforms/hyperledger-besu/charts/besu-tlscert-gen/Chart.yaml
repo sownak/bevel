@@ -5,21 +5,35 @@
 ##############################################################################################
 
 apiVersion: v1
-appVersion: '0.15.0'
+name: besu-tlscert-gen
 description: "Hyperledger Besu: Generates and stores TLS certificates for nodes and tessera"
-name: besu-tlscert-cert-gen
-version: '0.15.0'
+version: '0.15.1'
 appVersion: latest
 dependencies:
   - name: bevel-vault-mgmt
-    alias: bevel-vault-mgmt
-    repository: https://hyperledger.github.io/bevel
+    alias: vault
+    repository: https://sownak.github.io/bevel
     tags:
       - bevel
-    version: 0.15.0
+    version: 0.15.3
+    condition: vault.type == 'hashicorp'
   - name: bevel-scripts
     alias: bevel-scripts
-    repository: https://hyperledger.github.io/bevel
+    repository: https://sownak.github.io/bevel
     tags:
       - bevel
-    version: 0.15.0
+    version: 0.15.1
+keywords:
+  - bevel
+  - hyperledger
+  - besu
+  - enterprise
+  - blockchain
+  - deployment
+  - accenture
+home: https://hyperledger-bevel.readthedocs.io/en/latest/
+sources:
+  - https://github.com/hyperledger/bevel
+maintainers:
+  - name: Hyperledger Bevel maintainers
+    email: bevel@lists.hyperledger.org

@@ -7,11 +7,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ include "besu-tlscert-cert-gen.name" . }}"
+  name: "{{ include "besu-tlscert-gen.name" . }}"
   namespace: "{{ .Release.Namespace }}"
   labels:
-    app: "{{ include "besu-tlscert-cert-gen.name" . }}"
-    app.kubernetes.io/name: "{{ include "besu-tlscert-cert-gen.name" . }}"
+    app: "{{ include "besu-tlscert-gen.name" . }}"
+    app.kubernetes.io/name: "{{ include "besu-tlscert-gen.name" . }}"
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -27,8 +27,8 @@ spec:
   template:
     metadata:
       labels:
-        app: "{{ include "besu-tlscert-cert-gen.name" . }}"
-        app.kubernetes.io/name: "{{ include "besu-tlscert-cert-gen.name" . }}"
+        app: "{{ include "besu-tlscert-gen.name" . }}"
+        app.kubernetes.io/name: "{{ include "besu-tlscert-gen.name" . }}"
         helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
         app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -190,8 +190,8 @@ spec:
               subjectAltName = @alt_names
               [alt_names]
               DNS.1 = ${EXTERNAL_URL}
-              DNS.2 = {{ include "besu-tlscert-cert-gen.name" . }}.{{ .Release.Namespace }}
-              DNS.3 = {{ include "besu-tlscert-cert-gen.name" . }}-tessera.{{ .Release.Namespace }}
+              DNS.2 = {{ include "besu-tlscert-gen.name" . }}.{{ .Release.Namespace }}
+              DNS.3 = {{ include "besu-tlscert-gen.name" . }}-tessera.{{ .Release.Namespace }}
               " > openssl.conf
               # Generates the ambassador tls certificates
               openssl genrsa -out node.key 2048
@@ -353,7 +353,7 @@ spec:
             chmod +x ./kubectl
             mv ./kubectl /usr/local/bin
             # Create tls secret with the certificates
-            kubectl create secret tls {{ include "besu-tlscert-cert-gen.name" . }}-tls-certs \
+            kubectl create secret tls {{ include "besu-tlscert-gen.name" . }}-tls-certs \
               --cert=${AMBASSADORTLS_PATH}/certchain.pem \
               --key=${AMBASSADORTLS_PATH}/node.key
 

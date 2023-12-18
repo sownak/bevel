@@ -67,7 +67,7 @@ charts:
   node_substrate: substrate-node
   genesis_job: substrate-genesis
   dscp_ipfs_node: dscp-ipfs-node
-  ambassador_besu: besu-tlscert-cert-gen
+  ambassador_besu: besu-tlscert-gen
   certs-ambassador-quorum: quorum-tlscerts-gen
   crypto_raft_job: quorum-raft-crypto-gen
   fabric-connector: fabric-cacti-connector
