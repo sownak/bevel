@@ -9,6 +9,8 @@ kind: Job
 metadata:
   name: {{ include "bevel-vault-mgmt.name" . }}-job
   namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/hook-delete-policy: "hook-succeeded"
   labels:
     app: "{{ include "bevel-vault-mgmt.name" . }}-job"
     app.kubernetes.io/name: "{{ include "bevel-vault-mgmt.name" . }}-job"
@@ -57,21 +59,21 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
           - name: VAULT_ADDR
-            value: {{ $.Values.address }}
+            value: "{{ $.Values.address }}"
           - name: VAULT_SECRET_PATH
-            value: {{ $.Values.secretPath }}
+            value: "{{ $.Values.secretEngine }}"
           - name: KUBERNETES_AUTH_PATH
-            value: {{ $.Values.authPath }}
+            value: "{{ $.Values.authPath }}"
           - name: VAULT_ROLE
-            value: {{ $.Values.role }}
+            value: "{{ $.Values.role }}"
           - name: VAULT_SA
-            value: {{ $.Values.serviceAccountName }}
+            value: "{{ $.Values.serviceAccountName }}"
           - name: KUBERNETES_URL
-            value: {{ $.Values.cluster.kubernetes_url }}
+            value: "{{ $.Values.cluster.kubernetes_url }}"
           - name: POLICY_NAME
-            value: {{ $.Values.policy }}          
+            value: "{{ include "bevel-vault-mgmt.fullname" . }}-{{ .Release.Namespace }}-policy"
           - name: NAMESPACE
-            value: {{ .Release.Namespace }}
+            value: "{{ .Release.Namespace }}"
           - name: POLICIES_PATH
             value: "/policies"
           - name: ROOT_TOKEN
@@ -88,12 +90,12 @@ spec:
                   exit 1
                 fi
               };
-              # Check if secretPath already created
+              # Check if secretEngine already created
               vault_kv_check=$(curl --header "X-Vault-Token: $ROOT_TOKEN" \
                 ${VAULT_ADDR}/v1/$VAULT_SECRET_PATH/ | jq '.errors');
 
               if [ "$vault_kv_check" != 'null' ]; then
-                echo "secretPath does not exist. Creating ..."
+                echo "secretEngine does not exist. Creating ..."
                 curl \
                 --header "X-Vault-Token: $ROOT_TOKEN" \
                 --request POST \
@@ -153,8 +155,7 @@ spec:
               
               if [ "$vault_policy_check" == 'null' ]; then
                 echo "vaultpolicy does not exist. Creating ..."
-                #mkdir -p ${POLICIES_PATH}
-
+                
                 # This command writes the policies to the vault
                 curl \
                 --header "X-Vault-Token: $ROOT_TOKEN" \

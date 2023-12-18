@@ -30,20 +30,20 @@ serviceAccountName: vault-auth
 #Eg. vaultrole: org1-vault-role
 role: vault-role
 #Provide the vault server address
-#Eg. address: http://Vault-884963190.eu-west-1.elb.amazonaws.com
+#Eg. address: http://vault-884963190.eu-west-1.elb.amazonaws.com
 address:
 #Provide the kubernetes auth backed configured in vault for an organization
 #Eg. authPath: fra-demo-hlkube-cluster-org1
 authPath:
-#Provide the vault policy name
-#Eg. policy: vault-crypto-orderer-net-org1-ro
-policy:
-#Provide the vault policy file contents in json format
-#Eg. policy: {"policy":"path \" ... }
-policyData:
-#Provide the value for vault secretprefix
-#Eg. secretPath: secretsv2
-secretPath: secretsv2
+#Provide the network type for which the policy will be configured
+#Eg. network: besu
+network: besu # choose from: besu | corda | fabric | corda-ent | quorum
+#Provide the vault secret engine name
+#Eg. secretEngine: secretsv2
+secretEngine: secretsv2
+#Provide the value for vault secret prefix
+#Eg. secretPrefix: org1/
+secretPrefix: "supplychain/"
 #Kuberenetes secret for vault ca.cert
 #Enable or disable TLS for vault communication if value present or not
 #Eg. tls: vaultca

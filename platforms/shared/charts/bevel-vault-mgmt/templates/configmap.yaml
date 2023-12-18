@@ -17,4 +17,53 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     {{- include "labels.custom" . | nindent 2 }}
 data:
-  policies-config.json: {{ .Values.policyData | quote }}
+  policies-config.json: |-
+    {{ if eq .Values.network "besu" -}}
+    {
+      "policy": 
+        "path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/*\" {
+          capabilities = [\"list\", \"read\", \"create\", \"update\"]
+        }
+        path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/smartContracts/*\" {
+          capabilities = [\"list\", \"read\"]
+        }"
+    }
+    {{ end }}
+    {{ if eq .Values.network "corda" -}}
+    {
+      "policy": 
+        "path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/*\" {
+          capabilities = [\"list\", \"read\", \"create\", \"update\"]
+        }"
+    }
+    {{ end }}
+    {{ if eq .Values.network "fabric" -}}
+    {
+      "policy": 
+        "path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/*\" {
+          capabilities = [\"list\", \"read\", \"create\", \"update\"]
+        }
+        path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/credentials/*\" {
+          capabilities = [\"list\", \"read\", \"create\", \"update\"]
+        }"
+    }
+    {{ end }}
+    {{ if eq .Values.network "quorum" -}}
+    {
+      "policy": 
+        "path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/crypto/*\" {
+          capabilities = [\"list\", \"read\", \"create\", \"update\"]
+        }
+        path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/smartContracts/*\" {
+          capabilities = [\"list\", \"read\"]
+        }"
+    }
+    {{ end }}
+    {{ if eq .Values.network "corda-ent" -}}
+    {
+      "policy": 
+        "path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/*\" {
+          capabilities = [\"list\", \"read\", \"create\", \"update\"]
+        }"
+    }
+    {{ end }}

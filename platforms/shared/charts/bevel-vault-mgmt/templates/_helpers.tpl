@@ -3,7 +3,7 @@
   {{ $key }}: {{ $val }}
   {{ end }}
 {{- end }}
-{{/* vim: set filetype=mustache: */}}
+
 {{/*
 Expand the name of the chart.
 */}}

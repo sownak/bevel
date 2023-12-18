@@ -10,8 +10,8 @@ metadata:
   name: "{{ include "besu-tlscert-cert-gen.name" . }}"
   namespace: "{{ .Release.Namespace }}"
   labels:
-    app: ""{{ include "besu-tlscert-cert-gen.name" . }}""
-    app.kubernetes.io/name: ""{{ include "besu-tlscert-cert-gen.name" . }}""
+    app: "{{ include "besu-tlscert-cert-gen.name" . }}"
+    app.kubernetes.io/name: "{{ include "besu-tlscert-cert-gen.name" . }}"
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -27,8 +27,8 @@ spec:
   template:
     metadata:
       labels:
-        app: ""{{ include "besu-tlscert-cert-gen.name" . }}""
-        app.kubernetes.io/name: ""{{ include "besu-tlscert-cert-gen.name" . }}""
+        app: "{{ include "besu-tlscert-cert-gen.name" . }}"
+        app.kubernetes.io/name: "{{ include "besu-tlscert-cert-gen.name" . }}"
         helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
         app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -45,7 +45,7 @@ spec:
       {{- if .Values.image.pullSecret }}
         - name: {{ .Values.image.pullSecret }}
       {{- end }}
-      serviceAccountName: {{ $.Values.vault.serviceAccountName }}
+      serviceAccountName: {{ .Values.vault.serviceAccountName }}
       volumes:
       - name: certificates
         emptyDir:
@@ -60,15 +60,15 @@ spec:
         imagePullPolicy: {{ $.Values.image.pullPolicy }}
         env:
         - name: VAULT_ADDR
-          value: {{ $.Values.vault.address }}
+          value: "{{ $.Values.vault.address }}"
         - name: VAULT_SECRET_ENGINE
-          value: {{ $.Values.vault.secretEngine }}
+          value: "{{ $.Values.vault.secretEngine }}"
         - name: VAULT_SECRET_PREFIX
-          value: {{ $.Values.vault.secretPrefix }}
+          value: "{{ $.Values.vault.secretPrefix }}"
         - name: KUBERNETES_AUTH_PATH
-          value: {{ $.Values.vault.authPath }}
+          value: "{{ $.Values.vault.authPath }}"
         - name: VAULT_APP_ROLE
-          value: {{ $.Values.vault.role }}
+          value: "{{ $.Values.vault.role }}"
         - name: VAULT_TYPE
           value: "{{ $.Values.vault.type }}"
         - name: MOUNT_PATH
@@ -83,13 +83,13 @@ spec:
           # Get the Vault token
           echo "Getting vault Token..."
           vaultBevelFunc "init"
-          
+
           # Set the output path.
           OUTPUT_PATH=${MOUNT_PATH}/check_certs;
           mkdir -p ${OUTPUT_PATH}
 
           # Obtain the ambassador TLS certificates from Vault if exists
-          vault_secret_key="${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}"
+          vault_secret_key="${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/tlscerts"
           echo "Checking certs in vault at path: ${vault_secret_key}"
           vaultBevelFunc "readJson" ${vault_secret_key}
 
@@ -121,17 +121,17 @@ spec:
         imagePullPolicy: {{ $.Values.image.pullPolicy }}
         env:
         - name: VAULT_ADDR
-          value: {{ $.Values.vault.address }}
+          value: "{{ $.Values.vault.address }}"
         - name: VAULT_SECRET_ENGINE
-          value: {{ $.Values.vault.secretEngine }}
+          value: "{{ $.Values.vault.secretEngine }}"
         - name: VAULT_SECRET_PREFIX
-          value: {{ $.Values.vault.secretPrefix }}
+          value: "{{ $.Values.vault.secretPrefix }}"
         - name: KUBERNETES_AUTH_PATH
-          value: {{ $.Values.vault.authPath }}
+          value: "{{ $.Values.vault.authPath }}"
         - name: VAULT_APP_ROLE
-          value: {{ $.Values.vault.role }}
+          value: "{{ $.Values.vault.role }}"
         - name: TM_CLIENT_PORT
-          value: 8888
+          value: "8888"
         - name: TM_TLS_ENABLED
           value: "{{ $.Values.settings.tmTls }}"
         - name: CERT_SUBJECT
@@ -292,13 +292,13 @@ spec:
               fi;
               
               # Copy the TLS certificates to the Vault
-              vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}" 'payload.json'
+              vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/tlscerts" 'payload.json'
 
               # Check if TLS certificates are written successfully and read them to validate
               if [ "$TM_TLS_ENABLED" == "true" ]
               then
                 # Obtain TLS certificates from the Vault when tmTls is true
-                vaultBevelFunc 'readJson' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}"
+                vaultBevelFunc 'readJson' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/tlscerts"
 
                 # Extract TLS certificate and key information from the response obtained from the Vault
                 CA_PEM=$(echo ${VAULT_SECRET} | jq -r '.["rootca_pem"]')
@@ -320,10 +320,9 @@ spec:
                     AMBASSADORTLS_CERT_WRITTEN=true
                   fi
                 done
-                echo "if code - Value of AMBASSADORTLS_CERT_WRITTEN:$AMBASSADORTLS_CERT_WRITTEN"
               else
                 # Obtain the TLS certificates from the Vault when tmTls is false
-                vaultBevelFunc 'readJson' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}"
+                vaultBevelFunc 'readJson' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/tlscerts"
 
                 # Extract TLS certificate and key information from the response obtained from the Vault
                 CA_PEM=$(echo ${VAULT_SECRET} | jq -r '.["rootca_pem"]')
@@ -343,7 +342,7 @@ spec:
                   fi
                 done
               fi;
-
+              echo "Final value of AMBASSADORTLS_CERT_WRITTEN:$AMBASSADORTLS_CERT_WRITTEN"
               # Delete the same JSON file that we created to perform the write operation in the vault
               rm payload.json
             fi;

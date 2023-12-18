@@ -69,9 +69,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `role`  | Role used for authentication with Vault | `vault-role`    |
 | `address`| URL of the Vault server.    | `""`            |
 | `authPath`    | Authentication path for Vault  | `""`            |
-| `policy` | Provide the vault policy name  | `""`            |
-| `policyData` | Provide the vault policy file contents in json format `| `""` |
-| `secretPath` | Provide the value for vault secret engine path   | `secretv2`  |
+| `network` | Provide the vault policy file contents in json format `| `besu` |
+| `secretEngine` | Provide the value for vault secret engine name   | `secretv2`  |
+| `secretPrefix` | Provide the value for vault secret prefix which is the org name   | `supplychain`  |
 | `tls` | Enable or disable TLS for vault communication if value present or not | `""`  |
 
 ## License

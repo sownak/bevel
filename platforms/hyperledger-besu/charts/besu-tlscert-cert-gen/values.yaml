@@ -32,6 +32,9 @@ settings:
   tesseraDNSName:
 
 vault:
+  #Provide the type of vault
+  #Eg. type: hashicorp
+  type: hashicorp
   #Provide the vault server address
   #Eg. address: http://54.226.163.39:8200
   address:
@@ -56,10 +59,6 @@ vault:
   #NOTE: Make sure that the service account is already created and autheticated to use the vault.
   #Eg. serviceAccountName: vault-auth
   serviceAccountName: vault-auth
-
-  #Provide the type of vault
-  #Eg. type: hashicorp
-  type: hashicorp
 
 labels:
   service: []
