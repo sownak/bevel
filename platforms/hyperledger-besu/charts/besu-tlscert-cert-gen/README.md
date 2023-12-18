@@ -3,151 +3,71 @@
 [//]: # (SPDX-License-Identifier: Apache-2.0)
 [//]: # (##############################################################################################)
 
-<a name = "deploy-generate-ambassador-certs"></a>
-# Ambassador Certs Hyperledger Besu Deployment
+# besu-tlscert-cert-gen
 
-- [Ambassador Certs Hyperledger Besu Deployment Helm Chart](#ambassador-certs-hyperledger-besu-deployment-helm-chart)
-- [Prerequisites](#prerequisites)
-- [Chart Structure](#chart-structure)
-- [Configuration](#configuration)
-- [Deployment](#deployment)
-- [Verification](#verification)
-- [Updating the Deployment](#updating-the-deployment)
-- [Deletion](#deletion)
-- [Contributing](#contributing)
-- [License](#license)
+This chart is a component of Hyperledger Bevel. The besu-tlscert-cert-gen chart generates the TLS certificates needed for accessing Besu and tessera nodes outside the cluster. If enabled, the certificates are then stored on the configured vault and also stored as Kuberneets secrtes. See [Bevel documentation](https://hyperledger-bevel.readthedocs.io/en/latest/) for details.
 
+## TL;DR
 
-<a name = "ambassador-certs-hyperledger-besu-deployment-helm-chart"></a>
-## Ambassador Certs Hyperledger Besu Deployment Helm Chart
----
-This [Helm chart](https://github.com/hyperledger/bevel/blob/develop/platforms/hyperledger-besu/charts/besu-tlscert-cert-gen) facilitates the deployment of Ambassador certificates using Kubernetes Jobs and stores them securely in HashiCorp Vault.
-
-
-<a name = "prerequisites"></a>
-## Prerequisites
----
-Before deploying the Helm chart, make sure to have the following prerequisites:
-
-- Kubernetes cluster up and running.
-- The Besu network is set up and running.
-- A HashiCorp Vault instance is set up and configured to use Kubernetes service account token-based authentication.
-- The Vault is unsealed and initialized.
-- Helm installed.
-
-
-<a name = "chart-structure"></a>
-## Chart Structure
----
-The structure of the Helm chart is as follows:
-
-```
-besu-tlscert-cert-gen/
-  |- templates/
-      |- _helpers.yaml
-      |- job.yaml
-  |- Chart.yaml
-  |- README.md
-  |- values.yaml
+```bash
+helm repo add bevel https://hyperledger.github.io/bevel
+helm install my-release bevel/besu-tlscert-cert-gen
 ```
 
-- `templates/`: This directory contains the Kubernetes manifest templates that define the resources to be deployed.
-- `helpers.tpl`: Contains custom label definitions used in other templates.
-- `job.yaml`: This file defines the Kubernetes Job resource for generating ambassador certificates and storing them in the Hashicorp Vault.
-- `Chart.yaml`: This file contains the metadata for the Helm chart, such as the name, version, and description.
-- `README.md`: This file provides information and instructions about the Helm chart.
-- `values.yaml`: This file contains the default configuration values for the Helm chart.
+## Prerequisitess
 
+- Kubernetes 1.19+
+- Helm 3.2.0+
 
-<a name = "configuration"></a>
-## Configuration
----
-The [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/hyperledger-besu/charts/besu-tlscert-cert-gen/values.yaml) file contains configurable values for the Helm chart. We can modify these values according to the deployment requirements. Here are some important configuration options:
+If Hashicorp Vault is used, then
+- HashiCorp Vault Server 1.13.1+
+- Vault Root token available.
+
+> **Important**: Also check the dependent charts.
+
+## Installing the Chart
+
+To install the chart with the release name `my-release`:
+
+```bash
+helm repo add bevel https://hyperledger.github.io/bevel
+helm install my-release bevel/besu-tlscert-cert-gen
+```
+
+The command deploys the chart on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
+
+> **Tip**: List all releases using `helm list`
+
+## Uninstalling the Chart
+
+To uninstall/delete the `my-release` deployment:
+
+```bash
+helm uninstall my-release
+```
+
+The command removes all the Kubernetes components associated with the chart and deletes the release.
 
 ## Parameters
----
 
 ### Image
 
-| Name                     | Description                                                                                | Default Value   |
-| ------------------------ | -------------------------------------------------------                                    | --------------- |
-| alpineutils        | Provide the alpine utils image, which is used by all containers of this job  | ghcr.io/hyperledger/bevel-alpine:latest              |
-| pullPolicy               | Pull policy to be used for the Docker image                                                | IfNotPresent    |
+| Name  | Description| Default Value   |
+|------------|-----------|---------|
+| `image.alpineutils`    | Docker image name and tag which will be used for this job | `ghcr.io/hyperledger/bevel-alpine:latest`  |
+| `image.pullSecret` | Provide the docker secret name  | `""`  |
+| `image.pullPolicy` | The pull policy for the image  | `IfNotPresent`  |
 
 ### Settings
-| Name                     | Description                                                                                | Default Value   |
-| ------------------------ | -------------------------------------------------------                                    | --------------- |
-| tmTls               | Set value to true when transaction manager like tessera uses tls. This enables TLS for the transaction manager and Besu node.                 | True |
-| certSubject             | Mention the subject for TLS       | ""            |
-| publicDNSName           | Provides the name for public domain                       | ""            |
-| privateDNSName          | Provides the name for private domain                      | ""            |
-| tesseraDNSName       | provides the name for domain domain_name tessera endpoint | ""            |
+| Name | Description | Default Value   |
+| ------------| -------------- | --------------- |
+| `settings.tmTls`   | Set value to true when transaction manager like tessera uses tls. This enables TLS for the transaction manager and Besu node. | `True` |
+| `settings.certSubject`  | Provide the X.509 subject for root CA | `"CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"`            |
+| `settings.externalURL`   | Provide the external URL of the besu node | `besunode1.blockchaincloudpoc.com` |
 
 ### Vault
+Check dependent chart [bevel-vault-mgmt](../../../shared/charts/bevel-vault-mgmt/README.md) details.
 
-| Name                      | Description                                                               | Default Value |
-| ------------------------- | --------------------------------------------------------------------------| ------------- |
-| address                   | Address/URL of the Vault server.                                          | ""            |
-| secretEngine              | Provide the secret engine.                                                | secretsv2     |
-| authPath                  | Authentication path for Vault                                             | besunode1  |
-| secretPrefix       | Provide the vault path where the ambassador certificates are stored                  | ""            |
-| role                      | Role used for authentication with Vault                                   | vault-role    |
-| serviceAccountName        | Provide the already created service account name autheticated to vault    | vault-auth    |
-| type        | Provide the type of vault    | hashicorp    |
-
-<a name = "deployment"></a>
-## Deployment
----
-
-To deploy the besu-tlscert-cert-gen Helm chart, follow these steps:
-
-1. Modify the [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/hyperledger-besu/charts/besu-tlscert-cert-gen/values.yaml) file to set the desired configuration values.
-2. Run the following Helm command to install the chart:
-    ```
-    $ helm repo add bevel https://hyperledger.github.io/bevel/
-    $ helm install <release-name> ./besu-tlscert-cert-gen
-    ```
-Replace `<release-name>` with the desired name for the release.
-
-This will deploy the ambassador certs job to the Kubernetes cluster based on the provided configurations.
-
-<a name = "verification"></a>
-## Verification
----
-
-To verify the deployment, we can use the following command:
-```
-$ kubectl get jobs -n <namespace>
-```
-Replace `<namespace>` with the actual namespace where the deployment was created. The command will display information about the deployment, including the number of 
-replicas and their current status.
-
-<a name = "updating-the-deployment"></a>
-## Updating the Deployment
----
-
-If we need to update the deployment with new configurations or changes, modify the same [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/hyperledger-besu/charts/besu-tlscert-cert-gen/values.yaml) file with the desired changes and run the following Helm command:
-```
-$ helm upgrade <release-name> ./besu-tlscert-cert-gen
-```
-Replace `<release-name>` with the name of the release. This command will apply the changes to the deployment, ensuring the besu-tlscert-cert-gen node is up to date.
-
-<a name = "deletion"></a>
-## Deletion
----
-
-To delete the deployment and associated resources, run the following Helm command:
-```
-$ helm uninstall <release-name>
-```
-Replace `<release-name>` with the name of the release. This command will remove all the resources created by the Helm chart.
-
-<a name = "contributing"></a>
-## Contributing
----
-If you encounter any bugs, have suggestions, or would like to contribute to the [Ambassador Certs GoQuorum Deployment Helm Chart](ttps://github.com/hyperledger/bevel/blob/develop/platforms/hyperledger-besu/charts/besu-tlscert-cert-gen), please feel free to open an issue or submit a pull request on the [project's GitHub repository](https://github.com/hyperledger/bevel).
-
-<a name = "license"></a>
 ## License
 
 This chart is licensed under the Apache v2.0 license.

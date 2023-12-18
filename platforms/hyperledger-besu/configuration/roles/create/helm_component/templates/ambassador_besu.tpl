@@ -23,9 +23,7 @@ spec:
     settings:
       tmTls: {{ tls_enabled }}
       certSubject: {{ cert_subject }}
-      publicDNSName: {{ name }}.{{ external_url_suffix }}
-      privateDNSName: {{ name }}.{{ component_ns }}
-      tesseraDNSName: {{ name }}-tessera.{{ component_ns }}
+      externalURL: {{ name }}.{{ external_url_suffix }}
 
     vault:
       address: {{ vault.url }}

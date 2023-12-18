@@ -15,7 +15,7 @@ image:
   #Eg. pullSecret: regcred
   pullSecret: 
   #Pull policy to be used for the Docker image
-  #Eg. pullPolicy: Always
+  #Eg. pullPolicy: IfNotPresent
   pullPolicy: IfNotPresent
 
 #Settings for certificate generation
@@ -23,42 +23,40 @@ settings:
   #Set value to true when transaction manager like tessera uses tls
   #Eg. tmTls: True
   tmTls: True
-  #Provide the node subject. 
-  #Eg. ambassadortls: L=lat/long is mandatory for supplychain sample app
-  certSubject: 
-  # Alternative Domain names for cert generation
-  publicDNSName: 
-  privateDNSName: 
-  tesseraDNSName:
+  #Provide the X.509 subject for root CA.
+  #Eg. certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
+  certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
+  # Provide external URL for cert generation
+  externalURL: besunode1.blockchaincloudpoc.com
 
+# The following values are for overriding dependent chart 'bevel-vault-mgmt' values
 vault:
   #Provide the type of vault
   #Eg. type: hashicorp
   type: hashicorp
+  #Provide the network type
+  network: besu
+  #Provide the service account name which will be created.
+  #Eg. serviceAccountName: vault-auth
+  serviceAccountName: vault-auth
   #Provide the vault server address
   #Eg. address: http://54.226.163.39:8200
   address:
 
+  #Provide the authPath configured to be used.
+  #Eg. authPath: besunode1
+  authPath: besunode1
   #Provide the secret engine.
   #Eg. secretEngine: secretsv2
   secretEngine: secretsv2
 
-  #Provide the authPath configured to be used.
-  #Eg. authPath: besunode1
-  authPath: besunode1
-
   #Provide the vault path where the tls and ambassador certificates
-  #Eg. secretPrefix: data/warehouse-bes/crypto/warehouse/tls
-  secretPrefix: 
+  #Eg. secretPrefix: data/warehouse-bes/crypto/warehouse/tls MUST use data/
+  secretPrefix: "data/besunode1"
 
   #Provide the vault role used.
   #Eg. role: vault-role
   role: vault-role
-
-  #Provide the service account name autheticated to vault.
-  #NOTE: Make sure that the service account is already created and autheticated to use the vault.
-  #Eg. serviceAccountName: vault-auth
-  serviceAccountName: vault-auth
 
 labels:
   service: []

@@ -71,8 +71,6 @@ spec:
           value: "{{ $.Values.vault.role }}"
         - name: VAULT_TYPE
           value: "{{ $.Values.vault.type }}"
-        - name: MOUNT_PATH
-          value: "/certificates"
         command: ["sh", "-c"]
         args:
         - |-
@@ -85,7 +83,7 @@ spec:
           vaultBevelFunc "init"
 
           # Set the output path.
-          OUTPUT_PATH=${MOUNT_PATH}/check_certs;
+          OUTPUT_PATH=/certificates/check_certs
           mkdir -p ${OUTPUT_PATH}
 
           # Obtain the ambassador TLS certificates from Vault if exists
@@ -94,10 +92,10 @@ spec:
           vaultBevelFunc "readJson" ${vault_secret_key}
 
           # Get the ambassador TLS data info from Vault
-          data_info=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorcrt"]')
+          cert=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorcrt"]')
 
-          # If the data_info is null, empty, or contains a parse error, then the certificates do not exist in Vault
-          if [ "$data_info" == "null" ] || [[ "$data_info" = "parse error"* ]] || [ "$data_info" = "" ]
+          # If the cert is null, empty, or contains a parse error, then the certificates do not exist in Vault
+          if [ "$cert" == "null" ] || [[ "$cert" = "parse error"* ]] || [ "$cert" = "" ]
           then
             # Create a file to indicate that the ambassador TLS certificates are absent
             echo "Certficates absent in vault. Ignore error warning"
@@ -106,6 +104,12 @@ spec:
             # Create a file to indicate that the ambassador TLS certificates are present
             echo "Certificates present in vault"
             touch ${OUTPUT_PATH}/ambassadortls_present.txt
+            AMBASSADORTLS_PATH=/certificates/ambassadortls
+            mkdir -p ${AMBASSADORTLS_PATH}
+            cert=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorcrt"]' | base64 -d )
+            key=$(echo ${VAULT_SECRET} | jq -r '.["ambassadorkey"]' | base64 -d )
+            echo "${cert}" > ${AMBASSADORTLS_PATH}/certchain.pem
+            echo "${key}" > ${AMBASSADORTLS_PATH}/node.key
           fi
 
           echo "Done checking for certificates in vault."
@@ -130,22 +134,18 @@ spec:
           value: "{{ $.Values.vault.authPath }}"
         - name: VAULT_APP_ROLE
           value: "{{ $.Values.vault.role }}"
+        - name: VAULT_TYPE
+          value: "{{ $.Values.vault.type }}"
         - name: TM_CLIENT_PORT
           value: "8888"
         - name: TM_TLS_ENABLED
           value: "{{ $.Values.settings.tmTls }}"
         - name: CERT_SUBJECT
           value: "{{ $.Values.settings.certSubject }}"
-        - name: publicDNSName
-          value: "{{ $.Values.settings.publicDNSName }}"
-        - name: privateDNSName
-          value: "{{ $.Values.settings.privateDNSName }}"
-        - name: tesseraDNSName
-          value: "{{ $.Values.settings.tesseraDNSName }}"
+        - name: EXTERNAL_URL
+          value: "{{ $.Values.settings.externalURL }}"
         - name: COMPONENT_NS
           value: "{{ .Release.Namespace }}"
-        - name: MOUNT_PATH
-          value: "/certificates"
         command: ["sh", "-c"]
         args:
           - |-
@@ -158,18 +158,17 @@ spec:
                 echo "$line\n";
               done < ${1} > ${2}/${NAME}.txt
             }
-            # Source the bevel-vault.sh script to perform the Vault-CURD operations
-            . /scripts/bevel-vault.sh
+
             # Set the directories path
-            CERTS_CHECKS_PATH=${MOUNT_PATH}/check_certs
-            AMBASSADORTLS_PATH=${MOUNT_PATH}/ambassadortls;
-            ROOTCA_PATH=${MOUNT_PATH}/rootca
+            CERTS_CHECKS_PATH=/certificates/check_certs
+            AMBASSADORTLS_PATH=/certificates/ambassadortls
+            ROOTCA_PATH=/certificates/rootca
             FORMAT_CERTIFICATE_PATH="/formatcertificate"
 
             # Create the ambassadortls directory if it doesn't exist
             mkdir -p ${AMBASSADORTLS_PATH}
 
-            # Check if either ambassadortls_absent file exists
+            # if ambassadortls_absent file does not exist, create the certificates
             if [ -e ${CERTS_CHECKS_PATH}/ambassadortls_absent.txt ]
             then
               # Create the rootca directory if it doesn't exist
@@ -182,49 +181,51 @@ spec:
               # Generates the openssl file for domain
               cd ${AMBASSADORTLS_PATH}
               echo "[req]
-                req_extensions = v3_req
-                distinguished_name = dn
-                [dn]
-                [ v3_req ]
-                basicConstraints = CA:FALSE
-                keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-                subjectAltName = @alt_names
-                [alt_names]
-                DNS.1 = ${publicDNSName}
-                DNS.2 = ${privateDNSName}
-                DNS.3 = ${tesseraDNSName}
-                " > openssl.conf
+              req_extensions = v3_req
+              distinguished_name = dn
+              [dn]
+              [ v3_req ]
+              basicConstraints = CA:FALSE
+              keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+              subjectAltName = @alt_names
+              [alt_names]
+              DNS.1 = ${EXTERNAL_URL}
+              DNS.2 = {{ include "besu-tlscert-cert-gen.name" . }}.{{ .Release.Namespace }}
+              DNS.3 = {{ include "besu-tlscert-cert-gen.name" . }}-tessera.{{ .Release.Namespace }}
+              " > openssl.conf
               # Generates the ambassador tls certificates
               openssl genrsa -out node.key 2048
-              openssl req -new -nodes -key node.key -days 1000 -out node.csr -subj "/CN=${publicDNSName}" -config "openssl.conf"
+              openssl req -new -nodes -key node.key -out node.csr -subj "/CN=${EXTERNAL_URL}" -config "openssl.conf"
               openssl x509 -req -in node.csr -CA ${ROOTCA_PATH}/rootca.pem -CAkey ${ROOTCA_PATH}/rootca.key -CAcreateserial -out node.pem -days 1000 -sha256 -extfile "openssl.conf" -extensions v3_req
               cat node.pem > certchain.pem
               cat ${ROOTCA_PATH}/rootca.pem >> certchain.pem
+              
+              # Check if TM_TLS_ENABLED is true
+              if [ "$TM_TLS_ENABLED" == "true"  ]
+              then
+                # Generate crypto for besu nodes and knownserver file
+                openssl genrsa -out besu-node.key 2048
+                openssl req -new -key besu-node.key -out besu-node.csr -subj "/CN=${EXTERNAL_URL}"
+                openssl x509 -req -in besu-node.csr -CA ${ROOTCA_PATH}/rootca.pem -CAkey ${ROOTCA_PATH}/rootca.key -CAcreateserial -out besu-node.pem -days 500 -sha256
+                cat besu-node.key besu-node.pem > besu_certificates.pem
+                openssl pkcs12 -export -in besu_certificates.pem -out besu-node.pkcs12 -password pass:changeme -name myAlias -noiter -nomaciter
+                echo "changeme" > besu-password
+                openssl x509 -in certchain.pem -noout -fingerprint -sha256 > besu-certchain-sha256
+                export DIGEST=$(awk '{print $2}' besu-certchain-sha256 | sed -n 's/Fingerprint=\(.*\)/\1/p')
+                printf '%s\n' "tessera.${COMPONENT_NS}:${TM_CLIENT_PORT} $DIGEST" "${EXTERNAL_URL} $DIGEST" > besu-knownServer
+              fi;
             fi;
-            # Check if TM_TLS_ENABLED is true or ambassadortls_absent.txt file exists
-            if [ "$TM_TLS_ENABLED" == "true"  ] || [ -e ${CERTS_CHECKS_PATH}/ambassadortls_absent.txt ]
-            then
-              # Generate crypto for besu nodes and knownserver file
-              openssl genrsa -out besu-node.key 2048
-              openssl req -new -key besu-node.key -out besu-node.csr -subj "/CN=${publicDNSName}"
-              openssl x509 -req -in besu-node.csr -CA ${ROOTCA_PATH}/rootca.pem -CAkey ${ROOTCA_PATH}/rootca.key -CAcreateserial -out besu-node.pem -days 500 -sha256
-              cat besu-node.key besu-node.pem > besu_certificates.pem
-              openssl pkcs12 -export -in besu_certificates.pem -out besu-node.pkcs12 -password pass:changeme -name myAlias -noiter -nomaciter
-              echo "changeme" > besu-password
-              openssl x509 -in certchain.pem -noout -fingerprint -sha256 > besu-certchain-sha256
-              export DIGEST=$(awk '{print $2}' besu-certchain-sha256 | sed -n 's/Fingerprint=\(.*\)/\1/p')
-              printf '%s\n' "tessera.${COMPONENT_NS}:${TM_CLIENT_PORT} $DIGEST" "${publicDNSName} $DIGEST" > besu-knownServer
-            fi;
-
             # Create necessary subdirectories for certificate storage
             mkdir -p ${FORMAT_CERTIFICATE_PATH}/rootca
             mkdir -p ${FORMAT_CERTIFICATE_PATH}/ambassadortls
 
+            # Source the bevel-vault.sh script to perform the Vault-CURD operations
+            . /scripts/bevel-vault.sh
             # Get the Vault token
             echo "Getting the vault Token.."
             vaultBevelFunc 'init'
 
-            # Check if either the ambassadortls certificates are absent
+            # Check if ambassadortls certificates are absent, then save them to Vault
             if [ -e ${CERTS_CHECKS_PATH}/ambassadortls_absent.txt ]
             then
               # Encode the certificate and key files in base64 format
@@ -290,7 +291,7 @@ spec:
                     }
                 }" > payload.json
               fi;
-              
+
               # Copy the TLS certificates to the Vault
               vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/tlscerts" 'payload.json'
 
@@ -346,7 +347,16 @@ spec:
               # Delete the same JSON file that we created to perform the write operation in the vault
               rm payload.json
             fi;
-            
+
+            #Download kubectl. MOVE this to dockerfile
+            curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.23.0/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+            mv ./kubectl /usr/local/bin
+            # Create tls secret with the certificates
+            kubectl create secret tls {{ include "besu-tlscert-cert-gen.name" . }}-tls-certs \
+              --cert=${AMBASSADORTLS_PATH}/certchain.pem \
+              --key=${AMBASSADORTLS_PATH}/node.key
+
         volumeMounts:
           - name: certificates
             mountPath: /certificates

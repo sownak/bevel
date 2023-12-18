@@ -41,9 +41,9 @@ network: besu # choose from: besu | corda | fabric | corda-ent | quorum
 #Provide the vault secret engine name
 #Eg. secretEngine: secretsv2
 secretEngine: secretsv2
-#Provide the value for vault secret prefix
-#Eg. secretPrefix: org1/
-secretPrefix: "supplychain/"
+#Provide the value for vault secret prefix. MUST use data
+#Eg. secretPrefix: data/org1
+secretPrefix: "data/supplychain"
 #Kuberenetes secret for vault ca.cert
 #Enable or disable TLS for vault communication if value present or not
 #Eg. tls: vaultca

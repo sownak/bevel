@@ -39,7 +39,7 @@ The command deploys the chart on the Kubernetes cluster in the default configura
 To uninstall/delete the `my-release` deployment:
 
 ```bash
-helm uninstall my-releases
+helm uninstall my-release
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
@@ -58,7 +58,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | Name  | Description| Default Value   |
 |------------|-----------|---------|
 | `images.alpineutils`    | Docker image name and tag which will be used for this job | `ghcr.io/hyperledger/bevel-alpine:latest`  |
-| `images.pullSecret` | Provide the docker secret name  | ""  |
+| `images.pullSecret` | Provide the docker secret name  | `""`  |
 
 ### Common parameters
 
