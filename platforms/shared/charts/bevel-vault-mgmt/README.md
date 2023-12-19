@@ -49,9 +49,9 @@ The command removes all the Kubernetes components associated with the chart and 
 ### Cluster parameters
 | Name  | Description   | Default Value |
 |-------|---------|-----|
-| `cluster.provider` | Kubernetes cluster provider. Only `aws` is supported for now | `aws`  |
-| `cluster.cloudNativeServices` | set to true to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure)    | `false`  |
-| `cluster.kubernetes_url` | Kubernetes server URL | ""            |
+| `global.cluster.provider` | Kubernetes cluster provider. Only `aws` is supported for now | `aws`  |
+| `global.cluster.cloudNativeServices` | set to true to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure)    | `false`  |
+| `global.cluster.kubernetes_url` | Kubernetes server URL | ""            |
 
 ### Images
 

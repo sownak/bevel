@@ -4,9 +4,35 @@
 #  SPDX-License-Identifier: Apache-2.0
 ##############################################################################################
 
-# Default values for indy-key-mgmt.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+# The following values are for overriding dependent chart 'bevel-vault-mgmt' values
+global:
+  vault:
+    #Provide the type of vault
+    #Eg. type: hashicorp
+    type: hashicorp
+    #Provide the network type
+    network: besu
+    #Provide the service account name which will be created.
+    #Eg. serviceAccountName: vault-auth
+    serviceAccountName: vault-auth
+    #Provide the vault server address
+    #Eg. address: http://54.226.163.39:8200
+    address:
+    #Provide the authPath configured to be used.
+    #Eg. authPath: besunode1
+    authPath: besunode1
+    #Provide the secret engine.
+    #Eg. secretEngine: secretsv2
+    secretEngine: secretsv2
+    #Provide the vault path where the tls and ambassador certificates
+    #Eg. secretPrefix: data/warehouse-bes/crypto/warehouse/tls MUST use data/
+    secretPrefix: "data/besunode1"
+    #Provide the vault role used.
+    #Eg. role: vault-role
+    role: vault-role
+
 image:
   #Provide the image repository for all containers
   #Eg. repository: ghcr.io/hyperledger/bevel-alpine:latest
@@ -28,35 +54,6 @@ settings:
   certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
   # Provide external URL for cert generation
   externalURL: besunode1.blockchaincloudpoc.com
-
-# The following values are for overriding dependent chart 'bevel-vault-mgmt' values
-vault:
-  #Provide the type of vault
-  #Eg. type: hashicorp
-  type: hashicorp
-  #Provide the network type
-  network: besu
-  #Provide the service account name which will be created.
-  #Eg. serviceAccountName: vault-auth
-  serviceAccountName: vault-auth
-  #Provide the vault server address
-  #Eg. address: http://54.226.163.39:8200
-  address:
-
-  #Provide the authPath configured to be used.
-  #Eg. authPath: besunode1
-  authPath: besunode1
-  #Provide the secret engine.
-  #Eg. secretEngine: secretsv2
-  secretEngine: secretsv2
-
-  #Provide the vault path where the tls and ambassador certificates
-  #Eg. secretPrefix: data/warehouse-bes/crypto/warehouse/tls MUST use data/
-  secretPrefix: "data/besunode1"
-
-  #Provide the vault role used.
-  #Eg. role: vault-role
-  role: vault-role
 
 labels:
   service: []

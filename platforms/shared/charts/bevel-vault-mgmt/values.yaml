@@ -4,12 +4,38 @@
 #  SPDX-License-Identifier: Apache-2.0
 ##############################################################################################
 
-cluster:
-  provider: aws  # choose from: local | aws | azure
-  cloudNativeServices: false # set to true to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure)
-  #Provide the kubernetes host url
-  #Eg. kubernetes_url: https://10.3.8.5:6443
-  kubernetes_url: 
+global:
+  cluster:
+    provider: aws  # choose from: local | aws
+    cloudNativeServices: false # set to true to use Cloud Native Services (SecretsManager and IAM for AWS)
+    #Provide the kubernetes host url
+    #Eg. kubernetes_url: https://10.3.8.5:6443
+    kubernetes_url: 
+  vault:
+    # The name of the ServiceAccount that will be created.
+    serviceAccountName: vault-auth
+    #Provide the vaultrole for an organization
+    #Eg. vaultrole: org1-vault-role
+    role: vault-role
+    #Provide the vault server address
+    #Eg. address: http://vault-884963190.eu-west-1.elb.amazonaws.com
+    address:
+    #Provide the kubernetes auth backed configured in vault for an organization
+    #Eg. authPath: fra-demo-hlkube-cluster-org1
+    authPath:
+    #Provide the network type for which the policy will be configured
+    #Eg. network: besu
+    network: besu # choose from: besu | corda | fabric | corda-ent | quorum
+    #Provide the vault secret engine name
+    #Eg. secretEngine: secretsv2
+    secretEngine: secretsv2
+    #Provide the value for vault secret prefix. MUST use data
+    #Eg. secretPrefix: data/org1
+    secretPrefix: "data/supplychain"
+    #Kuberenetes secret for vault ca.cert
+    #Enable or disable TLS for vault communication if value present or not
+    #Eg. tls: vaultca
+    tls:
 
 images:
   #Provide the valid image name and version to read certificates from vault server
@@ -24,27 +50,3 @@ images:
 #Eg. labels:
 #      role: anchorpeer
 labels:
-# The name of the ServiceAccount that will be created.
-serviceAccountName: vault-auth
-#Provide the vaultrole for an organization
-#Eg. vaultrole: org1-vault-role
-role: vault-role
-#Provide the vault server address
-#Eg. address: http://vault-884963190.eu-west-1.elb.amazonaws.com
-address:
-#Provide the kubernetes auth backed configured in vault for an organization
-#Eg. authPath: fra-demo-hlkube-cluster-org1
-authPath:
-#Provide the network type for which the policy will be configured
-#Eg. network: besu
-network: besu # choose from: besu | corda | fabric | corda-ent | quorum
-#Provide the vault secret engine name
-#Eg. secretEngine: secretsv2
-secretEngine: secretsv2
-#Provide the value for vault secret prefix. MUST use data
-#Eg. secretPrefix: data/org1
-secretPrefix: "data/supplychain"
-#Kuberenetes secret for vault ca.cert
-#Enable or disable TLS for vault communication if value present or not
-#Eg. tls: vaultca
-tls:

@@ -4,9 +4,6 @@ kind: Job
 metadata:
   name: {{ include "besu-genesis.name" . }}-cleanup
   labels:
-{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
-    azure.workload.identity/use: "true"
-{{- end }}  
     app.kubernetes.io/name: besu-genesis-job-cleanup
     app.kubernetes.io/component: genesis-job-cleanup
     app.kubernetes.io/part-of: {{ include "besu-genesis.fullname" . }}
@@ -23,26 +20,21 @@ spec:
   template:
     metadata:
       labels:
-{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
-        azure.workload.identity/use: "true"
-{{- end}}         
         app.kubernetes.io/name: besu-genesis-job-cleanup
         app.kubernetes.io/component: genesis-job-cleanup
         app.kubernetes.io/part-of: {{ include "besu-genesis.fullname" . }}
         app.kubernetes.io/namespace: {{ .Release.Namespace }}
         app.kubernetes.io/managed-by: helm
     spec:
-{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
-      serviceAccountName: {{ .Values.azure.serviceAccountName }}
-{{- else if and (eq .Values.cluster.provider "aws") (.Values.cluster.cloudNativeServices) }}
-      serviceAccountName: {{ .Values.aws.serviceAccountName }}
+{{- if and (eq .Values.global.cluster.provider "aws") (.Values.global.cluster.cloudNativeServices) }}
+      serviceAccountName: {{ .Values.global.aws.serviceAccountName }}
 {{- else }}
-      serviceAccountName: {{ .Values.azure.serviceAccountName}}-sa
+      serviceAccountName: {{ .Values.global.vault.serviceAccountName}}
 {{- end }}       
       restartPolicy: "Never"
       containers:
         - name: delete-genesis
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.genesisUtils }}"
           securityContext:
             runAsUser: 0
           imagePullPolicy: {{ .Values.image.pullPolicy }}

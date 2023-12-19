@@ -1,27 +1,29 @@
 ---
+global:
+  vault:
+    enabled: true
+    type: hashicorp
+    network: besu
+    serviceAccountName: vault-auth
+    address: test1
+    authPath: besunode1
+    secretEngine: secretsv2
+    secretPrefix: "data/supplychain"
+    role: vault-role
+  cluster:
+    provider: aws
+    cloudNativeServices: false
+    kubernetes_url: "test1"
+image:
+  genesisUtils: consensys/quorum-k8s-hooks:qgt-0.2.12
+  alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
+  #Provide the secret to use if private repository
+  #Eg. pullSecret: regcred
+  pullSecret: 
+  pullPolicy: IfNotPresent
 
 quorumFlags:
   removeGenesisOnDelete: true
-
-cluster:
-  provider: vault  # choose from: vault | local | aws | azure
-  cloudNativeServices: false # set to true to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure)
-
-aws:
-  # the aws cli commands uses the name 'quorum-sa' so only change this if you altered the name
-  serviceAccountName: quorum-sa
-  # the region you are deploying to
-  region: ap-southeast-2
-
-azure:
-  serviceAccountName: quorum-sa
-  # the clientId of the user assigned managed identity created in the template
-  identityClientId: azure-clientId
-  keyvaultName: azure-keyvault
-  # the tenant ID of the key vault
-  tenantId: azure-tenantId
-  # the subscription ID to use - this needs to be set explictly when using multi tenancy
-  subscriptionId: azure-subscriptionId
 
 # the raw Genesis config
 # rawGenesisConfig.blockchain.nodes set the number of validators/signers
@@ -37,13 +39,17 @@ rawGenesisConfig:
     gasLimit: '0xf7b760' 
     difficulty: '0x1'
     coinbase: '0x0000000000000000000000000000000000000000'
+    includeQuickStartAccounts: false
   blockchain:
     nodes:
       generate: true
       count: 4
     accountPassword: 'password'
-
-image:
-  repository: consensys/quorum-k8s-hooks
-  tag: qgt-0.2.12
-  pullPolicy: IfNotPresent
+tls:
+  enabled: true
+  vault:
+    enabled: false
+  settings:
+    tmTls: True
+    certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
+    externalURL: besunode1.blockchaincloudpoc.com

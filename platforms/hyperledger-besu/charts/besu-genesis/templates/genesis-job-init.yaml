@@ -4,9 +4,6 @@ kind: Job
 metadata:
   name: {{ include "besu-genesis.name" . }}-init
   labels:
-{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
-    azure.workload.identity/use: "true"
-{{- end }}
     app.kubernetes.io/name: besu-genesis-job
     app.kubernetes.io/component: genesis-job
     app.kubernetes.io/part-of: {{ include "besu-genesis.fullname" . }}
@@ -17,59 +14,54 @@ metadata:
   annotations:
     helm.sh/hook-delete-policy: "hook-succeeded"
 spec:
-  # backoffLimit: 3
-  completions: 1
+  backoffLimit: 3
   template:
     metadata:
       labels:
-{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
-        azure.workload.identity/use: "true"
-{{- end }}
         app.kubernetes.io/name: besu-genesis-job
         app.kubernetes.io/component: genesis-job
         app.kubernetes.io/part-of: {{ include "besu-genesis.fullname" . }}
         app.kubernetes.io/namespace: {{ .Release.Namespace }}
         app.kubernetes.io/managed-by: helm
     spec:
-{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
-      serviceAccountName: {{ .Values.azure.serviceAccountName }}
-{{- else if and (eq .Values.cluster.provider "aws") (.Values.cluster.cloudNativeServices) }}
-      serviceAccountName: {{ .Values.aws.serviceAccountName }}
+{{- if and (eq .Values.global.cluster.provider "aws") (.Values.global.cluster.cloudNativeServices) }}
+      serviceAccountName: {{ .Values.global.aws.serviceAccountName }}
 {{- else }}
-      serviceAccountName: {{ .Values.azure.serviceAccountName}}-sa
+      serviceAccountName: {{ .Values.global.vault.serviceAccountName}}
 {{- end }}
-      restartPolicy: "Never"
+      restartPolicy: OnFailure
       containers:
         - name: generate-genesis
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.genesisUtils }}"
           securityContext:
             runAsUser: 0
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
             - name: generated-config
               mountPath: /generated-config
+            - name: scripts-volume
+              mountPath: /scripts/bevel-vault.sh
+              subPath: bevel-vault.sh
+          env:
+          - name: VAULT_ADDR
+            value: "{{ .Values.global.vault.address }}"
+          - name: VAULT_SECRET_ENGINE
+            value: "{{ .Values.global.vault.secretEngine }}"
+          - name: VAULT_SECRET_PREFIX
+            value: "{{ .Values.global.vault.secretPrefix }}"
+          - name: KUBERNETES_AUTH_PATH
+            value: "{{ .Values.global.vault.authPath }}"
+          - name: VAULT_APP_ROLE
+            value: "{{ .Values.global.vault.role }}"
+          - name: VAULT_TYPE
+            value: "{{ .Values.global.vault.type }}"
           command:
             - /bin/bash
             - -c
           args:
             - |
-{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
-              function safeWriteSecret {
-                key=$1
-                fpath=$2
-                az keyvault secret show --vault-name {{ .Values.azure.keyvaultName }} --name $key > /dev/null 2>&1
-                if [ $? -ne 0 ]; then
-                  az keyvault secret set --vault-name {{ .Values.azure.keyvaultName }} --name $key --file $fpath --encoding utf-8
-                else
-                  # if the key exists pull it from keyvault so that when you update the enodes configmap, you have the right value
-                  az keyvault secret show --vault-name {{ .Values.azure.keyvaultName }} --name $key | jq -r '.value' > $fpath
-                fi
-              }
-              az login --identity --debug
-              az account set --subscription {{ .Values.azure.subscriptionId }}
 
-{{- else if and (eq .Values.cluster.provider "aws") (.Values.cluster.cloudNativeServices) }}
-              
+{{- if and (eq .Values.global.cluster.provider "aws") (.Values.global.cluster.cloudNativeServices) }}
               function safeWriteSecret {
                 key=$1
                 fpath=$2
@@ -81,7 +73,39 @@ spec:
                   aws secretsmanager get-secret-value --secret-id $key | jq -r '.SecretString' > $fpath
                 fi
               }
+{{- else if and (eq .Values.global.vault.type "hashicorp") (not .Values.global.cluster.cloudNativeServices) }}
+              . /scripts/bevel-vault.sh
+              echo "Getting vault Token..."
+              vaultBevelFunc "init"
+              function safeWriteSecret {
+                key=$1
+                fpath=$2
+                NODE_ADDRESS=$(cat ${fpath}/address)
+                NODE_KEY=$(cat ${fpath}/nodekey)
+                NODE_KEY_PUB=$(cat ${fpath}/nodekey.pub)
+                accountPrivateKey=$(cat ${fpath}/accountPrivateKey)
+                accountPassword=$(cat ${fpath}/accountPassword)
+                accountKeystore=$(cat ${fpath}/accountKeystore | base64 -w 0)
+                accountAddress=$(cat ${fpath}/accountAddress)
 
+                # create a JSON file for the data related to node crypto
+                echo "
+                {
+                  \"data\":
+                    {
+                      \"nodeAddress\": \"${NODE_ADDRESS}\",
+                      \"key\": \"${NODE_KEY}\",
+                      \"key_pub\": \"${NODE_KEY_PUB}\",
+                      \"accountPrivateKey\": \"${accountPrivateKey}\",
+                      \"accountPassword\": \"${accountPassword}\",
+                      \"accountKeystore_base64\": \"${accountKeystore}\",
+                      \"accountAddress\": \"${accountAddress}\"
+                    }
+                }" > payload.json
+                # Add vault write code
+                vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/${key}" 'payload.json'
+                rm payload.json
+              }
 {{- else }}
               
               function safeWriteSecret {
@@ -128,7 +152,7 @@ spec:
                   echo $f
                   echo "Creating keys in vault for validator-${i} ..."
 
-{{- if and (ne .Values.cluster.provider "local") (.Values.cluster.cloudNativeServices) }}
+{{- if and (ne .Values.global.cluster.provider "local") (.Values.global.cluster.cloudNativeServices) }}
 
                   safeWriteSecret besu-node-validator-${i}-nodekey $FOLDER_PATH/${f}/nodekey
                   safeWriteSecret besu-node-validator-${i}-nodekeypub $FOLDER_PATH/${f}/nodekey.pub 
@@ -149,7 +173,7 @@ spec:
 {{- end }}
                   # add to the static-nodes
                   pubkey=$(cat $FOLDER_PATH/${f}/nodekey.pub )
-                  echo ",\"enode://$pubkey@besu-node-validator-$i-0.besu-node-validator-$i.{{ .Release.Namespace }}.svc.cluster.local:30303?discport=0\"" >> $FOLDER_PATH/static-nodes.json
+                  echo ",\"enode://$pubkey@besu-node-validator-$i.{{ .Release.Namespace }}:30303?discport=0\"" >> $FOLDER_PATH/static-nodes.json
 
                   i=$((i+1))
                 fi
@@ -161,7 +185,11 @@ spec:
               safeWriteBesuPeersConfigmap $FOLDER_PATH
 
               echo "Completed ..."
-
+          
       volumes:
-        - name: generated-config
-          emptyDir: {}
+      - name: generated-config
+        emptyDir: {}
+      - name: scripts-volume
+        configMap:
+          name: bevel-vault-script
+          defaultMode: 0777

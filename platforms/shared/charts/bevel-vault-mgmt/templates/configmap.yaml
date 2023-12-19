@@ -18,51 +18,51 @@ metadata:
     {{- include "labels.custom" . | nindent 2 }}
 data:
   policies-config.json: |-
-    {{ if eq .Values.network "besu" -}}
+    {{ if eq .Values.global.vault.network "besu" -}}
     {
       "policy": 
-        "path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/*\" {
+        "path \"{{ .Values.global.vault.secretEngine }}/{{ .Values.global.vault.secretPrefix }}/*\" {
           capabilities = [\"list\", \"read\", \"create\", \"update\"]
         }
-        path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/smartContracts/*\" {
+        path \"{{ .Values.global.vault.secretEngine }}/{{ .Values.global.vault.secretPrefix }}/smartContracts/*\" {
           capabilities = [\"list\", \"read\"]
         }"
     }
     {{ end }}
-    {{ if eq .Values.network "corda" -}}
+    {{ if eq .Values.global.vault.network "corda" -}}
     {
       "policy": 
-        "path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/*\" {
+        "path \"{{ .Values.global.vault.secretEngine }}/{{ .Values.global.vault.secretPrefix }}/*\" {
           capabilities = [\"list\", \"read\", \"create\", \"update\"]
         }"
     }
     {{ end }}
-    {{ if eq .Values.network "fabric" -}}
+    {{ if eq .Values.global.vault.network "fabric" -}}
     {
       "policy": 
-        "path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/*\" {
+        "path \"{{ .Values.global.vault.secretEngine }}/{{ .Values.global.vault.secretPrefix }}/*\" {
           capabilities = [\"list\", \"read\", \"create\", \"update\"]
         }
-        path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/credentials/*\" {
+        path \"{{ .Values.global.vault.secretEngine }}/{{ .Values.global.vault.secretPrefix }}/credentials/*\" {
           capabilities = [\"list\", \"read\", \"create\", \"update\"]
         }"
     }
     {{ end }}
-    {{ if eq .Values.network "quorum" -}}
+    {{ if eq .Values.global.vault.network "quorum" -}}
     {
       "policy": 
-        "path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/crypto/*\" {
+        "path \"{{ .Values.global.vault.secretEngine }}/{{ .Values.global.vault.secretPrefix }}/crypto/*\" {
           capabilities = [\"list\", \"read\", \"create\", \"update\"]
         }
-        path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/smartContracts/*\" {
+        path \"{{ .Values.global.vault.secretEngine }}/{{ .Values.global.vault.secretPrefix }}/smartContracts/*\" {
           capabilities = [\"list\", \"read\"]
         }"
     }
     {{ end }}
-    {{ if eq .Values.network "corda-ent" -}}
+    {{ if eq .Values.global.vault.network "corda-ent" -}}
     {
       "policy": 
-        "path \"{{ .Values.secretEngine }}/{{ .Values.secretPrefix }}/*\" {
+        "path \"{{ .Values.global.vault.secretEngine }}/{{ .Values.global.vault.secretPrefix }}/*\" {
           capabilities = [\"list\", \"read\", \"create\", \"update\"]
         }"
     }

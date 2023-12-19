@@ -45,7 +45,7 @@ spec:
       {{- if .Values.image.pullSecret }}
         - name: {{ .Values.image.pullSecret }}
       {{- end }}
-      serviceAccountName: {{ .Values.vault.serviceAccountName }}
+      serviceAccountName: {{ .Values.global.vault.serviceAccountName }}
       volumes:
       - name: certificates
         emptyDir:
@@ -60,17 +60,17 @@ spec:
         imagePullPolicy: {{ $.Values.image.pullPolicy }}
         env:
         - name: VAULT_ADDR
-          value: "{{ $.Values.vault.address }}"
+          value: "{{ $.Values.global.vault.address }}"
         - name: VAULT_SECRET_ENGINE
-          value: "{{ $.Values.vault.secretEngine }}"
+          value: "{{ $.Values.global.vault.secretEngine }}"
         - name: VAULT_SECRET_PREFIX
-          value: "{{ $.Values.vault.secretPrefix }}"
+          value: "{{ $.Values.global.vault.secretPrefix }}"
         - name: KUBERNETES_AUTH_PATH
-          value: "{{ $.Values.vault.authPath }}"
+          value: "{{ $.Values.global.vault.authPath }}"
         - name: VAULT_APP_ROLE
-          value: "{{ $.Values.vault.role }}"
+          value: "{{ $.Values.global.vault.role }}"
         - name: VAULT_TYPE
-          value: "{{ $.Values.vault.type }}"
+          value: "{{ $.Values.global.vault.type }}"
         command: ["sh", "-c"]
         args:
         - |-
@@ -125,17 +125,17 @@ spec:
         imagePullPolicy: {{ $.Values.image.pullPolicy }}
         env:
         - name: VAULT_ADDR
-          value: "{{ $.Values.vault.address }}"
+          value: "{{ $.Values.global.vault.address }}"
         - name: VAULT_SECRET_ENGINE
-          value: "{{ $.Values.vault.secretEngine }}"
+          value: "{{ $.Values.global.vault.secretEngine }}"
         - name: VAULT_SECRET_PREFIX
-          value: "{{ $.Values.vault.secretPrefix }}"
+          value: "{{ $.Values.global.vault.secretPrefix }}"
         - name: KUBERNETES_AUTH_PATH
-          value: "{{ $.Values.vault.authPath }}"
+          value: "{{ $.Values.global.vault.authPath }}"
         - name: VAULT_APP_ROLE
-          value: "{{ $.Values.vault.role }}"
+          value: "{{ $.Values.global.vault.role }}"
         - name: VAULT_TYPE
-          value: "{{ $.Values.vault.type }}"
+          value: "{{ $.Values.global.vault.type }}"
         - name: TM_CLIENT_PORT
           value: "8888"
         - name: TM_TLS_ENABLED
