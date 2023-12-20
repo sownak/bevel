@@ -6,32 +6,38 @@
 
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-# The following values are for overriding dependent chart 'bevel-vault-mgmt' values
+# The following are for overriding global values
 global:
+  #Provide the service account name which will be created.
+  #Eg. serviceAccountName: vault-auth
+  serviceAccountName: vault-auth
   vault:
     #Provide the type of vault
     #Eg. type: hashicorp
     type: hashicorp
-    #Provide the network type
-    network: besu
-    #Provide the service account name which will be created.
-    #Eg. serviceAccountName: vault-auth
-    serviceAccountName: vault-auth
-    #Provide the vault server address
-    #Eg. address: http://54.226.163.39:8200
-    address:
-    #Provide the authPath configured to be used.
-    #Eg. authPath: besunode1
-    authPath: besunode1
-    #Provide the secret engine.
-    #Eg. secretEngine: secretsv2
-    secretEngine: secretsv2
-    #Provide the vault path where the tls and ambassador certificates
-    #Eg. secretPrefix: data/warehouse-bes/crypto/warehouse/tls MUST use data/
-    secretPrefix: "data/besunode1"
     #Provide the vault role used.
     #Eg. role: vault-role
     role: vault-role
+    #Provide the vault server address
+    #Eg. address: http://54.226.163.39:8200
+    address:
+    #Provide the vault authPath configured to be used.
+    #Eg. authPath: besunode1
+    authPath: besunode1
+    #Provide the network type
+    network: besu
+    #Provide the secret engine.
+    #Eg. secretEngine: secretsv2
+    secretEngine: secretsv2
+    #Provide the vault path where the tls certificates will be stored
+    #Eg. secretPrefix: data/warehouse-bes/crypto/warehouse/tls MUST use data/
+    secretPrefix: "data/besunode1"
+  cluster:
+    provider: aws  # choose from: local | aws
+    cloudNativeServices: false # 'false' is implemented
+    #Provide the kubernetes host url
+    #Eg. kubernetes_url: https://10.3.8.5:6443
+    kubernetes_url: 
 
 image:
   #Provide the image repository for all containers
@@ -55,6 +61,10 @@ settings:
   # Provide external URL for cert generation
   externalURL: besunode1.blockchaincloudpoc.com
 
+# Settings for subchart
+vault:
+  # Enable the bevel-vault-mgmt subchart
+  enabled: true
 labels:
   service: []
   pvc: []

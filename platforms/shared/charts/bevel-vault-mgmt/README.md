@@ -46,12 +46,21 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ## Parameters
 
-### Cluster parameters
-| Name  | Description   | Default Value |
-|-------|---------|-----|
+### Global parameters
+These parameters are refered to as same in each parent or chold chart
+| Name   | Description  | Default Value |
+|--------|---------|-------------|
+|`global.serviceAccountName` | The serviceaccount name that will be created for Vault Auth management| `vault-auth` |
 | `global.cluster.provider` | Kubernetes cluster provider. Only `aws` is supported for now | `aws`  |
-| `global.cluster.cloudNativeServices` | set to true to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure)    | `false`  |
-| `global.cluster.kubernetes_url` | Kubernetes server URL | ""            |
+| `global.cluster.cloudNativeServices` | only `false` is implemented, `true` to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure) is for future  | `false`  |
+| `global.cluster.kubernetes_url` | Kubernetes server URL | "" |
+| `global.vault.role`  | Role used for authentication with Vault | `vault-role`    |
+| `global.vault.address`| URL of the Vault server.    | `""`            |
+| `global.vault.authPath`    | Authentication path for Vault  | `""`            |
+| `global.vault.network` | Network type which will determine the vault policy | `besu` |
+| `secretEngine` | Provide the value for vault secret engine name   | `secretsv2`  |
+| `secretPrefix` | Provide the value for vault secret prefix which must start with `data/`   | `data/supplychain`  |
+| `tls` | Enable or disable TLS for vault communication if value present or not | `""`  |
 
 ### Images
 
@@ -65,14 +74,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | Name   | Description  | Default Value |
 |--------|---------|-------------|
 | `labels` | Custom labels in yaml k-v format  | `""`  |
-|`serviceAccountName` | The serviceaccount name that will be created| `vault-auth` |
-| `role`  | Role used for authentication with Vault | `vault-role`    |
-| `address`| URL of the Vault server.    | `""`            |
-| `authPath`    | Authentication path for Vault  | `""`            |
-| `network` | Provide the vault policy file contents in json format `| `besu` |
-| `secretEngine` | Provide the value for vault secret engine name   | `secretv2`  |
-| `secretPrefix` | Provide the value for vault secret prefix which is the org name   | `supplychain`  |
-| `tls` | Enable or disable TLS for vault communication if value present or not | `""`  |
 
 ## License
 

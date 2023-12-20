@@ -26,11 +26,7 @@ spec:
         app.kubernetes.io/namespace: {{ .Release.Namespace }}
         app.kubernetes.io/managed-by: helm
     spec:
-{{- if and (eq .Values.global.cluster.provider "aws") (.Values.global.cluster.cloudNativeServices) }}
-      serviceAccountName: {{ .Values.aws.serviceAccountName }}
-{{- else }}
-      serviceAccountName: {{ .Values.global.vault.serviceAccountName }}
-{{- end }}       
+      serviceAccountName: {{ .Values.global.serviceAccountName }}      
       restartPolicy: "Never"
       {{ if .Values.images.pullSecret  }}
       imagePullSecrets:

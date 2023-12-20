@@ -5,15 +5,15 @@
 ##############################################################################################
 
 global:
+  # The name of the ServiceAccount that will be created.
+  serviceAccountName: vault-auth
   cluster:
     provider: aws  # choose from: local | aws
-    cloudNativeServices: false # set to true to use Cloud Native Services (SecretsManager and IAM for AWS)
+    cloudNativeServices: false # 'false' is implemented, 'true' to use Cloud Native Services (SecretsManager and IAM for AWS) is in future
     #Provide the kubernetes host url
     #Eg. kubernetes_url: https://10.3.8.5:6443
     kubernetes_url: 
   vault:
-    # The name of the ServiceAccount that will be created.
-    serviceAccountName: vault-auth
     #Provide the vaultrole for an organization
     #Eg. vaultrole: org1-vault-role
     role: vault-role

@@ -45,7 +45,7 @@ spec:
       {{- if .Values.image.pullSecret }}
         - name: {{ .Values.image.pullSecret }}
       {{- end }}
-      serviceAccountName: {{ .Values.global.vault.serviceAccountName }}
+      serviceAccountName: {{ .Values.global.serviceAccountName }}
       volumes:
       - name: certificates
         emptyDir:
@@ -348,10 +348,12 @@ spec:
               rm payload.json
             fi;
             # Create tls secret with the certificates
-            kubectl create secret tls {{ include "besu-tlscert-gen.name" . }}-tls-certs \
+            kubectl get configmap --namespace {{ .Release.Namespace }} {{ include "besu-tlscert-gen.name" . }}-tls-certs
+            if [ $? -ne 0 ]; then
+              kubectl create secret tls --namespace {{ .Release.Namespace }} {{ include "besu-tlscert-gen.name" . }}-tls-certs \
               --cert=${AMBASSADORTLS_PATH}/certchain.pem \
               --key=${AMBASSADORTLS_PATH}/node.key
-
+            fi
         volumeMounts:
           - name: certificates
             mountPath: /certificates

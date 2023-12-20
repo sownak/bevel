@@ -9,7 +9,7 @@ dependencies:
     repository: "file://../besu-tlscert-gen"
     tags:
       - bevel
-    version: 0.15.2
+    version: ~0.15.2
     condition: tls.enabled
 keywords:
   - bevel

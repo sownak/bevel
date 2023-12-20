@@ -1,28 +1,47 @@
+##############################################################################################
+#  Copyright Accenture. All Rights Reserved.
+#
+#  SPDX-License-Identifier: Apache-2.0
+##############################################################################################
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
 ---
+# The following are for overriding global values
 global:
+  #Provide the service account name which will be created.
+  serviceAccountName: vault-auth
   vault:
-    enabled: true
+    #Provide the type of vault
     type: hashicorp
-    network: besu
-    serviceAccountName: vault-auth
-    address: test1
-    authPath: besunode1
-    secretEngine: secretsv2
-    secretPrefix: "data/supplychain"
+    #Provide the vault role used.
     role: vault-role
+    #Provide the network type
+    network: besu
+    #Provide the vault server address
+    address: 
+    #Provide the vault authPath configured to be used.
+    authPath: besunode1
+    #Provide the secret engine.
+    secretEngine: secretsv2
+    #Provide the vault path where the secrets will be stored
+    secretPrefix: "data/supplychain"
   cluster:
-    provider: aws
-    cloudNativeServices: false
-    kubernetes_url: "test1"
+    provider: aws  # choose from: local | aws
+    cloudNativeServices: false # 'false' is implemented
+    #Provide the kubernetes host url
+    #Eg. kubernetes_url: https://10.3.8.5:6443
+    kubernetes_url: 
 image:
+  #Provide the image for the job/hook container
   genesisUtils: consensys/quorum-k8s-hooks:qgt-0.2.12
-  alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
   #Provide the secret to use if private repository
   #Eg. pullSecret: regcred
   pullSecret: 
+  #Pull policy to be used for the Docker image
   pullPolicy: IfNotPresent
 
 quorumFlags:
+  # Flag to ensure the genesis configmap is removed on helm uninstall
   removeGenesisOnDelete: true
 
 # the raw Genesis config
@@ -45,11 +64,16 @@ rawGenesisConfig:
       generate: true
       count: 4
     accountPassword: 'password'
+# Settings for subchart
 tls:
+  # Enable the besu-tlscert-gen subchart
   enabled: true
   vault:
     enabled: false
   settings:
-    tmTls: True
+    #Set value to true when transaction manager like tessera uses tls
+    tmTls: false
+    #Provide the X.509 subject for root CA.
     certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
+    # Provide external URL for cert generation
     externalURL: besunode1.blockchaincloudpoc.com

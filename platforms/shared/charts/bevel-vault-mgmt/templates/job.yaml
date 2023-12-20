@@ -34,7 +34,7 @@ spec:
       imagePullSecrets:
         - name: {{ $.Values.images.pullSecret }}
       {{ end }}
-      serviceAccountName: {{ $.Values.global.vault.serviceAccountName }}
+      serviceAccountName: {{ .Values.global.serviceAccountName }}
       volumes:
       {{ if .Values.global.vault.tls  }}
       - name: vaultca
@@ -67,7 +67,7 @@ spec:
           - name: VAULT_ROLE
             value: "{{ $.Values.global.vault.role }}"
           - name: VAULT_SA
-            value: "{{ $.Values.global.vault.serviceAccountName }}"
+            value: "{{ $.Values.global.serviceAccountName }}"
           - name: KUBERNETES_URL
             value: "{{ $.Values.global.cluster.kubernetes_url }}"
           - name: POLICY_NAME

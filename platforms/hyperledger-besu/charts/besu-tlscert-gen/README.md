@@ -50,6 +50,25 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ## Parameters
 
+Also check dependent chart [bevel-vault-mgmt](../../../shared/charts/bevel-vault-mgmt/README.md) details.
+
+### Global parameters
+These parameters are refered to as same in each parent or chold chart
+| Name   | Description  | Default Value |
+|--------|---------|-------------|
+|`global.serviceAccountName` | The serviceaccount name that will be created for Vault Auth management| `vault-auth` |
+| `global.cluster.provider` | Kubernetes cluster provider. Only `aws` is supported for now | `aws`  |
+| `global.cluster.cloudNativeServices` | only `false` is implemented, `true` to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure) is for future  | `false`  |
+| `global.cluster.kubernetes_url` | Kubernetes server URL | "" |
+| `global.vault.type`  | Type of Vault to support other providers. Currently, only `hashicorp` is supported. | `hashicorp`    |
+| `global.vault.role`  | Role used for authentication with Vault | `vault-role`    |
+| `global.vault.address`| URL of the Vault server.    | `""`            |
+| `global.vault.authPath`    | Authentication path for Vault  | `besunode1`            |
+| `global.vault.network` | Network type which will determine the vault policy | `besu` |
+| `secretEngine` | Provide the value for vault secret engine name   | `secretsv2`  |
+| `secretPrefix` | Provide the value for vault secret prefix which must start with `data/`   | `data/besunode1`  |
+| `tls` | Enable or disable TLS for vault communication if value present or not | `""`  |
+
 ### Image
 
 | Name  | Description| Default Value   |
@@ -65,8 +84,16 @@ The command removes all the Kubernetes components associated with the chart and 
 | `settings.certSubject`  | Provide the X.509 subject for root CA | `"CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"`            |
 | `settings.externalURL`   | Provide the external URL of the besu node | `besunode1.blockchaincloudpoc.com` |
 
-### Vault
-Check dependent chart [bevel-vault-mgmt](../../../shared/charts/bevel-vault-mgmt/README.md) details.
+### Common parameters
+
+| Name   | Description  | Default Value |
+|--------|---------|-------------|
+| `vault.enabled` | Enable `bevel-vault-mgmt` subchart  | `true`  |
+| `vault.nameOverride` | String to partially override bevel-vault-mgmt.fullname template (will maintain the release name)| `""` |
+| `vault.fullnameOverride` | String to fully override bevel-vault-mgmt.fullname template | `""` |
+| `labels.service` | Custom labels in yaml k-v format  | `[]`  |
+| `labels.pvc` | Custom labels in yaml k-v format  | `[]`  |
+| `labels.deployment` | Custom labels in yaml k-v format  | `[]`  |
 
 ## License
 
