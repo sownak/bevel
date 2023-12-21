@@ -26,7 +26,7 @@ spec:
         app.kubernetes.io/namespace: {{ .Release.Namespace }}
         app.kubernetes.io/managed-by: helm
     spec:
-      serviceAccountName: {{ .Values.global.serviceAccountName}}      
+      serviceAccountName: {{ .Values.global.serviceAccountName }}      
       restartPolicy: "Never"
       containers:
         - name: delete-genesis

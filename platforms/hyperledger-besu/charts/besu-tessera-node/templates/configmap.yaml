@@ -8,11 +8,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: tessera-config-{{ .Values.tessera.name }}
-  namespace: {{ .Values.metadata.namespace }}
+  name: {{ include "besu-tessera-node.fullname" . }}-tessera-config
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/name: tessera-config
-    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    app.kubernetes.io/component: besu
+    app.kubernetes.io/part-of: {{ include "besu-tessera-node.fullname" . }}
+    app.kubernetes.io/namespace: {{ .Release.Namespace }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 data:  
@@ -29,7 +31,7 @@ data:
         {
           "app": "ThirdParty",
           "enabled": true,
-          "serverAddress": "http://{{ .Values.tessera.name }}:9080",
+          "serverAddress": "http://{{ .Values.tessera.name }}:{{ .Values.tessera.tpport }}",
           "communicationType": "REST"
         },
         {
@@ -40,15 +42,15 @@ data:
             "tls": {{ .Values.tessera.tls | quote }},
             "generateKeyStoreIfNotExisted": true,
             "serverTrustMode": {{ .Values.tessera.trust | quote }},
-            "serverTlsKeyPath": "{{ .Values.tessera.mountPath }}/crypto/tessera_cer.key",
-            "serverTlsCertificatePath": "{{ .Values.tessera.mountPath }}/crypto/tessera_cer.pem",
-            "serverTrustCertificates": ["{{ .Values.tessera.mountPath }}/crypto/tessera_ca.pem"],
+            "serverTlsKeyPath": "{{ .Values.tessera.dataPath }}/crypto/tessera_cer.key",
+            "serverTlsCertificatePath": "{{ .Values.tessera.dataPath }}/crypto/tessera_cer.pem",
+            "serverTrustCertificates": ["{{ .Values.tessera.dataPath }}/crypto/tessera_ca.pem"],
             "clientTrustMode": {{ .Values.tessera.trust | quote }},
-            "clientTlsKeyPath": "{{ .Values.tessera.mountPath }}/crypto/tessera_cer.key",
-            "clientTlsCertificatePath": "{{ .Values.tessera.mountPath }}/crypto/tessera_cer.pem",
-            "clientTrustCertificates": ["{{ .Values.tessera.mountPath }}/crypto/tessera_ca.pem"],
-            "knownClientsFile": "{{ .Values.tessera.mountPath }}/crypto/known_client1",
-            "knownServersFile": "{{ .Values.tessera.mountPath }}/crypto/known_server1",
+            "clientTlsKeyPath": "{{ .Values.tessera.dataPath }}/crypto/tessera_cer.key",
+            "clientTlsCertificatePath": "{{ .Values.tessera.dataPath }}/crypto/tessera_cer.pem",
+            "clientTrustCertificates": ["{{ .Values.tessera.dataPath }}/crypto/tessera_ca.pem"],
+            "knownClientsFile": "{{ .Values.tessera.dataPath }}/crypto/known_client1",
+            "knownServersFile": "{{ .Values.tessera.dataPath }}/crypto/known_server1",
             "clientAuth": true
           },
           "communicationType": "REST"
@@ -61,37 +63,30 @@ data:
             "tls": {{ .Values.tessera.tls | quote }},
             "generateKeyStoreIfNotExisted": true,
             "serverTrustMode": {{ .Values.tessera.trust | quote }},
-            "serverTlsKeyPath": "{{ .Values.tessera.mountPath }}/crypto/tessera_cer.key",
-            "serverTlsCertificatePath": "{{ .Values.tessera.mountPath }}/crypto/tessera_cer.pem",
-            "serverTrustCertificates": ["{{ .Values.tessera.mountPath }}/crypto/tessera_ca.pem"],            
+            "serverTlsKeyPath": "{{ .Values.tessera.dataPath }}/crypto/tessera_cer.key",
+            "serverTlsCertificatePath": "{{ .Values.tessera.dataPath }}/crypto/tessera_cer.pem",
+            "serverTrustCertificates": ["{{ .Values.tessera.dataPath }}/crypto/tessera_ca.pem"],            
             "clientTrustMode": {{ .Values.tessera.trust | quote }},
-            "clientTlsKeyPath": "{{ .Values.tessera.mountPath }}/crypto/tessera_cer.key",
-            "clientTlsCertificatePath": "{{ .Values.tessera.mountPath }}/crypto/tessera_cer.pem",
-            "clientTrustCertificates": ["{{ .Values.tessera.mountPath }}/crypto/tessera_ca.pem"],
-            "knownClientsFile": "{{ .Values.tessera.mountPath }}/crypto/known_client2",
-            "knownServersFile": "{{ .Values.tessera.mountPath }}/crypto/known_server2"
+            "clientTlsKeyPath": "{{ .Values.tessera.dataPath }}/crypto/tessera_cer.key",
+            "clientTlsCertificatePath": "{{ .Values.tessera.dataPath }}/crypto/tessera_cer.pem",
+            "clientTrustCertificates": ["{{ .Values.tessera.dataPath }}/crypto/tessera_ca.pem"],
+            "knownClientsFile": "{{ .Values.tessera.dataPath }}/crypto/known_client2",
+            "knownServersFile": "{{ .Values.tessera.dataPath }}/crypto/known_server2"
           },
           "communicationType": "REST"
         }
       ],
       "peer": {{ .Values.tessera.othernodes | toPrettyJson | indent 6 }},
       "keys": {
-          "keyVaultConfigs": [
-              {
-                  "keyVaultType": "HASHICORP",
-                  "properties": {
-                      "url": "{{ $.Values.vault.address }}"
-                  }
-              }
-          ],
-          "keyData": [
-              {
-                  "hashicorpVaultsecretengineName": "{{ $.Values.vault.secretEngine }}",
-                  "hashicorpVaultSecretName": "{{ $.Values.vault.tmsecretpath }}",
-                  "hashicorpVaultPrivateKeyId": "privateKey",
-                  "hashicorpVaultPublicKeyId": "publicKey"
-              }
-          ]
+      {{ if .Values.node.tessera.password }}
+        "passwordFile": "{{ .Values.node.tessera.passwordPath }}",
+      {{ end }}
+        "keyData": [
+          {
+            "privateKeyPath": "/keys/tm.key",
+            "publicKeyPath": "/keys/tm.pub"
+          }
+        ]
       },
       "alwaysSendTo": []
     }

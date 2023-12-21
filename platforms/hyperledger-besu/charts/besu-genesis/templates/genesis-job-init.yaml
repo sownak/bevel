@@ -57,19 +57,7 @@ spec:
           args:
             - |
 
-{{- if and (eq .Values.global.cluster.provider "aws") (.Values.global.cluster.cloudNativeServices) }}
-              function safeWriteSecret {
-                key=$1
-                fpath=$2
-                aws secretsmanager describe-secret --secret-id $key > /dev/null 2>&1
-                if [ $? -ne 0 ]; then
-                  aws secretsmanager create-secret --name $key --description $key --secret-string file://$fpath
-                else
-                  # if the key exists pull it from keyvault so that when you update the enodes configmap, you have the right value
-                  aws secretsmanager get-secret-value --secret-id $key | jq -r '.SecretString' > $fpath
-                fi
-              }
-{{- else if and (eq .Values.global.vault.type "hashicorp") (not .Values.global.cluster.cloudNativeServices) }}
+{{- if and (eq .Values.global.vault.type "hashicorp") (not .Values.global.cluster.cloudNativeServices) }}
               . /scripts/bevel-vault.sh
               echo "Getting vault Token..."
               vaultBevelFunc "init"
@@ -90,8 +78,8 @@ spec:
                   \"data\":
                     {
                       \"nodeAddress\": \"${NODE_ADDRESS}\",
-                      \"key\": \"${NODE_KEY}\",
-                      \"key_pub\": \"${NODE_KEY_PUB}\",
+                      \"nodekey\": \"${NODE_KEY}\",
+                      \"nodekey_pub\": \"${NODE_KEY_PUB}\",
                       \"accountPrivateKey\": \"${accountPrivateKey}\",
                       \"accountPassword\": \"${accountPassword}\",
                       \"accountKeystore_base64\": \"${accountKeystore}\",
@@ -99,7 +87,7 @@ spec:
                     }
                 }" > payload.json
                 # Add vault write code
-                vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/${key}" 'payload.json'
+                vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/${key}-keys" 'payload.json'
                 rm payload.json
               }
 {{- else }}

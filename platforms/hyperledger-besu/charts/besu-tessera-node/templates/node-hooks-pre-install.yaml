@@ -1,0 +1,157 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "besu-tessera-node.fullname" . }}-pre-install-hook
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": "hook-succeeded"
+  labels:
+    app.kubernetes.io/name: pre-install-hook
+    app.kubernetes.io/component: job
+    app.kubernetes.io/part-of: {{ include "besu-tessera-node.fullname" . }}
+    app.kubernetes.io/namespace: {{ .Release.Namespace }}
+    app.kubernetes.io/release: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  backoffLimit: 1
+  completions: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pre-install-hook
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ .Values.global.serviceAccountName }}
+      restartPolicy: "OnFailure"
+      containers:
+        - name: {{ template "besu-tessera-node.fullname" . }}-pre-start-hook
+          image: {{ .Values.image.hooks.repository }}:{{ .Values.image.hooks.tag }}
+          imagePullPolicy: {{ .Values.image.besu.pullPolicy }}
+          securityContext:
+            runAsUser: 0
+          {{- if (eq .Values.global.vault.type "hashicorp") }}
+          volumeMounts:
+            - name: scripts-volume
+              mountPath: /scripts/bevel-vault.sh
+              subPath: bevel-vault.sh
+          env:
+          - name: VAULT_ADDR
+            value: "{{ .Values.global.vault.address }}"
+          - name: VAULT_SECRET_ENGINE
+            value: "{{ .Values.global.vault.secretEngine }}"
+          - name: VAULT_SECRET_PREFIX
+            value: "{{ .Values.global.vault.secretPrefix }}"
+          - name: KUBERNETES_AUTH_PATH
+            value: "{{ .Values.global.vault.authPath }}"
+          - name: VAULT_APP_ROLE
+            value: "{{ .Values.global.vault.role }}"
+          - name: VAULT_TYPE
+            value: "{{ .Values.global.vault.type }}"
+          {{- end }}
+          command:
+            - /bin/bash
+            - -c
+          args:
+            - |
+
+              function update_tessera_peers_configmap {
+                kubectl -n {{ .Release.Namespace }} get configmap tessera-peers -o json
+                # first time a tx node is deployed and there is no configmap
+                if [ $? -ne 0 ]; then
+                  echo "No tessera-peers found, creating a new one..."
+                  echo "[{ \"url\": \"http://{{ template "besu-tessera-node.fullname" . }}.{{ .Release.Namespace }}:9000\" }]"  > /tmp/tessera-peers
+                  kubectl --namespace {{ .Release.Namespace }} create configmap tessera-peers --from-file=tesseraPeers=/tmp/tessera-peers
+
+                # update the entries
+                else
+                  echo "Tessera-peers found, updating existing..."
+                  echo $(kubectl -n {{ .Release.Namespace }} get configmap tessera-peers -o jsonpath='{.data.tesseraPeers}' ) > /tmp/tessera-peers.raw
+                  NEEDLE="http://{{ template "besu-tessera-node.fullname" . }}.{{ .Release.Namespace }}:9000"
+                  cat /tmp/tessera-peers.raw | jq --arg NEEDLE "$NEEDLE" '. += [{"url": $NEEDLE}] | unique ' > /tmp/tessera-peers
+                  kubectl -n {{ .Release.Namespace }} create configmap tessera-peers --from-file=tesseraPeers=/tmp/tessera-peers -o yaml --dry-run=client | kubectl replace -f -
+                fi
+              }
+
+{{- if (eq .Values.global.vault.type "hashicorp") }}
+              . /scripts/bevel-vault.sh
+              echo "Getting vault Token..."
+              vaultBevelFunc "init"
+              function safeWriteSecret {
+                key=$1
+                fpath=$2
+                #Read if secret exists in Vault
+                vaultBevelFunc 'readJson' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/${key}-tessera-keys"
+                if [ "$SECRETS_AVAILABLE" == "yes" ]
+                then
+                  # Get secret from Vault and create the k8s secret if it does not exist
+                  kubectl get secret ${key}-tessera-keys --namespace {{ .Release.Namespace }} -o json > /dev/null 2>&1
+                  if [ $? -ne 0 ]; then
+                    privateKey=$(echo ${VAULT_SECRET} | jq -r '.["privateKey"]')
+                    publicKey=$(echo ${VAULT_SECRET} | jq -r '.["publicKey"]')
+                    password=$(echo ${VAULT_SECRET} | jq -r '.["password"]')
+                    kubectl create secret generic {{ template "besu-tessera-node.fullname" . }}-tessera-keys --namespace {{ .Release.Namespace }} \
+                      --from-literal=tm.key=${privateKey} --from-literal=tm.pub=${publicKey} \
+                      --from-literal=tm.password=${password}
+                  fi
+                else
+                  # Save Tessera secrets to Vault
+                  privateKey=$(cat ${fpath}/tessera.key)
+                  publicKey=$(cat ${fpath}/tessera.pub)
+                  password=$(cat ${fpath}/passwordFile.txt)
+                  # create a JSON file for the data related to node crypto
+                  echo "
+                  {
+                    \"data\":
+                      {
+                        \"privateKey\": \"${privateKey}\",
+                        \"publicKey\": \"${publicKey}\",
+                        \"password\": \"${password}\"
+                      }
+                  }" > tessera.json
+                  vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/${key}-tessera-keys" 'tessera.json'
+                  rm tessera.json
+                  # Also create the k8s secret
+                  kubectl create secret generic ${key}-tessera-keys --namespace {{ .Release.Namespace }} \
+                    --from-file=tm.key=${fpath}/tessera.key --from-file=tm.pub=${fpath}/tessera.pub \
+                    --from-file=tm.password=${fpath}/passwordFile.txt
+                fi
+              }
+{{- else }}
+
+              function safeWriteSecret {
+                key=$1
+                fpath=$2
+                kubectl get secret ${key}-tessera-keys --namespace {{ .Release.Namespace }} -o json > /dev/null 2>&1
+                if [ $? -ne 0 ]; then
+                  kubectl create secret generic {{ template "besu-tessera-node.fullname" . }}-tessera-keys --namespace {{ .Release.Namespace }} \
+                    --from-file=tm.key=${fpath}/tessera.key --from-file=tm.pub=${fpath}/tessera.pub \
+                    --from-file=tm.password=${fpath}/passwordFile.txt
+                fi
+              }
+{{- end }}
+
+              echo "{{ template "besu-tessera-node.fullname" . }} hook ..."
+              echo "Tessera keys generation ..."
+              FOLDER_PATH=$(quorum-genesis-tool --validators 0 --members 1 --bootnodes 0 --tesseraEnabled true \
+                --tesseraPassword {{ .Values.node.tessera.password }} --outputPath /tmp/tessera | tail -1 | sed -e "s/^Artifacts in folder: //")
+              if [ ! -f "$FOLDER_PATH/member0/passwordFile.txt" ]; then
+                echo "" > $FOLDER_PATH/member0/passwordFile.txt
+              fi
+              echo "Creating {{ template "besu-tessera-node.fullname" . }}-tessera-keys secrets in k8s ..."
+{{- if .Values.cluster.cloudNativeServices }}
+              safeWriteSecret {{ template "besu-tessera-node.fullname" . }}-tmkey $FOLDER_PATH/member0/tessera.key
+              safeWriteSecret {{ template "besu-tessera-node.fullname" . }}-tmkeypub $FOLDER_PATH/member0/tessera.pub
+              safeWriteSecret {{ template "besu-tessera-node.fullname" . }}-tmpassword $FOLDER_PATH/member0/passwordFile.txt
+{{- else }}
+              safeWriteSecret {{ template "besu-tessera-node.fullname" . }} $FOLDER_PATH/member0
+{{- end }}
+              update_tessera_peers_configmap
+              echo "Tessera Completed"
+      volumes:
+      - name: scripts-volume
+        configMap:
+          name: bevel-vault-script
+          defaultMode: 0777

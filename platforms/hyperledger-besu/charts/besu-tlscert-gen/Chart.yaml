@@ -19,7 +19,7 @@ dependencies:
     condition: vault.enabled
   - name: bevel-scripts
     alias: bevel-scripts
-    repository: https://sownak.github.io/bevel
+    repository: "file://../../../shared/charts/bevel-scripts"
     tags:
       - bevel
     version: ~0.15.1

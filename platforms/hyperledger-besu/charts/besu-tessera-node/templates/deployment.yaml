@@ -3,17 +3,18 @@
 #
 #  SPDX-License-Identifier: Apache-2.0
 ##############################################################################################
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  namespace: {{ .Values.metadata.namespace }}
-  creationTimestamp: null
+  name: {{ template "besu-tessera-node.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
-    app.kubernetes.io/name: {{ .Values.tessera.name }}
-    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    app.kubernetes.io/name: tessera-statefulset
+    app.kubernetes.io/component: besu
+    app.kubernetes.io/part-of: {{ include "besu-tessera-node.fullname" . }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
-    app.kubernetes.io/instance: {{ .Release.Name }} 
+    app.kubernetes.io/namespace: {{ .Release.Namespace }}
+    app.kubernetes.io/release: {{ .Release.Name }} 
     {{- include "labels.custom" . | nindent 2 }}
     {{- if $.Values.labels }}
     {{- range $key, $value := $.Values.labels.deployment }}
@@ -22,35 +23,29 @@ metadata:
     {{- end }}
     {{- end }}
     {{- end }}
-  name: {{ .Values.tessera.name }}
 spec:
-  serviceName: {{ .Values.tessera.name }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
-      service.rpc: {{ .Values.tessera.name }}
-      app.kubernetes.io/name: {{ .Values.tessera.name }}
-      helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+      app.kubernetes.io/name: tessera-statefulset
+      app.kubernetes.io/component: besu
+      app.kubernetes.io/part-of: {{ include "besu-tessera-node.fullname" . }}
       app.kubernetes.io/managed-by: {{ .Release.Service }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
-      {{- include "labels.custom" . | nindent 2 }}
-      {{- if $.Values.labels }}
-      {{- range $key, $value := $.Values.labels.deployment }}
-      {{- range $k, $v := $value }}
-      {{ $k }}: {{ $v | quote }}
-      {{- end }}
-      {{- end }}
-      {{- end }}
+      app.kubernetes.io/namespace: {{ .Release.Namespace }}
+      app.kubernetes.io/release: {{ .Release.Name }}
+  serviceName: {{ include "besu-tessera-node.fullname" . }}
   template:
     metadata:
-      creationTimestamp: null
       labels:
-        name: {{ .Values.tessera.name }}
-        service.rpc: {{ .Values.tessera.name }}
-        app.kubernetes.io/name: {{ .Values.tessera.name }}
-        helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+        app.kubernetes.io/name: tessera-statefulset
+        app.kubernetes.io/component: besu
+        app.kubernetes.io/part-of: {{ include "besu-tessera-node.fullname" . }}
         app.kubernetes.io/managed-by: {{ .Release.Service }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/namespace: {{ .Release.Namespace }}
+        app.kubernetes.io/release: {{ .Release.Name }} 
         {{- include "labels.custom" . | nindent 2 }}
         {{- if $.Values.labels }}
         {{- range $key, $value := $.Values.labels.deployment }}
@@ -59,31 +54,17 @@ spec:
         {{- end }}
         {{- end }}
         {{- end }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.node.besu.metrics.port | quote}}
+        prometheus.io/path: "/metrics"
     spec:
-      serviceAccountName: {{ .Values.vault.serviceAccountName }}
-      hostname: {{ .Values.tessera.name }}
+      serviceAccountName: {{ .Values.global.serviceAccountName }}
+      hostname: {{ include "besu-tessera-node.fullname" . }}.{{ .Release.Namespace }}
       imagePullSecrets:
-          - name: {{ .Values.images.imagePullSecret }}
-      volumes:
-        - name: certificates
-          emptyDir:
-            medium: Memory
-        - name: mysql
-          emptyDir:
-            medium: Memory
-        - name: mysql-jar
-          emptyDir:
-            medium: Memory
-        - name: tessera-config
-          configMap:
-            name: tessera-config-{{ .Values.tessera.name }}
-            items:
-              - key: tessera-config.json.tmpl
-                path: tessera-config.json.tmpl
-        - name: scripts-volume
-          configMap:
-            name: bevel-vault-script
-            defaultMode: 0777
+      {{- if .Values.image.pullSecret }}
+        - name: {{ .Values.image.pullSecret }}
+      {{- end }}
       initContainers:
       - name: certificates-init
         image: {{ .Values.images.alpineutils }}
@@ -228,12 +209,46 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
         - name: certificates
           mountPath: /secret
-        - name: {{ .Values.tessera.name }}-mysql
+        - name: data-mysql
           mountPath: "/var/lib/mysql"
           subPath: mysql
       - name: tessera
         image: {{ .Values.images.tessera }}
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: {{ .Values.image.PullPolicy }}
+        ports:
+          - name: tessera
+            containerPort: {{ .Values.node.tessera.port }}
+            protocol: TCP
+          - name: tessera-tp
+            containerPort: {{ .Values.node.tessera.tpport }}
+            protocol: TCP
+          - name: tessera-q2t
+            containerPort: {{ .Values.node.tessera.q2tport }}
+            protocol: TCP
+        env:
+          - name: TESSERA_HOME
+            value: {{ .Values.tessera.dataPath }}
+          - name: VAULT_ADDR
+            value: {{ $.Values.vault.address }}
+          - name: KUBERNETES_AUTH_PATH
+            value: {{ $.Values.vault.authPath }}
+          - name: VAULT_APP_ROLE
+            value: {{ $.Values.vault.role }}
+        volumeMounts:
+          - name: tessera-keys
+            mountPath: {{ .Values.node.tessera.keysPath }}
+            readOnly: true
+          - name: certificates
+            mountPath: {{ .Values.tessera.dataPath }}/crypto/
+          - name: data
+            mountPath: {{ .Values.tessera.dataPath }}
+          - name: tessera-peers
+            mountPath: /config/tessera-peers
+          - name: tessera-config
+            mountPath: {{ .Values.tessera.dataPath }}/tessera-config.json.tmpl
+            subPath: tessera-config.json.tmpl
+          - name: mysql-jar
+            mountPath: /mysql-jar
         command: ["sh", "-c"]
         args:
           - |-
@@ -271,33 +286,40 @@ spec:
 
             # Run Tessera with the generated configuration file, passing the 'jdbc.password' parameter
             /tessera/bin/tessera --configfile ${DDIR}/tessera-config-with-hosts.json -o jdbc.password=$PASSWORD;
-        ports:
-          - containerPort: {{ .Values.tessera.ports.tm }}
-        env:
-          - name: TESSERA_HOME
-            value: {{ .Values.tessera.mountPath }}
-          - name: QHOME
-            value: {{ .Values.tessera.mountPath }}
-          - name: VAULT_ADDR
-            value: {{ $.Values.vault.address }}
-          - name: KUBERNETES_AUTH_PATH
-            value: {{ $.Values.vault.authPath }}
-          - name: VAULT_APP_ROLE
-            value: {{ $.Values.vault.role }}
-        volumeMounts:
-          - name: certificates
-            mountPath: {{ .Values.tessera.mountPath }}/crypto/
-          - name: {{ .Values.tessera.name }}-pv
-            mountPath: {{ .Values.tessera.mountPath }}
-          - name: tessera-config
-            mountPath: {{ .Values.tessera.mountPath }}/tessera-config.json.tmpl
-            subPath: tessera-config.json.tmpl
-          - name: mysql-jar
-            mountPath: /mysql-jar
+        
       restartPolicy: Always
+      volumes:
+        - name: certificates
+          emptyDir:
+            medium: Memory
+        - name: mysql
+          emptyDir:
+            medium: Memory
+        - name: mysql-jar
+          emptyDir:
+            medium: Memory
+        - name: tessera-config
+          configMap:
+            name: {{ include "besu-tessera-node.fullname" . }}-tessera-config
+            items:
+              - key: tessera-config.json.tmpl
+                path: tessera-config.json.tmpl
+        - name: scripts-volume
+          configMap:
+            name: bevel-vault-script
+            defaultMode: 0777
+        - name: tessera-keys
+          secret:
+            secretName: {{ include "besu-node.fullname" . }}-tessera-keys
+        - name: tessera-peers
+          configMap:
+            name: tessera-peers
+            items:
+              - key: tesseraPeers
+                path: tesseraPeers
   volumeClaimTemplates:
     - metadata:
-        name: {{ .Values.tessera.name }}-pv
+        name: data
         labels:
           {{- if $.Values.labels }}
           {{- range $key, $value := $.Values.labels.pvc }}
@@ -307,13 +329,13 @@ spec:
           {{- end }}
           {{- end }}
       spec:
-        storageClassName: {{ .Values.storage.storageclassname }}
+        storageClassName: {{ include "besu-tessera-node.fullname" . }}-storage
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: {{ .Values.storage.storagesize }}
+            storage: {{ .Values.storage.size }}
     - metadata:
-        name: {{ .Values.tessera.name }}-mysql
+        name: data-mysql
         labels:
           {{- if $.Values.labels }}
           {{- range $key, $value := $.Values.labels.pvc }}
@@ -323,8 +345,8 @@ spec:
           {{- end }}
           {{- end }}
       spec:
-        storageClassName: {{ .Values.storage.storageclassname }}
+        storageClassName: {{ include "besu-tessera-node.fullname" . }}-storage
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: {{ .Values.storage.dbstorage }}
+            storage: {{ .Values.storage.dbSize }}

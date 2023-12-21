@@ -106,6 +106,27 @@ writeHashicorpVaultSecret() {
         echo "Successfully wrote to Vault at path ${VAULT_ADDR}/v1/${1}"
     fi
 }
+# Delete a secret on the HashiCorp Vault
+deleteHashicorpVaultSecret() {
+    # Send a request to Vault API to write a secret
+    VAULT_RESPONSE=$(curl \
+        -H "X-Vault-Token: ${VAULT_TOKEN}" \
+        -X DELETE \
+        "${VAULT_ADDR}/v1/${1}")
+
+    # Print the Vault API response
+    echo "Vault write API call response: ${VAULT_RESPONSE}"
+
+    # Stop further execution of code if an error is found
+    # Check if the Vault API response indicates a failure
+    if [ -z "$VAULT_RESPONSE" ] || [ "$VAULT_RESPONSE" = "null" ] || echo "$VAULT_RESPONSE" | grep -q "errors"; then
+        echo "Error: Failed to delete secret at path ${VAULT_ADDR}/v1/${1}"
+        exit 1
+    else
+        validateVaultResponseHashicorp "${1}" "LOOKUPSECRETRESPONSE" "write api call"
+        echo "Successfully deleted secret at path ${VAULT_ADDR}/v1/${1}"
+    fi
+}
 
 # Main function for HashiCorp Vault operations
 vaultBevelFunc() {
@@ -122,6 +143,10 @@ vaultBevelFunc() {
             "write")
                 # Write a secret to the Vault
                 writeHashicorpVaultSecret "$2" "$3"
+                ;;
+            "delete")
+                # Delete Vault secret
+                deleteHashicorpVaultSecret "$2"
                 ;;
             *)
                 # Invalid option

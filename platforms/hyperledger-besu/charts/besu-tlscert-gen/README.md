@@ -90,7 +90,6 @@ These parameters are refered to as same in each parent or chold chart
 |--------|---------|-------------|
 | `vault.enabled` | Enable `bevel-vault-mgmt` subchart  | `true`  |
 | `vault.nameOverride` | String to partially override bevel-vault-mgmt.fullname template (will maintain the release name)| `""` |
-| `vault.fullnameOverride` | String to fully override bevel-vault-mgmt.fullname template | `""` |
 | `labels.service` | Custom labels in yaml k-v format  | `[]`  |
 | `labels.pvc` | Custom labels in yaml k-v format  | `[]`  |
 | `labels.deployment` | Custom labels in yaml k-v format  | `[]`  |

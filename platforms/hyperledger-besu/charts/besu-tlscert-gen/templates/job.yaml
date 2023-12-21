@@ -9,6 +9,8 @@ kind: Job
 metadata:
   name: "{{ include "besu-tlscert-gen.name" . }}"
   namespace: "{{ .Release.Namespace }}"
+  annotations:
+    helm.sh/hook-delete-policy: "hook-succeeded"
   labels:
     app: "{{ include "besu-tlscert-gen.name" . }}"
     app.kubernetes.io/name: "{{ include "besu-tlscert-gen.name" . }}"
