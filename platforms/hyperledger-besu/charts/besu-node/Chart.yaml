@@ -9,13 +9,6 @@ description: Hyperledger Besu nodes for a POA network
 version: 0.15.0
 appVersion: latest
 dependencies:
-  - name: besu-tlscert-gen
-    alias: tls
-    repository: "file://../besu-tlscert-gen"
-    tags:
-      - bevel
-    version: ~0.15.2
-    condition: tls.enabled
   - name: bevel-storageclass
     alias: storage
     repository: "file://../../../shared/charts/bevel-storageclass"
@@ -23,6 +16,13 @@ dependencies:
       - bevel
     version: ~0.15.0
     condition: storage.enabled
+  - name: besu-tlscert-gen
+    alias: tls
+    repository: "file://../besu-tlscert-gen"
+    tags:
+      - bevel
+    version: ~0.15.2
+    condition: tls.enabled
   - name: besu-tessera-node
     alias: privacy
     repository: "file://../besu-tessera-node"

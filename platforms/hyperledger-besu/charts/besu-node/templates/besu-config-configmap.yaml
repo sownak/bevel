@@ -85,9 +85,9 @@ data:
     permissions-accounts-contract-address={{ .Values.node.besu.permissions.accountsContract.address | quote }}
     {{ end }}
 
-    {{ if  .Values.quorumFlags.privacy -}}
+    {{ if .Values.privacy.enabled -}}
     # Privacy
-    privacy-enabled={{ .Values.quorumFlags.privacy }}
+    privacy-enabled={{ .Values.privacy.enabled }}
     privacy-url={{ .Values.node.besu.privacy.url | quote }}
     {{- if and (ne .Values.global.cluster.provider "local") (.Values.global.cluster.cloudNativeServices) }}
     privacy-public-key-file="{{ .Values.node.besu.keysPath }}/{{ .Values.node.besu.privacy.pubkeyFile }}"

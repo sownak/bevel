@@ -45,7 +45,7 @@ spec:
         {{- end }}
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: {{ include "besu-node.fullname" . }}-storage
+      storageClassName: storage-{{ .Release.Name }}
       resources:
         requests:
           storage: "{{ .Values.storage.size }}"
@@ -93,7 +93,7 @@ spec:
       containers:
       - name: {{ .Release.Name }}-besu
         image: {{ .Values.image.besu.repository }}:{{ .Values.image.besu.tag }}
-        imagePullPolicy: {{ .Values.image.besu.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         resources:
           requests:
             cpu: "{{ .Values.node.besu.resources.cpuRequest }}"
@@ -114,7 +114,7 @@ spec:
           - name: BESU_OPTS
             value: "{{ .Values.node.besu.envBesuOpts }}"
 {{- end }}    
-{{- if .Values.quorumFlags.usesBootnodes }}
+{{- if .Values.node.usesBootnodes }}
           - name: BESU_BOOTNODES
             valueFrom:
               configMapKeyRef:

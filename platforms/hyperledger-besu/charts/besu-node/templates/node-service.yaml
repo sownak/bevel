@@ -42,22 +42,6 @@ spec:
       port: {{ .Values.node.besu.metrics.port }}
       targetPort: metrics
       protocol: TCP
-      
-{{- if .Values.quorumFlags.privacy }}          
-    - name: tessera
-      port: {{ .Values.node.tessera.port }}
-      targetPort: tessera
-      protocol: TCP
-    - name: tessera-tp
-      port: {{ .Values.node.tessera.tpport }}
-      targetPort: tessera-tp
-      protocol: TCP
-    - name: tessera-q2t
-      port: {{ .Values.node.tessera.q2tport }}
-      targetPort: tessera-q2t
-      protocol: TCP
-{{- end }}
-
 
 {{- if and .Values.node.besu.metrics.enabled .Values.node.besu.metrics.serviceMonitorEnabled }}
 {{- if $.Capabilities.APIVersions.Has "monitoring.coreos.com/v1/ServiceMonitor" }}

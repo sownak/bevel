@@ -2,9 +2,17 @@
 global:
   serviceAccountName: vault-auth
   cluster:
-    provider: aws  # choose from: minikube | aws | azure | gcp
+    provider: aws  # choose from: local | aws | azure | gcp
     cloudNativeServices: false # set to true to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure)
+  vault:
+    type: hashicorp
+    address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
+    authPath: besunode1
+    secretEngine: secretsv2
+    secretPrefix: "data/supplychain"
+    role: vault-role
 
+# Override necessary Subchart values
 storage:
   enabled: true
   size: "2Gi"
@@ -13,20 +21,21 @@ storage:
   volumeBindingMode: Immediate # choose from: Immediate | WaitForFirstConsumer
   allowedTopologies:
     enabled: false
+privacy:
+  enabled: false
+tls:
+  enabled: false
 
 # fixes permissions of volumes because besu runs as user `besu` and volumes prefer `root`
 volumePermissionsFix:
   - local
   - aws
 
-quorumFlags:
-  privacy: false
-  # this will erase keys - so be careful with this on validators
-  removeKeysOnDelete: false
-  isBootnode: true    # set this to true if this node is a bootnode
-  usesBootnodes: true # set this to true if the network you are connecting to use a bootnode/s that are deployed in the cluster 
-
 node:
+  removeKeysOnDelete: false # this will erase keys - so be careful with this on validators
+  isBootnode: false    # set this to true if this node is a bootnode
+  usesBootnodes: false # set this to true if the network you are connecting to use a bootnode/s that are deployed in the cluster 
+
   besu:
     envBesuOpts: ""
     resources:
@@ -34,8 +43,6 @@ node:
       cpuRequest: 0.5
       memLimit: "2G"
       memRequest: "1G"
-    # privKey:
-    # pubKey:
     dataPath: "/data/besu"
     keysPath: "/keys"
     privateKeyPath: "/keys/nodekey"
@@ -108,38 +115,17 @@ node:
         address: "0x0000000000000000000000000000000000009999"
       accountsContract:
         enabled: false
-        address: "0x0000000000000000000000000000000000008888"  
-
-  tessera:
-    resources:
-      cpuLimit: 1
-      cpuRequest: 0.5
-      memLimit: "2G"
-      memRequest: "1G"
-    tmkey: ""
-    tmpub: ""
-    password: "password"
-    passwordPath: "/keys/tm.password"
-    dataPath: "/data/tessera"
-    keysPath: "/keys"
-    port: 9000
-    tpport: 9080
-    q2tport: 9101
-
+        address: "0x0000000000000000000000000000000000008888"
 image:
-  pullSecret: regcred
+  pullSecret: 
+  pullPolicy: IfNotPresent
   besu:
     repository: hyperledger/besu
     tag: 22.7.2
-    pullPolicy: IfNotPresent
-  tessera:
-    repository: quorumengineering/tessera
-    tag: 22.1.7
-    pullPolicy: IfNotPresent
   hooks:
     repository: consensys/quorum-k8s-hooks
     tag: qgt-0.2.12
-    pullPolicy: IfNotPresent
+
 # This section contains the proxy ports.
 proxy:
   # Mention the proxy provider. Currently ambassador or none is supported.

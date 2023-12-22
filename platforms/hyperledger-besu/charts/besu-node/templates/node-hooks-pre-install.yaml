@@ -7,7 +7,7 @@ metadata:
   annotations:
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": "hook-succeeded"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
   labels:
     app.kubernetes.io/name: pre-install-hook
     app.kubernetes.io/component: job
@@ -25,11 +25,15 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ .Values.global.serviceAccountName }}
+      imagePullSecrets:
+      {{- if .Values.image.pullSecret }}
+        - name: {{ .Values.image.pullSecret }}
+      {{- end }}
       restartPolicy: "OnFailure"
       containers:
         - name: {{ template "besu-node.fullname" . }}-pre-start-hook
           image: {{ .Values.image.hooks.repository }}:{{ .Values.image.hooks.tag }}
-          imagePullPolicy: {{ .Values.image.besu.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             runAsUser: 0
           {{- if (eq .Values.global.vault.type "hashicorp") }}
@@ -111,13 +115,13 @@ spec:
                     nodekey=$(echo ${VAULT_SECRET} | jq -r '.["nodekey"]')
                     accountPrivateKey=$(echo ${VAULT_SECRET} | jq -r '.["accountPrivateKey"]')
                     accountPassword=$(echo ${VAULT_SECRET} | jq -r '.["accountPassword"]')
-                    accountKeystore=$(echo ${VAULT_SECRET} | jq -r '.["accountKeystore"]' | base64 -d)
+                    accountKeystore=$(echo ${VAULT_SECRET} | jq -r '.["accountKeystore_base64"]' | base64 -d)
                     echo $accountKeystore > /tmp/accountKeystore
-                    accountAdddress=$(echo ${VAULT_SECRET} | jq -r '.["accountAdddress"]')
+                    accountAddress=$(echo ${VAULT_SECRET} | jq -r '.["accountAddress"]')
                     kubectl create secret generic ${key}-keys --from-literal=nodekey=${nodekey} --from-literal=nodekey.pub=${nodekey_pub} \
                       --from-literal=enode=${nodekey_pub} --from-literal=accountPrivate.key=${accountPrivateKey} \
                       --from-literal=accountPassword=${accountPassword} --from-file=accountKeystore=/tmp/accountKeystore \
-                      --from-literal=accountAdddress=${accountAdddress}
+                      --from-literal=accountAddress=${accountAddress}
                     rm /tmp/accountKeystore
                   fi
                 else
@@ -151,7 +155,7 @@ spec:
                   kubectl create secret generic ${key}-keys --namespace {{ .Release.Namespace }} --from-file=nodekey=${fpath}/nodekey \
                     --from-file=nodekey.pub=${fpath}/nodekey.pub --from-file=enode=${fpath}/nodekey.pub \
                     --from-file=accountPrivate.key=${fpath}/accountPrivateKey --from-file=accountPassword=${fpath}/accountPassword \
-                    --from-file=accountKeystore=${fpath}/accountKeystore --from-file=accountAdddress=${fpath}/accountAddress
+                    --from-file=accountKeystore=${fpath}/accountKeystore --from-file=accountAddress=${fpath}/accountAddress
                 fi
               }
 {{- else }}
@@ -164,7 +168,7 @@ spec:
                   kubectl create secret generic ${key}-keys --namespace {{ .Release.Namespace }} --from-file=nodekey=${fpath}/nodekey \
                     --from-file=nodekey.pub=${fpath}/nodekey.pub --from-file=enode=${fpath}/nodekey.pub \
                     --from-file=accountPrivate.key=${fpath}/accountPrivateKey --from-file=accountPassword=${fpath}/accountPassword \
-                    --from-file=accountKeystore=${fpath}/accountKeystore --from-file=accountAdddress=${fpath}/accountAddress
+                    --from-file=accountKeystore=${fpath}/accountKeystore --from-file=accountAddress=${fpath}/accountAddress
                 else
                   # if the key exists pull it from secrets so that when you update the enodes configmap, you have the right value
                   kubectl get secrets ${key}-keys --namespace {{ .Release.Namespace }}  -o json | jq '.data.enode' | tr -d '"'| base64 --decode > /tmp/enode
@@ -185,7 +189,7 @@ spec:
                 kubectl create configmap {{ template "besu-node.fullname" . }}-address --from-file=address=$FOLDER_PATH/${f}/member0/address
               fi
               
-{{- if .Values.cluster.cloudNativeServices }}
+{{- if .Values.global.cluster.cloudNativeServices }}
               echo "Creating keys in vault for {{ template "besu-node.fullname" . }} ..."
               safeWriteSecret {{ template "besu-node.fullname" . }}-nodekey $FOLDER_PATH/member0/nodekey
               safeWriteSecret {{ template "besu-node.fullname" . }}-nodekeypub $FOLDER_PATH/member0/nodekey.pub
@@ -200,7 +204,7 @@ spec:
 {{- end }}
 
               update_peers_configmap /tmp/enode
-{{- if .Values.quorumFlags.isBootnode }}
+{{- if .Values.node.isBootnode }}
               update_bootnodes_configmap /tmp/enode
 {{- end }}
               echo "hook completed"

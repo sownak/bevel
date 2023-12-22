@@ -1,3 +1,8 @@
+##############################################################################################
+#  Copyright Accenture. All Rights Reserved.
+#
+#  SPDX-License-Identifier: Apache-2.0
+##############################################################################################
 ---
 apiVersion: batch/v1
 kind: Job
@@ -25,11 +30,15 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ .Values.global.serviceAccountName }}
+      imagePullSecrets:
+      {{- if .Values.image.pullSecret }}
+        - name: {{ .Values.image.pullSecret }}
+      {{- end }}
       restartPolicy: "OnFailure"
       containers:
         - name: {{ template "besu-node.fullname" . }}-node-pre-delete-hook
           image: "{{ .Values.image.hooks.repository }}:{{ .Values.image.hooks.tag }}"
-          imagePullPolicy: {{ .Values.image.hooks.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - /bin/bash
             - -c
@@ -93,7 +102,7 @@ spec:
               delete_node_from_enodes_configmap
               delete_node_from_besu_bootnodes_configmap
 
-{{- if .Values.quorumFlags.removeKeysOnDelete }}
+{{- if .Values.node.removeKeysOnDelete }}
 
 {{- if and (ne .Values.global.cluster.provider "local") (.Values.global.cluster.cloudNativeServices) }}
 
