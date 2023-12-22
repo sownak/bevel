@@ -133,15 +133,11 @@ proxy:
   provider: ambassador
   # Provide the external URL of the proxy. This is not used because Besu does not support DNS names.
   # Eg. validator1.test.besu.blockchaincloudpoc.com
-  external_url:
+  externalUrlSuffix: test.besu.blockchaincloudpoc.com
   # Mention the p2p port configured on proxy.
   # NOTE: Make sure that the port is enabled and not already used.
   # Eg. p2p: 15010
   p2p: 15010
-  # Mention the rpc port configured on proxy.
-  # NOTE: Make sure that the port is enabled and not already used.
-  # Eg. rpc: 15011
-  rpc: 15011
 labels:
   service: []
   pvc: []
