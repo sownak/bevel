@@ -4,13 +4,19 @@ description: "Hyperledger Besu: Genesis generator"
 version: 0.15.0
 appVersion: latest
 dependencies:
-  - name: besu-tlscert-gen
-    alias: tls
-    repository: "file://../besu-tlscert-gen"
+  - name: bevel-vault-mgmt
+    repository: "file://../../../shared/charts/bevel-vault-mgmt"
     tags:
       - bevel
-    version: ~0.15.2
-    condition: tls.enabled
+    version: ~0.15.3
+    alias: vault
+    condition: vault.enabled
+  - name: bevel-scripts
+    alias: bevel-scripts
+    repository: "file://../../../shared/charts/bevel-scripts"
+    tags:
+      - bevel
+    version: ~0.15.1
 keywords:
   - bevel
   - ethereum

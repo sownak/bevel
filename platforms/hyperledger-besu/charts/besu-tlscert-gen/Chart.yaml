@@ -7,22 +7,8 @@
 apiVersion: v1
 name: besu-tlscert-gen
 description: "Hyperledger Besu: Generates and stores TLS certificates for nodes and tessera"
-version: 0.15.4
+version: 0.15.1
 appVersion: latest
-dependencies:
-  - name: bevel-vault-mgmt
-    repository: "file://../../../shared/charts/bevel-vault-mgmt"
-    tags:
-      - bevel
-    version: ~0.15.3
-    alias: vault
-    condition: vault.enabled
-  - name: bevel-scripts
-    alias: bevel-scripts
-    repository: "file://../../../shared/charts/bevel-scripts"
-    tags:
-      - bevel
-    version: ~0.15.1
 keywords:
   - bevel
   - hyperledger
