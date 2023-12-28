@@ -149,7 +149,7 @@ spec:
                       }
                   }" > payload.json
                   # Add vault write code
-                  vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/${key}" 'payload.json'
+                  vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/${key}-keys" 'payload.json'
                   rm payload.json
                   # Also create the secret
                   kubectl create secret generic ${key}-keys --namespace {{ .Release.Namespace }} --from-file=nodekey=${fpath}/nodekey \

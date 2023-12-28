@@ -1,6 +1,6 @@
 ---
-#helm install validator-1 -f releases/validator.yml -n besu --set global.proxy.p2p=15010 charts/besu-node
-#helm upgrade validator-1 -f releases/validator.yml -n besu --set global.proxy.p2p=15010 charts/besu-node
+#helm install member-1 -f releases/txnode.yml -n besu --set global.proxy.p2p=15014 charts/besu-node 
+#helm upgrade member-1 -f releases/txnode.yml -n besu --set global.proxy.p2p=15014 charts/besu-node
 global:
   serviceAccountName: vault-auth
   cluster:
@@ -18,12 +18,29 @@ global:
     externalUrlSuffix: bes.demo.aws.blockchaincloudpoc.com
 
 storage:
-  enabled: true
   size: "2Gi"
-privacy:
-  enabled: false
-tls:
-  enabled: false
+tessera:
+  enabled: true
+  tessera:
+    port: 443
+  resources:
+    cpuLimit: 1
+    cpuRequest: 0.5
+    memLimit: "2G"
+    memRequest: "1G"
+    password: 'password'
+  storage:
+    enabled: false
+    size: 1Gi
+    dbSize: 2Gi
+    allowedTopologies:
+      enabled: false
+  
+  tls:
+    enabled: true
+    settings:
+      certSubject: CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB
+      tmTls: true
 
 node:
   removeKeysOnDelete: false # this will erase keys - so be careful with this on validators
@@ -38,3 +55,5 @@ node:
       cpuRequest: 0.5
       memLimit: "2G"
       memRequest: "1G"
+    account:
+      password: 'password'
