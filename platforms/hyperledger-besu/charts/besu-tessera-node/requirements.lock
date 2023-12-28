@@ -4,6 +4,6 @@ dependencies:
   version: 0.15.2
 - name: besu-tlscert-gen
   repository: file://../besu-tlscert-gen
-  version: 0.15.1
-digest: sha256:5360e3f2b90c59be04a455bc6b642478f739a1986ef27cf7d0e9c7005e49a005
-generated: "2023-12-27T16:27:22.966942879Z"
+  version: 0.15.2
+digest: sha256:ef64d378aa40d1a66db9e2782e49883f2b9cea979435570b5e165067a9c8e2fd
+generated: "2023-12-28T13:58:43.047146546Z"

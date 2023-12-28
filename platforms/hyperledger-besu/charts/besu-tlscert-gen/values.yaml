@@ -38,6 +38,9 @@ global:
     #Provide the kubernetes host url
     #Eg. kubernetes_url: https://10.3.8.5:6443
     kubernetes_url: 
+  proxy:
+    # Provide external URL for cert generation
+    externalUrlSuffix: test.blockchaincloudpoc.com
 
 image:
   #Provide the image repository for all containers
@@ -58,8 +61,6 @@ settings:
   #Provide the X.509 subject for root CA.
   #Eg. certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
   certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
-  # Provide external URL for cert generation
-  externalUrlSuffix: test.blockchaincloudpoc.com
 
 labels:
   service: []

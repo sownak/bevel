@@ -46,7 +46,7 @@ spec:
     protocol: TCP
     port: {{ .Values.tessera.dbport }}
     targetPort: {{ .Values.tessera.dbport }}
-{{- if eq $.Values.proxy.provider "ambassador" }}
+{{- if eq $.Values.global.proxy.provider "ambassador" }}
 ## Host for tm connection
 ---
 apiVersion: getambassador.io/v3alpha1
@@ -54,7 +54,7 @@ kind: Host
 metadata:
   name: {{ .Release.Name }}-host
 spec:
-  hostname: {{ .Release.Name }}.{{ .Values.proxy.externalUrlSuffix }}
+  hostname: {{ .Release.Name }}.{{ .Values.global.proxy.externalUrlSuffix }}
   acmeProvider:
     authority: none
   requestPolicy:
@@ -71,7 +71,7 @@ metadata:
   name: {{ .Release.Name }}-mapping
   namespace: {{ .Release.Namespace }}
 spec:
-  host: {{ .Release.Name }}.{{ .Values.proxy.externalUrlSuffix }}
+  host: {{ .Release.Name }}.{{ .Values.global.proxy.externalUrlSuffix }}
   prefix: /
   service: {{ include "besu-tessera-node.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.tessera.port }}
   tls: {{ .Release.Name }}-tlscontext
@@ -83,7 +83,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - {{ .Release.Name }}.{{ .Values.proxy.externalUrlSuffix }}
+  - {{ .Release.Name }}.{{ .Values.global.proxy.externalUrlSuffix }}
   secret: tls-tls-certs.{{ .Release.Namespace }}
   secret_namespacing: true
   min_tls_version: v1.2

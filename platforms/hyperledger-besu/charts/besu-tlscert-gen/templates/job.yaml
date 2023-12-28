@@ -145,7 +145,7 @@ spec:
         - name: CERT_SUBJECT
           value: "{{ $.Values.settings.certSubject }}"
         - name: EXTERNAL_URL
-          value: "{{ .Release.Name }}.{{ .Values.settings.externalUrlSuffix }}"
+          value: "{{ .Release.Name }}.{{ .Values.global.proxy.externalUrlSuffix }}"
         - name: COMPONENT_NS
           value: "{{ .Release.Namespace }}"
         command: ["sh", "-c"]

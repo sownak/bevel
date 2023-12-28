@@ -4,6 +4,6 @@ dependencies:
   version: 0.15.2
 - name: besu-tessera-node
   repository: file://../besu-tessera-node
-  version: 0.15.3
-digest: sha256:c7b3ac9b51366193452f7ec04d2d2d8817a89ca1ed74891c43ead1d7a6de9f6e
-generated: "2023-12-27T16:28:50.487526498Z"
+  version: 0.15.4
+digest: sha256:fb6c5314e0ea320194df46f51e9c6751e17ccf7e5dcaf630b5fc935be357bc56
+generated: "2023-12-28T13:59:06.965621914Z"

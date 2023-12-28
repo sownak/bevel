@@ -94,7 +94,7 @@ spec:
     honorLabels: true
 {{- end }}
 {{- end }}
-{{- if eq .Values.proxy.provider "ambassador" }}
+{{- if eq .Values.global.proxy.provider "ambassador" }}
 ## Listeners rlpx (p2p) ports
 ---
 apiVersion: getambassador.io/v3alpha1
@@ -103,7 +103,7 @@ metadata:
   name: {{ include "besu-node.fullname" . }}-rlpx
   namespace: {{ .Release.Namespace }}
 spec:
-  port: {{ .Values.proxy.p2p }}
+  port: {{ .Values.global.proxy.p2p }}
   protocol: TCP
   securityModel: XFP
   hostBinding:
@@ -117,7 +117,7 @@ metadata:
   name: {{ include "besu-node.fullname" . }}-json-rpc
   namespace: {{ .Release.Namespace }}
 spec:
-  hostname: '{{ .Release.Name }}rpc.{{ .Values.proxy.externalUrlSuffix }}'
+  hostname: '{{ .Release.Name }}rpc.{{ .Values.global.proxy.externalUrlSuffix }}'
   prefix: /
   service: http://{{ include "besu-node.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.node.besu.rpc.port }}
 ## TCPMapping for rlpx
@@ -128,6 +128,6 @@ metadata:
   name: {{ include "besu-node.fullname" . }}-rlpx
   namespace: {{ .Release.Namespace }}
 spec:
-  port: {{ .Values.proxy.p2p }}
+  port: {{ .Values.global.proxy.p2p }}
   service: {{ include "besu-node.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.node.besu.p2p.port }}
 {{- end }}

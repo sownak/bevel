@@ -18,6 +18,17 @@ global:
     secretEngine: secretsv2
     secretPrefix: "data/supplychain"
     role: vault-role
+  proxy:
+    #This will be the proxy/ingress provider. Can have values "ambassador" or "none"
+    #Eg. provider: "ambassador"
+    provider: "ambassador"
+    #This field contains the external URL of the node
+    #Eg. externalUrlSuffix: test.besu.blockchaincloudpoc.com
+    externalUrlSuffix: test.besu.blockchaincloudpoc.com
+    # Following are the ports that are exposed externally via the proxy
+    tm: 443
+    portTM: 15013
+    client: 15023
 
 storage:
   enabled: true
@@ -110,21 +121,6 @@ tls:
     #Provide the X.509 subject for root CA.
     #Eg. certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
     certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
-    # Provide external URL for cert generation
-    externalUrlSuffix: besunode1.bes.demo.aws.blockchaincloudpoc.com
-
-
-proxy:
-  #This will be the proxy/ingress provider. Can have values "ambassador" or "none"
-  #Eg. provider: "ambassador"
-  provider: "ambassador"
-  #This field contains the external URL of the node
-  #Eg. externalUrlSuffix: node1.quo.demo.aws.blockchaincloudpoc.com
-  externalUrlSuffix: 
-  # Following are the ports that are exposed externally via the proxy
-  portTM: 15013
-  tm: 443
-  client: 15023
 
 labels:
   service: []

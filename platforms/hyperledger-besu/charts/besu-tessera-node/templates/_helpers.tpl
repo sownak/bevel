@@ -34,16 +34,16 @@ Create tessera url depending on tls mode
 {{- define "besu-tessera-node.tesseraURL" -}}
 {{- $fullname := include "besu-tessera-node.fullname" . -}}
 {{- $port := .Values.tessera.port | int -}}
-{{- $extport := .Values.proxy.portTM | int -}}
+{{- $extport := .Values.global.proxy.portTM | int -}}
 {{- if eq .Values.tessera.tlsMode "STRICT" -}}
-{{- if eq .Values.proxy.provider "ambassador" -}}
-    {{- printf "https://%s.%s:%d" $fullname .Values.proxy.externalUrlSuffix $extport | quote }}
+{{- if eq .Values.global.proxy.provider "ambassador" -}}
+    {{- printf "https://%s.%s:%d" $fullname .Values.global.proxy.externalUrlSuffix $extport | quote }}
 {{- else -}}
     {{- printf "https://%s.%s:%d" $fullname .Release.Namespace $port | quote }}
 {{- end -}}
 {{- else -}}
-{{- if eq .Values.proxy.provider "ambassador" -}}
-    {{- printf "http://%s.%s:%d" $fullname .Values.proxy.externalUrlSuffix $extport | quote }}
+{{- if eq .Values.global.proxy.provider "ambassador" -}}
+    {{- printf "http://%s.%s:%d" $fullname .Values.global.proxy.externalUrlSuffix $extport | quote }}
 {{- else -}}
     {{- printf "http://%s.%s:%d" $fullname .Release.Namespace $port | quote }}
 {{- end -}}
