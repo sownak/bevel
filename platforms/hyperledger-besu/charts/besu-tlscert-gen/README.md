@@ -82,7 +82,7 @@ These parameters are refered to as same in each parent or chold chart
 | ------------| -------------- | --------------- |
 | `settings.tmTls`   | Set value to true when transaction manager like tessera uses tls. This enables TLS for the transaction manager and Besu node. | `True` |
 | `settings.certSubject`  | Provide the X.509 subject for root CA | `"CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"`            |
-| `settings.externalURL`   | Provide the external URL of the besu node | `besunode1.blockchaincloudpoc.com` |
+| `settings.externalUrlSuffix`   | Provide the external URL of the besu node | `test.blockchaincloudpoc.com` |
 
 ### Common parameters
 

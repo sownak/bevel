@@ -59,7 +59,7 @@ settings:
   #Eg. certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
   certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
   # Provide external URL for cert generation
-  externalURL: besunode1.blockchaincloudpoc.com
+  externalUrlSuffix: test.blockchaincloudpoc.com
 
 labels:
   service: []

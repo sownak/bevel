@@ -1,8 +1,3 @@
-{{- define "labels.custom" }}
-  {{ range $key, $val := $.Values.metadata.labels }}
-  {{ $key }}: {{ $val }}
-  {{ end }}
-{{- end }}
 {{/* vim: set filetype=mustache: */}}
 {{/*
 Expand the name of the chart.
@@ -33,3 +28,37 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{/*
+Create tessera url depending on tls mode
+*/}}
+{{- define "besu-tessera-node.tesseraURL" -}}
+{{- $fullname := include "besu-tessera-node.fullname" . -}}
+{{- $port := .Values.tessera.port | int -}}
+{{- $extport := .Values.proxy.portTM | int -}}
+{{- if eq .Values.tessera.tlsMode "STRICT" -}}
+{{- if eq .Values.proxy.provider "ambassador" -}}
+    {{- printf "https://%s.%s:%d" $fullname .Values.proxy.externalUrlSuffix $extport | quote }}
+{{- else -}}
+    {{- printf "https://%s.%s:%d" $fullname .Release.Namespace $port | quote }}
+{{- end -}}
+{{- else -}}
+{{- if eq .Values.proxy.provider "ambassador" -}}
+    {{- printf "http://%s.%s:%d" $fullname .Values.proxy.externalUrlSuffix $extport | quote }}
+{{- else -}}
+    {{- printf "http://%s.%s:%d" $fullname .Release.Namespace $port | quote }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create client url depending on tls mode
+*/}}
+{{- define "besu-tessera-node.clientURL" -}}
+{{- $fullname := include "besu-tessera-node.fullname" . -}}
+{{- $port := .Values.tessera.q2tport | int -}}
+{{- if eq .Values.tessera.tlsMode "STRICT" -}}
+    {{- printf "https://%s.%s:%d" $fullname .Release.Namespace $port | quote }}
+{{- else -}}
+    {{- printf "http://%s.%s:%d" $fullname .Release.Namespace $port | quote }}
+{{- end -}}
+{{- end -}}

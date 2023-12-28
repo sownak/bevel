@@ -39,9 +39,9 @@ spec:
             runAsUser: 0
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-            - /bin/bash
+            - sh
             - -c
           args:
             - |
-              echo "Deleting tls-certs configmap in k8s ..."
-              kubectl delete configmap --namespace {{ .Release.Namespace }} {{ include "besu-tlscert-gen.name" . }}-tls-certs
+              echo "Deleting tls-certs secret in k8s ..."
+              kubectl delete secret --namespace {{ .Release.Namespace }} {{ include "besu-tlscert-gen.name" . }}-tls-certs

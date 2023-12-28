@@ -107,13 +107,13 @@ The [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/hy
 | Name                     | Description                          | Default Value |
 | ------------------------ | ------------------------------------ | ------------- |
 | name              | Provide the name for tessera node                | node1         |
-| dbname            | Provide the mysql DB name                        | demodb         |
-| dburl             | Provide the Database URL                         | ""         |
-| dbusername        | Provide the Database username                    | demouser         |
+| dbName            | Provide the mysql DB name                        | demodb         |
+| dbUrl             | Provide the Database URL                         | ""         |
+| dbUsername        | Provide the Database username                    | demouser         |
 | dbpassword        | Provide the Database password                    | ""         |
 | url               | Provide the tessera node's own url. This should be local. Use http if tls is OFF                    | ""         |
-| clienturl         | Provide the client url for tessera node                    | ""         |
-| othernodes        | Provide the list of tessera nodes to connect in url. This should be reachable from this node                    | ""         |
+| q2tUrl         | Provide the client url for tessera node                    | ""         |
+| peerNodes        | Provide the list of tessera nodes to connect in url. This should be reachable from this node                    | ""         |
 | tls               | Provide if tessera will use tls                 | STRICT         |
 | trust             | Provide the server/client  trust configuration for nodes          | CA_OR_TOFU         |
 | servicetype       | Provide the k8s service type          | ClusterIP         |
@@ -149,7 +149,7 @@ The [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/hy
 | Name                  | Description                                                           | Default Value |
 | --------------------- | --------------------------------------------------------------------- | ------------- |
 | provider              | The proxy/ingress provider (ambassador, haproxy)                      | ambassador    |
-| external_url          | This field contains the external URL of the node                      | ""            |
+| externalUrlSuffix          | This field contains the external URL of the node                      | ""            |
 | portTM                | The TM port exposed externally via the proxy                          | 15013         |
 
 

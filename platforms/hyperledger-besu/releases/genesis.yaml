@@ -30,10 +30,5 @@ rawGenesisConfig:
       generate: true
       count: 4
     accountPassword: 'password'
-tls:
+vault:
   enabled: true
-  nameOverride: "tlscert-gen"
-  settings:
-    tmTls: True
-    certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
-    externalURL: besunode1.bes.demo.aws.blockchaincloudpoc.com

@@ -14,16 +14,13 @@ global:
 
 # Override necessary Subchart values
 storage:
-  enabled: true
   size: "2Gi"
   # NOTE: when you set this to Retain, the volume WILL persist after the chart is delete and you need to manually delete it
   reclaimPolicy: "Delete" # choose from: Delete | Retain
   volumeBindingMode: Immediate # choose from: Immediate | WaitForFirstConsumer
   allowedTopologies:
     enabled: false
-privacy:
-  enabled: false
-tls:
+tessera:
   enabled: false
 
 # fixes permissions of volumes because besu runs as user `besu` and volumes prefer `root`

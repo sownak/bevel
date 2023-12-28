@@ -7,16 +7,16 @@ metadata:
   annotations:
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": "hook-succeeded"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
   labels:
     app.kubernetes.io/name: pre-install-hook
-    app.kubernetes.io/component: job
+    app.kubernetes.io/component: keygen
     app.kubernetes.io/part-of: {{ include "besu-tessera-node.fullname" . }}
     app.kubernetes.io/namespace: {{ .Release.Namespace }}
     app.kubernetes.io/release: {{ .Release.Name }}
     app.kubernetes.io/managed-by: helm
 spec:
-  backoffLimit: 1
+  backoffLimit: 3
   completions: 1
   template:
     metadata:
@@ -27,9 +27,9 @@ spec:
       serviceAccountName: {{ .Values.global.serviceAccountName }}
       restartPolicy: "OnFailure"
       containers:
-        - name: {{ template "besu-tessera-node.fullname" . }}-pre-start-hook
+        - name: {{ template "besu-tessera-node.fullname" . }}-keygen
           image: {{ .Values.image.hooks.repository }}:{{ .Values.image.hooks.tag }}
-          imagePullPolicy: {{ .Values.image.besu.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             runAsUser: 0
           {{- if (eq .Values.global.vault.type "hashicorp") }}
@@ -83,22 +83,23 @@ spec:
                 key=$1
                 fpath=$2
                 #Read if secret exists in Vault
-                vaultBevelFunc 'readJson' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/${key}-tessera-keys"
+                vaultBevelFunc 'readJson' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/${key}-keys"
                 if [ "$SECRETS_AVAILABLE" == "yes" ]
                 then
                   # Get secret from Vault and create the k8s secret if it does not exist
-                  kubectl get secret ${key}-tessera-keys --namespace {{ .Release.Namespace }} -o json > /dev/null 2>&1
+                  kubectl get secret ${key}-keys --namespace {{ .Release.Namespace }} -o json > /dev/null 2>&1
                   if [ $? -ne 0 ]; then
-                    privateKey=$(echo ${VAULT_SECRET} | jq -r '.["privateKey"]')
+                    privateKey=$(echo ${VAULT_SECRET} | jq -r '.["privateKey_base64"]' | base64 -d)
                     publicKey=$(echo ${VAULT_SECRET} | jq -r '.["publicKey"]')
                     password=$(echo ${VAULT_SECRET} | jq -r '.["password"]')
-                    kubectl create secret generic {{ template "besu-tessera-node.fullname" . }}-tessera-keys --namespace {{ .Release.Namespace }} \
-                      --from-literal=tm.key=${privateKey} --from-literal=tm.pub=${publicKey} \
+                    echo $privateKey > /tmp/privateKey
+                    kubectl create secret generic {{ template "besu-tessera-node.fullname" . }}-keys --namespace {{ .Release.Namespace }} \
+                      --from-file=tm.key=/tmp/privateKey --from-literal=tm.pub=${publicKey} \
                       --from-literal=tm.password=${password}
                   fi
                 else
                   # Save Tessera secrets to Vault
-                  privateKey=$(cat ${fpath}/tessera.key)
+                  privateKey=$(cat ${fpath}/tessera.key | base64 -w 0)
                   publicKey=$(cat ${fpath}/tessera.pub)
                   password=$(cat ${fpath}/passwordFile.txt)
                   # create a JSON file for the data related to node crypto
@@ -106,15 +107,15 @@ spec:
                   {
                     \"data\":
                       {
-                        \"privateKey\": \"${privateKey}\",
+                        \"privateKey_base64\": \"${privateKey}\",
                         \"publicKey\": \"${publicKey}\",
                         \"password\": \"${password}\"
                       }
                   }" > tessera.json
-                  vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/${key}-tessera-keys" 'tessera.json'
+                  vaultBevelFunc 'write' "${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/${key}-keys" 'tessera.json'
                   rm tessera.json
                   # Also create the k8s secret
-                  kubectl create secret generic ${key}-tessera-keys --namespace {{ .Release.Namespace }} \
+                  kubectl create secret generic ${key}-keys --namespace {{ .Release.Namespace }} \
                     --from-file=tm.key=${fpath}/tessera.key --from-file=tm.pub=${fpath}/tessera.pub \
                     --from-file=tm.password=${fpath}/passwordFile.txt
                 fi
@@ -124,24 +125,24 @@ spec:
               function safeWriteSecret {
                 key=$1
                 fpath=$2
-                kubectl get secret ${key}-tessera-keys --namespace {{ .Release.Namespace }} -o json > /dev/null 2>&1
+                kubectl get secret ${key}-keys --namespace {{ .Release.Namespace }} -o json > /dev/null 2>&1
                 if [ $? -ne 0 ]; then
-                  kubectl create secret generic {{ template "besu-tessera-node.fullname" . }}-tessera-keys --namespace {{ .Release.Namespace }} \
+                  kubectl create secret generic {{ template "besu-tessera-node.fullname" . }}-keys --namespace {{ .Release.Namespace }} \
                     --from-file=tm.key=${fpath}/tessera.key --from-file=tm.pub=${fpath}/tessera.pub \
                     --from-file=tm.password=${fpath}/passwordFile.txt
                 fi
               }
 {{- end }}
 
-              echo "{{ template "besu-tessera-node.fullname" . }} hook ..."
+              echo "{{ template "besu-tessera-node.fullname" . }} pre-install-hook ..."
               echo "Tessera keys generation ..."
               FOLDER_PATH=$(quorum-genesis-tool --validators 0 --members 1 --bootnodes 0 --tesseraEnabled true \
-                --tesseraPassword {{ .Values.node.tessera.password }} --outputPath /tmp/tessera | tail -1 | sed -e "s/^Artifacts in folder: //")
+                --tesseraPassword {{ .Values.tessera.password }} --outputPath /tmp/tessera | tail -1 | sed -e "s/^Artifacts in folder: //")
               if [ ! -f "$FOLDER_PATH/member0/passwordFile.txt" ]; then
                 echo "" > $FOLDER_PATH/member0/passwordFile.txt
               fi
-              echo "Creating {{ template "besu-tessera-node.fullname" . }}-tessera-keys secrets in k8s ..."
-{{- if .Values.cluster.cloudNativeServices }}
+              echo "Creating {{ template "besu-tessera-node.fullname" . }}-keys secrets in k8s ..."
+{{- if .Values.global.cluster.cloudNativeServices }}
               safeWriteSecret {{ template "besu-tessera-node.fullname" . }}-tmkey $FOLDER_PATH/member0/tessera.key
               safeWriteSecret {{ template "besu-tessera-node.fullname" . }}-tmkeypub $FOLDER_PATH/member0/tessera.pub
               safeWriteSecret {{ template "besu-tessera-node.fullname" . }}-tmpassword $FOLDER_PATH/member0/passwordFile.txt

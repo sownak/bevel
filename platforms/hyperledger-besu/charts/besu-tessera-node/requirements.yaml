@@ -1,0 +1,15 @@
+dependencies:
+  - name: bevel-storageclass
+    alias: storage
+    repository: "file://../../../shared/charts/bevel-storageclass"
+    tags:
+      - storage
+    version: ~0.15.0
+    condition: storage.enabled
+  - name: besu-tlscert-gen
+    alias: tls
+    repository: "file://../besu-tlscert-gen"
+    tags:
+      - bevel
+    version: ~0.15.0
+    condition: tls.enabled

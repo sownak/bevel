@@ -1,0 +1,9 @@
+dependencies:
+- name: bevel-storageclass
+  repository: file://../../../shared/charts/bevel-storageclass
+  version: 0.15.2
+- name: besu-tlscert-gen
+  repository: file://../besu-tlscert-gen
+  version: 0.15.1
+digest: sha256:5360e3f2b90c59be04a455bc6b642478f739a1986ef27cf7d0e9c7005e49a005
+generated: "2023-12-27T16:27:22.966942879Z"

@@ -14,8 +14,7 @@ metadata:
     app.kubernetes.io/part-of: {{ include "besu-tessera-node.fullname" . }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/namespace: {{ .Release.Namespace }}
-    app.kubernetes.io/release: {{ .Release.Name }} 
-    {{- include "labels.custom" . | nindent 2 }}
+    app.kubernetes.io/release: {{ .Release.Name }}
     {{- if $.Values.labels }}
     {{- range $key, $value := $.Values.labels.deployment }}
     {{- range $k, $v := $value }}
@@ -37,6 +36,39 @@ spec:
       app.kubernetes.io/namespace: {{ .Release.Namespace }}
       app.kubernetes.io/release: {{ .Release.Name }}
   serviceName: {{ include "besu-tessera-node.fullname" . }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          {{- if $.Values.labels }}
+          {{- range $key, $value := $.Values.labels.pvc }}
+          {{- range $k, $v := $value }}
+          {{ $k }}: {{ $v | quote }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+      spec:
+        storageClassName: storage-{{ .Release.Name }}
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.storage.size }}
+    - metadata:
+        name: data-mysql
+        labels:
+          {{- if $.Values.labels }}
+          {{- range $key, $value := $.Values.labels.pvc }}
+          {{- range $k, $v := $value }}
+          {{ $k }}: {{ $v | quote }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+      spec:
+        storageClassName: storage-{{ .Release.Name }}
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.storage.dbSize }}
   template:
     metadata:
       labels:
@@ -45,8 +77,7 @@ spec:
         app.kubernetes.io/part-of: {{ include "besu-tessera-node.fullname" . }}
         app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/namespace: {{ .Release.Namespace }}
-        app.kubernetes.io/release: {{ .Release.Name }} 
-        {{- include "labels.custom" . | nindent 2 }}
+        app.kubernetes.io/release: {{ .Release.Name }}
         {{- if $.Values.labels }}
         {{- range $key, $value := $.Values.labels.deployment }}
         {{- range $k, $v := $value }}
@@ -56,7 +87,7 @@ spec:
         {{- end }}
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: {{ .Values.node.besu.metrics.port | quote}}
+        prometheus.io/port: {{ .Values.tessera.metrics.port | quote }}
         prometheus.io/path: "/metrics"
     spec:
       serviceAccountName: {{ .Values.global.serviceAccountName }}
@@ -67,21 +98,21 @@ spec:
       {{- end }}
       initContainers:
       - name: certificates-init
-        image: {{ .Values.images.alpineutils }}
+        image: {{ .Values.image.alpineutils }}
         imagePullPolicy: IfNotPresent
         env:
         - name: VAULT_ADDR
-          value: {{ .Values.vault.address }}
+          value: {{ .Values.global.vault.address }}
         - name: VAULT_SECRET_ENGINE
-          value: {{ $.Values.vault.secretEngine }}
+          value: {{ $.Values.global.vault.secretEngine }}
         - name: VAULT_SECRET_PREFIX
-          value: {{ .Values.vault.secretPrefix }}
+          value: {{ .Values.global.vault.secretPrefix }}
         - name: KUBERNETES_AUTH_PATH
-          value: {{ .Values.vault.authPath }}
+          value: {{ .Values.global.vault.authPath }}
         - name: VAULT_APP_ROLE
-          value: {{ .Values.vault.role }}
+          value: {{ .Values.global.vault.role }}
         - name: VAULT_TYPE
-          value: "{{ $.Values.vault.type }}"
+          value: "{{ $.Values.global.vault.type }}"
         - name: MOUNT_PATH
           value: "/secret"
         command: ["sh", "-c"]
@@ -95,38 +126,12 @@ spec:
           # Get the Vault token
           echo "Getting the vault Token..."
           vaultBevelFunc 'init'
-          
-          # Store the Vault token in the specified file
-          echo $VAULT_TOKEN > /secret/VAULT_CLIENT_TOKEN
 
-          # Obtain keys from the specified path within the Vault
-          vault_secret_key="${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/{{ .Values.vault.keyname }}"
-          echo "Getting 5 keys from $vault_secret_key"
-          vaultBevelFunc 'readJson' ${vault_secret_key}
-
-          # Extract keys from the response obtained from the Vault
-          nodekey=$(echo ${VAULT_SECRET} | jq -r '.["nodekey"]')
-          keystore=$(echo ${VAULT_SECRET} | jq -r '.["keystore"]')          
-          gethpassword=$(echo ${VAULT_SECRET} | jq -r '.["gethpassword"]')
-          username=$(echo ${VAULT_SECRET} | jq -r '.["db_user"]')
-          password=$(echo ${VAULT_SECRET} | jq -r '.["db_password"]')
-
-          # Define the output directory path
-          OUTPUT_PATH="${MOUNT_PATH}/keys"
-          mkdir -p ${OUTPUT_PATH}
-          
-          # Write the extracted values to respective files in the output directory
-          echo -n "${gethpassword}" > ${OUTPUT_PATH}/passwords.txt
-          echo -n "${nodekey}" > ${OUTPUT_PATH}/nodekey
-          echo -n "${keystore}" > ${OUTPUT_PATH}/keystore
-          echo "${username}" > ${OUTPUT_PATH}/username
-          echo "${password}" > ${OUTPUT_PATH}/password
-
-          # Check if the value of 'tessera.tls' is 'STRICT'
-          if [ {{ $.Values.tessera.tls }} == "STRICT" ]
+          # Check if the value of 'tessera.tlsMode' is 'STRICT'
+          if [ {{ $.Values.tessera.tlsMode }} == "STRICT" ]
           then
             # Obtain TLS-related data from the Vault
-            vault_secret_key="${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/{{ .Values.vault.tlsdir }}"
+            vault_secret_key="${VAULT_SECRET_ENGINE}/${VAULT_SECRET_PREFIX}/tlscerts"
             vaultBevelFunc 'readJson' ${vault_secret_key}
             
             # Extract and decode TLS-related data from the response obtained from the Vault
@@ -159,7 +164,7 @@ spec:
           mountPath: /scripts/bevel-vault.sh
           subPath: bevel-vault.sh
       - name: mysql-init
-        image: {{ .Values.images.busybox }}
+        image: {{ .Values.image.busybox }}
         imagePullPolicy: IfNotPresent
         command: ["/bin/sh"]
         args:
@@ -169,14 +174,14 @@ spec:
 
           echo "Getting Username and Password from the Vault"
 
-          # Read the password from the specified file and store it in 'var'
-          var=$(cat /secret/keys/password)
+          # Read the password from the specified file and store it in 'pass'
+          pass=$(cat /keys/tm.password)
 
           # create an SQL script file
           # This SQL script updates user passwords and creates database tables
           cat << EOF > /docker-entrypoint-initdb.d/createTables.sql
-            UPDATE mysql.user SET authentication_string = PASSWORD('$var') WHERE User = 'demouser';
-            UPDATE mysql.user SET authentication_string = PASSWORD('$var') WHERE User = 'root';
+            UPDATE mysql.user SET authentication_string = PASSWORD('$pass') WHERE User = 'demouser';
+            UPDATE mysql.user SET authentication_string = PASSWORD('$pass') WHERE User = 'root';
             CREATE TABLE IF NOT EXISTS ENCRYPTED_TRANSACTION (ENCODED_PAYLOAD BLOB NOT NULL, HASH VARBINARY(100) NOT NULL, TIMESTAMP BIGINT, PRIMARY KEY (HASH));
             CREATE TABLE IF NOT EXISTS PRIVACY_GROUP(ID VARBINARY(100) NOT NULL, LOOKUP_ID BLOB NOT NULL, DATA BLOB NOT NULL, TIMESTAMP BIGINT, PRIMARY KEY (ID));
             CREATE TABLE IF NOT EXISTS ENCRYPTED_RAW_TRANSACTION (ENCRYPTED_KEY BLOB NOT NULL, ENCRYPTED_PAYLOAD BLOB NOT NULL, NONCE BLOB NOT NULL, SENDER BLOB NOT NULL, TIMESTAMP BIGINT, HASH VARBINARY(100) NOT NULL, PRIMARY KEY (HASH));
@@ -187,61 +192,63 @@ spec:
         volumeMounts:
         - name: mysql
           mountPath: /docker-entrypoint-initdb.d
-        - name: certificates
-          mountPath: /secret
+        - name: tessera-keys
+          mountPath: {{ .Values.tessera.keysPath }}
+          readOnly: true
       containers:
       - name: mysql-db
-        image: {{ .Values.images.mysql }}
+        image: {{ .Values.image.mysql }}
         imagePullPolicy: IfNotPresent
         env:
         - name: "MYSQL_ROOT_PASSWORD"
           value: ""
         - name: MYSQL_DATABASE
-          value: "{{ .Values.tessera.dbname }}"
+          value: "{{ .Values.tessera.dbName }}"
         - name: MYSQL_USER
-          value: "{{ .Values.tessera.dbusername }}"
+          value: "{{ .Values.tessera.dbUsername }}"
         - name: MYSQL_PASSWORD
-          value: /secret/keys/password
+          value: /keys/tm.password
         ports:
-          - containerPort: {{ .Values.tessera.ports.db }}
+          - containerPort: {{ .Values.tessera.dbport }}
         volumeMounts:
         - name: mysql
           mountPath: /docker-entrypoint-initdb.d
-        - name: certificates
-          mountPath: /secret
+        - name: tessera-keys
+          mountPath: {{ .Values.tessera.keysPath }}
+          readOnly: true
         - name: data-mysql
           mountPath: "/var/lib/mysql"
           subPath: mysql
       - name: tessera
-        image: {{ .Values.images.tessera }}
+        image: {{ .Values.image.tessera }}
         imagePullPolicy: {{ .Values.image.PullPolicy }}
         ports:
           - name: tessera
-            containerPort: {{ .Values.node.tessera.port }}
+            containerPort: {{ .Values.tessera.port }}
             protocol: TCP
           - name: tessera-tp
-            containerPort: {{ .Values.node.tessera.tpport }}
+            containerPort: {{ .Values.tessera.tpport }}
             protocol: TCP
           - name: tessera-q2t
-            containerPort: {{ .Values.node.tessera.q2tport }}
+            containerPort: {{ .Values.tessera.q2tport }}
             protocol: TCP
         env:
           - name: TESSERA_HOME
             value: {{ .Values.tessera.dataPath }}
           - name: VAULT_ADDR
-            value: {{ $.Values.vault.address }}
+            value: {{ $.Values.global.vault.address }}
           - name: KUBERNETES_AUTH_PATH
-            value: {{ $.Values.vault.authPath }}
+            value: {{ $.Values.global.vault.authPath }}
           - name: VAULT_APP_ROLE
-            value: {{ $.Values.vault.role }}
+            value: {{ $.Values.global.vault.role }}
         volumeMounts:
           - name: tessera-keys
-            mountPath: {{ .Values.node.tessera.keysPath }}
+            mountPath: {{ .Values.tessera.keysPath }}
             readOnly: true
-          - name: certificates
-            mountPath: {{ .Values.tessera.dataPath }}/crypto/
           - name: data
             mountPath: {{ .Values.tessera.dataPath }}
+          - name: certificates
+            mountPath: {{ .Values.tessera.dataPath }}/crypto
           - name: tessera-peers
             mountPath: /config/tessera-peers
           - name: tessera-config
@@ -261,14 +268,7 @@ spec:
             DDIR=$TESSERA_HOME/tm;
 
             # Read the password from the specified file and store it in the 'PASSWORD' variable
-            PASSWORD=$(cat $TESSERA_HOME/crypto/keys/password);
-
-            # Set the 'HASHICORP_TOKEN' environment variable by reading the 'VAULT_CLIENT_TOKEN' file
-            # This is required for Tessera Vault integration
-            export HASHICORP_TOKEN=$(cat $TESSERA_HOME/crypto/VAULT_CLIENT_TOKEN);
-
-            # Print the current environment variables
-            printenv;
+            PASSWORD=$(cat /keys/tm.password);
 
             # Copy, extract, and place the MySQL connector file into the Tessera library directory, ensuring that Tessera can use it for database connectivity.
             cp /mysql-jar/mysql-connector-java-8.0.25.tar.gz mysql-connector-java-8.0.25.tar.gz
@@ -310,43 +310,11 @@ spec:
             defaultMode: 0777
         - name: tessera-keys
           secret:
-            secretName: {{ include "besu-node.fullname" . }}-tessera-keys
+            secretName: {{ include "besu-tessera-node.fullname" . }}-keys
         - name: tessera-peers
           configMap:
             name: tessera-peers
             items:
               - key: tesseraPeers
                 path: tesseraPeers
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-        labels:
-          {{- if $.Values.labels }}
-          {{- range $key, $value := $.Values.labels.pvc }}
-          {{- range $k, $v := $value }}
-          {{ $k }}: {{ $v | quote }}
-          {{- end }}
-          {{- end }}
-          {{- end }}
-      spec:
-        storageClassName: {{ include "besu-tessera-node.fullname" . }}-storage
-        accessModes: [ "ReadWriteOnce" ]
-        resources:
-          requests:
-            storage: {{ .Values.storage.size }}
-    - metadata:
-        name: data-mysql
-        labels:
-          {{- if $.Values.labels }}
-          {{- range $key, $value := $.Values.labels.pvc }}
-          {{- range $k, $v := $value }}
-          {{ $k }}: {{ $v | quote }}
-          {{- end }}
-          {{- end }}
-          {{- end }}
-      spec:
-        storageClassName: {{ include "besu-tessera-node.fullname" . }}-storage
-        accessModes: [ "ReadWriteOnce" ]
-        resources:
-          requests:
-            storage: {{ .Values.storage.dbSize }}
+  

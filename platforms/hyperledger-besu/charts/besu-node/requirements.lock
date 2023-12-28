@@ -1,12 +1,9 @@
 dependencies:
-- name: besu-tlscert-gen
-  repository: file://../besu-tlscert-gen
-  version: 0.15.5
 - name: bevel-storageclass
   repository: file://../../../shared/charts/bevel-storageclass
-  version: 0.15.1
+  version: 0.15.2
 - name: besu-tessera-node
   repository: file://../besu-tessera-node
-  version: 0.15.1
-digest: sha256:7f75e12540e5aceef9dffe94d528c77660454d9cf18d3cbd1d7a37e7eb3e0724
-generated: "2023-12-21T16:04:43.013778381Z"
+  version: 0.15.3
+digest: sha256:c7b3ac9b51366193452f7ec04d2d2d8817a89ca1ed74891c43ead1d7a6de9f6e
+generated: "2023-12-27T16:28:50.487526498Z"

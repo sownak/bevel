@@ -23,23 +23,23 @@ data:
       "mode": "orion",
       "useWhiteList": "false",
       "jdbc": {
-        "username": {{ .Values.tessera.dbusername | quote }},
+        "username": {{ .Values.tessera.dbUsername | quote }},
         "password": "",
-        "url": {{ .Values.tessera.dburl | quote }}
+        "url": "jdbc:mysql://{{ include "besu-tessera-node.fullname" . }}:{{ .Values.tessera.dbport }}/demodb"
       },
       "serverConfigs": [
         {
           "app": "ThirdParty",
           "enabled": true,
-          "serverAddress": "http://{{ .Values.tessera.name }}:{{ .Values.tessera.tpport }}",
+          "serverAddress": "http://{{ include "besu-tessera-node.fullname" . }}:{{ .Values.tessera.tpport }}",
           "communicationType": "REST"
         },
         {
           "app": "Q2T",
           "enabled": true,
-          "serverAddress": {{ .Values.tessera.clienturl | quote }},          
+          "serverAddress": {{ include "besu-tessera-node.clientURL" . }},          
           "sslConfig": {
-            "tls": {{ .Values.tessera.tls | quote }},
+            "tls": {{ .Values.tessera.tlsMode | quote }},
             "generateKeyStoreIfNotExisted": true,
             "serverTrustMode": {{ .Values.tessera.trust | quote }},
             "serverTlsKeyPath": "{{ .Values.tessera.dataPath }}/crypto/tessera_cer.key",
@@ -58,9 +58,9 @@ data:
         {
           "app": "P2P",
           "enabled": true,
-          "serverAddress": {{ .Values.tessera.url | quote }},
+          "serverAddress": {{ include "besu-tessera-node.tesseraURL" . }},
           "sslConfig": {
-            "tls": {{ .Values.tessera.tls | quote }},
+            "tls": {{ .Values.tessera.tlsMode | quote }},
             "generateKeyStoreIfNotExisted": true,
             "serverTrustMode": {{ .Values.tessera.trust | quote }},
             "serverTlsKeyPath": "{{ .Values.tessera.dataPath }}/crypto/tessera_cer.key",
@@ -76,10 +76,19 @@ data:
           "communicationType": "REST"
         }
       ],
-      "peer": {{ .Values.tessera.othernodes | toPrettyJson | indent 6 }},
+      "peer": [
+        {
+          "url": {{ include "besu-tessera-node.tesseraURL" . }}
+        }
+        {{- range .Values.tessera.peerNodes }}
+        ,{
+          "url": {{ .url | quote }}
+        }
+        {{- end }}
+      ],
       "keys": {
-      {{ if .Values.node.tessera.password }}
-        "passwordFile": "{{ .Values.node.tessera.passwordPath }}",
+      {{ if .Values.tessera.password }}
+        "passwordFile": "{{ .Values.tessera.passwordPath }}",
       {{ end }}
         "keyData": [
           {

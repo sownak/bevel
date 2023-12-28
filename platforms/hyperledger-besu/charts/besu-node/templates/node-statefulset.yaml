@@ -67,7 +67,7 @@ spec:
         {{- end }}
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: {{ .Values.node.besu.metrics.port | quote}}
+        prometheus.io/port: {{ .Values.node.besu.metrics.port | quote }}
         prometheus.io/path: "/metrics"
     spec:
       serviceAccountName: {{ .Values.global.serviceAccountName }}

@@ -1,0 +1,14 @@
+dependencies:
+  - name: bevel-storageclass
+    alias: storage
+    repository: "file://../../../shared/charts/bevel-storageclass"
+    tags:
+      - storage
+    version: ~0.15.0
+  - name: besu-tessera-node
+    alias: tessera
+    repository: "file://../besu-tessera-node"
+    tags:
+      - tessera
+    version: ~0.15.0
+    condition: tessera.enabled
