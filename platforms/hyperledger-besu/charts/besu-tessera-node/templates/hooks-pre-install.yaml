@@ -57,24 +57,6 @@ spec:
           args:
             - |
 
-              function update_tessera_peers_configmap {
-                kubectl -n {{ .Release.Namespace }} get configmap tessera-peers -o json
-                # first time a tx node is deployed and there is no configmap
-                if [ $? -ne 0 ]; then
-                  echo "No tessera-peers found, creating a new one..."
-                  echo "[{ \"url\": \"http://{{ template "besu-tessera-node.fullname" . }}.{{ .Release.Namespace }}:9000\" }]"  > /tmp/tessera-peers
-                  kubectl --namespace {{ .Release.Namespace }} create configmap tessera-peers --from-file=tesseraPeers=/tmp/tessera-peers
-
-                # update the entries
-                else
-                  echo "Tessera-peers found, updating existing..."
-                  echo $(kubectl -n {{ .Release.Namespace }} get configmap tessera-peers -o jsonpath='{.data.tesseraPeers}' ) > /tmp/tessera-peers.raw
-                  NEEDLE="http://{{ template "besu-tessera-node.fullname" . }}.{{ .Release.Namespace }}:9000"
-                  cat /tmp/tessera-peers.raw | jq --arg NEEDLE "$NEEDLE" '. += [{"url": $NEEDLE}] | unique ' > /tmp/tessera-peers
-                  kubectl -n {{ .Release.Namespace }} create configmap tessera-peers --from-file=tesseraPeers=/tmp/tessera-peers -o yaml --dry-run=client | kubectl replace -f -
-                fi
-              }
-
 {{- if (eq .Values.global.vault.type "hashicorp") }}
               . /scripts/bevel-vault.sh
               echo "Getting vault Token..."
@@ -149,7 +131,6 @@ spec:
 {{- else }}
               safeWriteSecret {{ template "besu-tessera-node.fullname" . }} $FOLDER_PATH/member0
 {{- end }}
-              update_tessera_peers_configmap
               echo "Tessera Completed"
       volumes:
       - name: scripts-volume

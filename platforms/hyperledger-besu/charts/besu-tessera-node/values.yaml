@@ -27,7 +27,6 @@ global:
     externalUrlSuffix: test.besu.blockchaincloudpoc.com
     # Following are the ports that are exposed externally via the proxy
     tm: 443
-    portTM: 15013
     client: 15023
 
 storage:

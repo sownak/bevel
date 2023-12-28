@@ -192,8 +192,8 @@ spec:
               subjectAltName = @alt_names
               [alt_names]
               DNS.1 = ${EXTERNAL_URL}
-              DNS.2 = {{ include "besu-tlscert-gen.name" . }}.{{ .Release.Namespace }}
-              DNS.3 = {{ include "besu-tlscert-gen.name" . }}-tessera.{{ .Release.Namespace }}
+              DNS.2 = {{ include "besu-tlscert-gen.fullname" . }}.{{ .Release.Namespace }}
+              DNS.3 = tessera-{{ .Release.Name }}.{{ .Release.Namespace }}
               " > openssl.conf
               # Generates the ambassador tls certificates
               openssl genrsa -out node.key 2048

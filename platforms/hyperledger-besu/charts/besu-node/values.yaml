@@ -65,7 +65,7 @@ node:
       enabled: true
       host: "0.0.0.0"
       port: 30303
-      discovery: true
+      discovery: false
       staticNodes: "/config/static/static-nodes.json"
       maxPeers: 25
     rpc:
@@ -106,7 +106,8 @@ node:
       interval: 15
       prometheusJob: "besu"
     privacy:
-      url: "http://localhost:9101"
+      scheme: "https" # Must use https when TLS is STRICT
+      clientport: 9101
       pubkeysPath: "/tessera"
       pubkeyFile: "tm.pub"
       onchainGroupsEnabled: false

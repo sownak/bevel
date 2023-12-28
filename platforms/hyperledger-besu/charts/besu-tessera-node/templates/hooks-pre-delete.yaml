@@ -57,22 +57,6 @@ spec:
 
 {{- end }}
 
-              function delete_node_from_tessera_peers_configmap {
-                kubectl -n {{ .Release.Namespace }} get configmap tessera-peers -o json
-                # if there is no configmap, do nothing
-                if [ $? -ne 0 ]; then
-                  echo "No tessera-peers found, nothing to do..."
-                # delete the one
-                else
-                  echo "tessera-peers found, deleting {{ template "besu-tessera-node.fullname" . }}..."
-                  echo $(kubectl -n {{ .Release.Namespace }} get configmap tessera-peers -o jsonpath='{.data.tesseraPeers}' ) > /tmp/tessera-peers.raw
-                  cat /tmp/tessera-peers.raw | jq --arg NEEDLE "{{ template "besu-tessera-node.fullname" . }}" 'del(.[] | select( .url | contains($NEEDLE) ))' > /tmp/tessera-peers
-                  kubectl -n {{ .Release.Namespace }} create configmap tessera-peers --from-file=tesseraPeers=/tmp/tessera-peers -o yaml --dry-run=client | kubectl replace -f -
-                fi
-              }
-
-              delete_node_from_tessera_peers_configmap
-
 {{- if .Values.tessera.removeKeysOnDelete }}
 
 {{- if and (ne .Values.global.cluster.provider "local") (.Values.global.cluster.cloudNativeServices) }}

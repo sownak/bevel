@@ -125,6 +125,11 @@ spec:
           - name: besu-keys
             mountPath: {{ .Values.node.besu.keysPath }}
             readOnly: true
+{{- if .Values.tessera.enabled }}
+          - name: tessera-keys
+            mountPath: {{ .Values.node.besu.privacy.pubkeysPath }}
+            readOnly: true
+{{- end }}
           - name: genesis
             mountPath: /etc/genesis
             readOnly: true
@@ -191,6 +196,11 @@ spec:
       - name: besu-keys
         secret:
           secretName: {{ include "besu-node.fullname" . }}-keys
+{{- if .Values.tessera.enabled }}
+      - name: tessera-keys
+        secret:
+          secretName: tessera-{{ .Release.Name }}-keys
+{{- end }}
 {{- if .Values.node.besu.permissions.enabled }}
       - name: permissions-config
         configMap:

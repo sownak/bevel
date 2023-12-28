@@ -249,8 +249,6 @@ spec:
             mountPath: {{ .Values.tessera.dataPath }}
           - name: certificates
             mountPath: {{ .Values.tessera.dataPath }}/crypto
-          - name: tessera-peers
-            mountPath: /config/tessera-peers
           - name: tessera-config
             mountPath: {{ .Values.tessera.dataPath }}/tessera-config.json.tmpl
             subPath: tessera-config.json.tmpl
@@ -311,10 +309,3 @@ spec:
         - name: tessera-keys
           secret:
             secretName: {{ include "besu-tessera-node.fullname" . }}-keys
-        - name: tessera-peers
-          configMap:
-            name: tessera-peers
-            items:
-              - key: tesseraPeers
-                path: tesseraPeers
-  
