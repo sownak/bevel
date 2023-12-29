@@ -1,6 +1,6 @@
 ---
-#helm install validator-1 -f releases/validator.yml -n besu --set global.proxy.p2p=15010 charts/besu-node
-#helm upgrade validator-1 -f releases/validator.yml -n besu --set global.proxy.p2p=15010 charts/besu-node
+#helm install validator-1 -f releases/validator.yml -n besu --set global.proxy.p2p=15011 charts/besu-node
+#helm upgrade validator-1 -f releases/validator.yml -n besu --set global.proxy.p2p=15011 charts/besu-node
 global:
   serviceAccountName: vault-auth
   cluster:
@@ -11,7 +11,7 @@ global:
     address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
     authPath: besunode1
     secretEngine: secretsv2
-    secretPrefix: "data/supplychain"
+    secretPrefix: "data/abesutest"
     role: vault-role
   proxy:
     provider: ambassador
@@ -20,9 +20,7 @@ global:
 storage:
   enabled: true
   size: "2Gi"
-privacy:
-  enabled: false
-tls:
+tessera:
   enabled: false
 
 node:

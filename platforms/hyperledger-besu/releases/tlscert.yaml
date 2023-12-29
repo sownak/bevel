@@ -6,7 +6,7 @@ global:
     address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
     authPath: besunode1
     secretEngine: secretsv2
-    secretPrefix: "data/supplychain"
+    secretPrefix: "data/abesutest"
     role: vault-role
   cluster:
     kubernetes_url: https://34D2F36E71F0880BE63D943D2E503A9B.gr7.eu-west-1.eks.amazonaws.com

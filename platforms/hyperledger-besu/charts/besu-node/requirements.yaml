@@ -12,3 +12,17 @@ dependencies:
       - tessera
     version: ~0.15.0
     condition: tessera.enabled
+  - name: bevel-vault-mgmt
+    repository: "file://../../../shared/charts/bevel-vault-mgmt"
+    tags:
+      - bevel
+    version: ~0.15.3
+    alias: vault
+    condition: vault.enabled
+  - name: bevel-scripts
+    alias: bevelScripts
+    repository: "file://../../../shared/charts/bevel-scripts"
+    tags:
+      - bevel
+    version: ~0.15.1
+    condition: bevelScripts.enabled

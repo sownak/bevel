@@ -1,6 +1,6 @@
 ---
-#helm install member-1 -f releases/txnode.yml -n besu --set global.proxy.p2p=15014 charts/besu-node 
-#helm upgrade member-1 -f releases/txnode.yml -n besu --set global.proxy.p2p=15014 charts/besu-node
+#helm install member-1 -f releases/txnode.yml -n besu --set global.proxy.p2p=15015 charts/besu-node 
+#helm upgrade member-1 -f releases/txnode.yml -n besu --set global.proxy.p2p=15015 charts/besu-node
 global:
   serviceAccountName: vault-auth
   cluster:
@@ -11,7 +11,7 @@ global:
     address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
     authPath: besunode1
     secretEngine: secretsv2
-    secretPrefix: "data/supplychain"
+    secretPrefix: "data/abesutest"
     role: vault-role
   proxy:
     provider: ambassador

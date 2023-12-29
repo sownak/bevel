@@ -75,7 +75,7 @@ spec:
                 else
                   echo "besu-peers found, deleting {{ template "besu-node.fullname" . }}..."
                   echo $(kubectl -n {{ .Release.Namespace }} get configmap besu-peers -o jsonpath='{.data.static-nodes\.json}' ) > /tmp/static-nodes.json.raw
-                  cat /tmp/static-nodes.json.raw | jq --arg NEEDLE "{{ template "besu-node.fullname" . }}" 'del(.[] | select( . | contains($NEEDLE) ))' > /tmp/static-nodes.json
+                  cat /tmp/static-nodes.json.raw | jq --arg NEEDLE "{{ .Release.Name }}" 'map(select(test($NEEDLE) | not))' > /tmp/static-nodes.json
                   kubectl -n {{ .Release.Namespace }} create configmap besu-peers --from-file=static-nodes.json=/tmp/static-nodes.json -o yaml --dry-run=client | kubectl replace -f -
 
                   echo "Deleting node address configmap... "
@@ -93,7 +93,7 @@ spec:
                 else
                   echo "besu-bootnodes found, deleting {{ template "besu-node.fullname" . }}..."
                   echo $(kubectl -n {{ .Release.Namespace }} get configmap besu-bootnodes -o jsonpath='{.data.bootnodes-json}' ) > /tmp/besu-bootnodes-json.raw
-                  cat /tmp/besu-bootnodes-json.raw | jq --arg NEEDLE "{{ template "besu-node.fullname" . }}" 'del(.[] | select( . | contains($NEEDLE) ))' > /tmp/besu-bootnodes-json
+                  cat /tmp/besu-bootnodes-json.raw | jq --arg NEEDLE "{{ .Release.Name }}" 'map(select(test($NEEDLE) | not))' > /tmp/besu-bootnodes-json
                   cat /tmp/besu-bootnodes-json | jq -r -c '. | join(",")' | tr -d '\n' > /tmp/besu-bootnodes-string
                   kubectl -n {{ .Release.Namespace }} create configmap besu-bootnodes --from-file=bootnodes-json=/tmp/besu-bootnodes-json --from-file=bootnodes-string=/tmp/besu-bootnodes-string -o yaml --dry-run=client | kubectl replace -f -
                 fi

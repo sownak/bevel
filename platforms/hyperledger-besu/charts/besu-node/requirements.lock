@@ -5,5 +5,11 @@ dependencies:
 - name: besu-tessera-node
   repository: file://../besu-tessera-node
   version: 0.15.4
-digest: sha256:fb6c5314e0ea320194df46f51e9c6751e17ccf7e5dcaf630b5fc935be357bc56
-generated: "2023-12-28T13:59:06.965621914Z"
+- name: bevel-vault-mgmt
+  repository: file://../../../shared/charts/bevel-vault-mgmt
+  version: 0.15.5
+- name: bevel-scripts
+  repository: file://../../../shared/charts/bevel-scripts
+  version: 0.15.2
+digest: sha256:996c1c8656b9299b6f9f37cc81a0069f83185d6a7351f0372f702ee152a9360f
+generated: "2023-12-29T14:37:30.588424829Z"

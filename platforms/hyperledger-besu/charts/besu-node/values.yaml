@@ -34,6 +34,10 @@ storage:
     enabled: false
 tessera:
   enabled: false
+vault:
+  enabled: false
+bevelScripts:
+  enabled: false
 
 # fixes permissions of volumes because besu runs as user `besu` and volumes prefer `root`
 volumePermissionsFix:

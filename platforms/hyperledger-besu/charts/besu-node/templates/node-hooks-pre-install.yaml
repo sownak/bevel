@@ -66,14 +66,16 @@ spec:
                 kubectl -n {{ .Release.Namespace }} get configmap besu-peers -o json
                 if [ $? -ne 0 ]; then
                   echo "[]" > /tmp/static-nodes.json.raw
+                  kubectl -n {{ .Release.Namespace }} create configmap besu-peers --from-file=static-nodes.json=/tmp/static-nodes.json.raw
                 else
                   echo $(kubectl -n {{ .Release.Namespace }} get configmap besu-peers -o jsonpath='{.data.static-nodes\.json}' ) > /tmp/static-nodes.json.raw
                 fi
                 # update the entries
                 echo "updating besu-peers..."
                 pubkey=$(cat $PUBKEY_LOC )
-                NEEDLE="enode://$pubkey@{{ template "besu-node.fullname" . }}.{{ .Release.Namespace }}:30303?discport=0"
-                cat /tmp/static-nodes.json.raw | jq --arg NEEDLE "$NEEDLE" '. += [ $NEEDLE ] | unique ' > /tmp/static-nodes.json
+                cat /tmp/static-nodes.json.raw | jq --arg NEEDLE "{{ .Release.Name }}" 'map(select(test($NEEDLE) | not))' > /tmp/static-nodes-new.json.raw
+                NEEDLE="enode://$pubkey@{{ include "besu-node.enodeURL" . }}?discport=0"
+                cat /tmp/static-nodes-new.json.raw | jq --arg NEEDLE "$NEEDLE" '. += [ $NEEDLE ] | unique ' > /tmp/static-nodes.json
                 kubectl -n {{ .Release.Namespace }} create configmap besu-peers --from-file=static-nodes.json=/tmp/static-nodes.json -o yaml --dry-run=client | kubectl replace -f -
               }
 
@@ -88,8 +90,9 @@ spec:
                 echo "updating besu-bootnodes..."
                 echo $(kubectl -n {{ .Release.Namespace }} get configmap besu-bootnodes -o jsonpath='{.data.bootnodes-json}' ) > /tmp/besu-bootnodes-json.raw
                 pubkey=$(cat $PUBKEY_LOC )
-                NEEDLE="enode://$pubkey@{{ template "besu-node.fullname" . }}.{{ .Release.Namespace }}:30303"
-                cat /tmp/besu-bootnodes-json.raw | jq --arg NEEDLE "$NEEDLE" '. += [ $NEEDLE ] | unique ' > /tmp/besu-bootnodes-json
+                NEEDLE="enode://$pubkey@{{ include "besu-node.enodeURL" . }}"
+                cat /tmp/besu-bootnodes-json.raw | jq --arg NEEDLE "{{ .Release.Name }}" 'map(select(test($NEEDLE) | not))' > /tmp/bootnodes-new.json.raw
+                cat /tmp/bootnodes-new.json.raw | jq --arg NEEDLE "$NEEDLE" '. += [ $NEEDLE ] | unique ' > /tmp/besu-bootnodes-json
                 cat /tmp/besu-bootnodes-json | jq -r -c '. | join(",")' | tr -d '\n' > /tmp/besu-bootnodes-string
                 kubectl -n {{ .Release.Namespace }} create configmap besu-bootnodes --from-file=bootnodes-json=/tmp/besu-bootnodes-json \
                   --from-file=bootnodes-string=/tmp/besu-bootnodes-string -o yaml --dry-run=client | kubectl replace -f -

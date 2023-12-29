@@ -1,3 +1,4 @@
+#helm install genesis -f releases/genesis.yaml -n besu charts/besu-genesis
 global:
   serviceAccountName: vault-auth
   vault:
@@ -6,7 +7,7 @@ global:
     address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
     authPath: besunode1
     secretEngine: secretsv2
-    secretPrefix: "data/supplychain"
+    secretPrefix: "data/abesutest"
     role: vault-role
   cluster:
     provider: aws
