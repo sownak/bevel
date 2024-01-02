@@ -1,9 +1,9 @@
 dependencies:
 - name: bevel-storageclass
-  repository: file://../../../shared/charts/bevel-storageclass
+  repository: https://sownak.github.io/bevel
   version: 0.15.2
 - name: besu-tlscert-gen
-  repository: file://../besu-tlscert-gen
+  repository: https://sownak.github.io/bevel
   version: 0.15.2
-digest: sha256:ef64d378aa40d1a66db9e2782e49883f2b9cea979435570b5e165067a9c8e2fd
-generated: "2023-12-28T13:58:43.047146546Z"
+digest: sha256:96944f2755c76d5f72f9ef10341dcbcc96e390fde998781fe7bd2efadae9ce58
+generated: "2024-01-02T15:08:00.112437377Z"

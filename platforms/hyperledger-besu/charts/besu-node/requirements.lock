@@ -1,9 +1,9 @@
 dependencies:
 - name: bevel-storageclass
-  repository: file://../../../shared/charts/bevel-storageclass
+  repository: https://sownak.github.io/bevel
   version: 0.15.2
 - name: besu-tessera-node
-  repository: file://../besu-tessera-node
-  version: 0.15.4
-digest: sha256:fb6c5314e0ea320194df46f51e9c6751e17ccf7e5dcaf630b5fc935be357bc56
-generated: "2023-12-29T16:33:46.797946293Z"
+  repository: https://sownak.github.io/bevel
+  version: 0.15.0
+digest: sha256:be5937257cf0ba397f883a8316e11175b03293f5e8ab2661bcb70cba60c3c5f8
+generated: "2024-01-02T15:04:46.531441539Z"
