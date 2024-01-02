@@ -88,7 +88,7 @@ The [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/hy
   these lables will not be applied to VolumeClaimTemplate of StatefulSet as labels are automatically picked up by Kubernetes                                 | ""       |
 
 
-### Images 
+### Image
 
 
 | Name                     | Description                                                                                | Default Value   |

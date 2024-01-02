@@ -1,0 +1,35 @@
+#helm install genesis -f values/proxy-and-vault/genesis.yaml -n besu besu-genesis
+global:
+  serviceAccountName: vault-auth
+  vault:
+    type: hashicorp
+    network: besu
+    address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
+    authPath: besunode1
+    secretEngine: secretsv2
+    secretPrefix: "data/abesutest"
+    role: vault-role
+  cluster:
+    provider: aws
+    cloudNativeServices: false
+    kubernetes_url: https://34D2F36E71F0880BE63D943D2E503A9B.gr7.eu-west-1.eks.amazonaws.com
+
+rawGenesisConfig:
+  genesis:
+    config:
+      chainId: 1337
+      algorithm:
+        consensus: qbft
+        blockperiodseconds: 10
+        epochlength: 30000
+        requesttimeoutseconds: 20
+    gasLimit: '0xf7b760' 
+    difficulty: '0x1'
+    coinbase: '0x0000000000000000000000000000000000000000'
+  blockchain:
+    nodes:
+      generate: true
+      count: 4
+    accountPassword: 'password'
+vault:
+  enabled: true

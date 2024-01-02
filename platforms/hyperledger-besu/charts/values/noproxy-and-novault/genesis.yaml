@@ -1,14 +1,14 @@
-#helm install genesis -f releases/genesis.yaml -n besu charts/besu-genesis
+#helm install genesis -f values/noproxy-and-novault/genesis.yaml -n besu besu-genesis
 global:
-  serviceAccountName: vault-auth
+  serviceAccountName: bevel-auth
   vault:
-    type: hashicorp
-    network: besu
-    address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
-    authPath: besunode1
-    secretEngine: secretsv2
-    secretPrefix: "data/abesutest"
-    role: vault-role
+    type: kubernetes
+    # network: besu
+    # address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
+    # authPath: besunode1
+    # secretEngine: secretsv2
+    # secretPrefix: "data/abesutest"
+    # role: vault-role
   cluster:
     provider: aws
     cloudNativeServices: false
@@ -31,5 +31,3 @@ rawGenesisConfig:
       generate: true
       count: 4
     accountPassword: 'password'
-vault:
-  enabled: true

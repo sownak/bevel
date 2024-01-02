@@ -58,7 +58,7 @@ spec:
           defaultMode: 0777
       initContainers:
       - name: init-check-certificates
-        image: "{{ $.Values.image.alpineutils }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ $.Values.image.pullPolicy }}
         env:
         - name: VAULT_ADDR
@@ -123,7 +123,7 @@ spec:
             subPath: bevel-vault.sh
       containers:
       - name:  "generate-certs"
-        image: "{{ $.Values.image.alpineutils }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ $.Values.image.pullPolicy }}
         env:
         - name: VAULT_ADDR

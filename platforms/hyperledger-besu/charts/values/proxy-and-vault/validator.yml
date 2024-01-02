@@ -1,6 +1,6 @@
 ---
-#helm install validator-1 -f releases/validator.yml -n besu --set global.proxy.p2p=15011 charts/besu-node
-#helm upgrade validator-1 -f releases/validator.yml -n besu --set global.proxy.p2p=15011 charts/besu-node
+#helm install validator-1 -f values/proxy-and-vault/validator.yml -n besu --set global.proxy.p2p=15011 besu-node
+#helm upgrade validator-1 -f values/proxy-and-vault/validator.yml -n besu --set global.proxy.p2p=15011 besu-node
 global:
   serviceAccountName: vault-auth
   cluster:
@@ -36,3 +36,7 @@ node:
       cpuRequest: 0.5
       memLimit: "2G"
       memRequest: "1G"
+image:
+  besu:
+    repository: hyperledger/besu
+    tag: 22.10.2

@@ -44,8 +44,9 @@ global:
 
 image:
   #Provide the image repository for all containers
-  #Eg. repository: ghcr.io/hyperledger/bevel-alpine:latest
-  alpineutils: ghcr.io/hyperledger/bevel-alpine:latest
+  #Eg. repository: ghcr.io/hyperledger/bevel-alpine
+  repository: ghcr.io/hyperledger/bevel-alpine
+  tag: latest
   #Provide the secret to use if private repository
   #Eg. pullSecret: regcred
   pullSecret: 

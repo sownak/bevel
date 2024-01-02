@@ -28,7 +28,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: generate-genesis
-          image: "{{ .Values.image.genesisUtils }}"
+          image: "{{ .Values.image.genesisUtils.repository }}:{{ .Values.image.genesisUtils.tag }}"
           securityContext:
             runAsUser: 0
           imagePullPolicy: {{ .Values.image.pullPolicy }}

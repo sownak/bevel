@@ -1,3 +1,4 @@
+{{- if eq .Values.global.vault.type "hashicorp" }}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -84,3 +85,4 @@ spec:
               mountPath: "/etc/ssl/certs/"
               readOnly: true
           {{ end }}
+{{ end }}

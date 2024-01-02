@@ -131,9 +131,9 @@ image:
   pullPolicy: IfNotPresent
   besu:
     repository: hyperledger/besu
-    tag: 22.7.2
+    tag: 22.10.2
   hooks:
-    repository: consensys/quorum-k8s-hooks
+    repository: ghcr.io/hyperledger/bevel-k8s-hooks
     tag: qgt-0.2.12
 
 labels:

@@ -4,10 +4,7 @@ dependencies:
     tags:
       - bevel
     version: ~0.15.3
-    alias: vault
-    condition: vault.enabled
   - name: bevel-scripts
-    alias: bevel-scripts
     repository: "file://../../../shared/charts/bevel-scripts"
     tags:
       - bevel

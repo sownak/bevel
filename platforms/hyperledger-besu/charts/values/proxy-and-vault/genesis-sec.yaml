@@ -1,0 +1,23 @@
+#helm install genesis -f values/proxy-and-vault/genesis-sec.yaml -n carrier-bes besu-genesis
+global:
+  serviceAccountName: vault-auth
+  cluster:
+    provider: aws
+    cloudNativeServices: false
+    kubernetes_url: https://34D2F36E71F0880BE63D943D2E503A9B.gr7.eu-west-1.eks.amazonaws.com
+  vault:
+    type: hashicorp
+    network: besu
+    address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
+    authPath: besunode2
+    secretEngine: secretsv2
+    secretPrefix: "data/carrier"
+    role: vault-role
+
+settings:
+  # Flag to ensure the genesis configmap is removed on helm uninstall
+  removeGenesisOnDelete: true
+  # Flag to copy genesis and static nodes from files for secondary members
+  secondaryGenesis: true
+vault:
+  enabled: true

@@ -1,9 +1,9 @@
 dependencies:
 - name: bevel-vault-mgmt
   repository: file://../../../shared/charts/bevel-vault-mgmt
-  version: 0.15.5
+  version: 0.15.6
 - name: bevel-scripts
   repository: file://../../../shared/charts/bevel-scripts
   version: 0.15.2
-digest: sha256:6f7a1239460c0f92af3b39ab1444c94aba42794f56813d603b8c62c12d7ce5b9
-generated: "2023-12-22T12:06:21.099635552Z"
+digest: sha256:82aa78781930c4d3d4725edbff4eef7e080db2c34fe04e9b5c105713333d5803
+generated: "2024-01-02T10:22:43.025490881Z"

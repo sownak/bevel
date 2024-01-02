@@ -37,8 +37,8 @@ spec:
     spec:
       containers:
       - name: cactus-connector
-        image: {{ .Values.image.repository | quote }}
-        imagePullPolicy: {{ .Values.image.pullPolicy}}
+        image: "{{ .Values.image.repository }}{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - name: http
           containerPort: 4000

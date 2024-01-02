@@ -33,7 +33,9 @@ global:
     kubernetes_url: 
 image:
   #Provide the image for the job/hook container
-  genesisUtils: consensys/quorum-k8s-hooks:qgt-0.2.12
+  genesisUtils:
+    repository: ghcr.io/hyperledger/bevel-k8s-hooks
+    tag: qgt-0.2.12
   #Provide the secret to use if private repository
   #Eg. pullSecret: regcred
   pullSecret: 
@@ -66,6 +68,3 @@ rawGenesisConfig:
       generate: true
       count: 4
     accountPassword: 'password'
-# Settings for subchart
-vault:
-  enabled: true

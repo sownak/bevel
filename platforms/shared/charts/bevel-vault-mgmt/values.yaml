@@ -14,6 +14,7 @@ global:
     #Eg. kubernetes_url: https://10.3.8.5:6443
     kubernetes_url: 
   vault:
+    type: hashicorp
     #Provide the vaultrole for an organization
     #Eg. vaultrole: org1-vault-role
     role: vault-role

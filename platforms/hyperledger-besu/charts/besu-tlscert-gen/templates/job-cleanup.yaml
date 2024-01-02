@@ -34,7 +34,7 @@ spec:
       {{- end }}
       containers:
         - name: delete-certs
-          image: "{{ .Values.image.alpineutils }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           securityContext:
             runAsUser: 0
           imagePullPolicy: {{ .Values.image.pullPolicy }}

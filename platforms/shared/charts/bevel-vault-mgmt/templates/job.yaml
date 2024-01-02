@@ -3,7 +3,7 @@
 #
 #  SPDX-License-Identifier: Apache-2.0
 ##############################################################################################
-
+{{- if eq .Values.global.vault.type "hashicorp" }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -204,3 +204,4 @@ spec:
             - name: policies-config
               mountPath: /policies/policies-config.json
               subPath: policies-config.json
+{{ end }}

@@ -98,7 +98,7 @@ spec:
       {{- end }}
       initContainers:
       - name: certificates-init
-        image: {{ .Values.image.alpineutils }}
+        image: {{ .Values.image.alpineutils.repository }}:{{ .Values.image.alpineutils.tag }}
         imagePullPolicy: IfNotPresent
         env:
         - name: VAULT_ADDR
@@ -197,7 +197,7 @@ spec:
           readOnly: true
       containers:
       - name: mysql-db
-        image: {{ .Values.image.mysql }}
+        image: {{ .Values.image.mysql.repository }}:{{ .Values.image.mysql.tag }}
         imagePullPolicy: IfNotPresent
         env:
         - name: "MYSQL_ROOT_PASSWORD"
@@ -220,7 +220,7 @@ spec:
           mountPath: "/var/lib/mysql"
           subPath: mysql
       - name: tessera
-        image: {{ .Values.image.tessera }}
+        image: {{ .Values.image.tessera.repository }}:{{ .Values.image.tessera.tag }}
         imagePullPolicy: {{ .Values.image.PullPolicy }}
         ports:
           - name: tessera

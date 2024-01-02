@@ -1,0 +1,38 @@
+---
+#helm install validator-1 -f values/noproxy-and-novault/validator.yml -n besu besu-node
+#helm upgrade validator-1 -f values/noproxy-and-novault/validator.yml -n besu besu-node
+global:
+  serviceAccountName: bevel-auth
+  cluster:
+    provider: aws
+    cloudNativeServices: false
+  vault:
+    type: kubernetes
+    # address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
+    # authPath: besunode1
+    # secretEngine: secretsv2
+    # secretPrefix: "data/abesutest"
+    # role: vault-role
+  proxy:
+    provider: none
+    externalUrlSuffix: svc.local
+
+storage:
+  enabled: true
+  size: "2Gi"
+tessera:
+  enabled: false
+
+node:
+  removeKeysOnDelete: false # this will erase keys - so be careful with this on validators
+  isBootnode: false    # set this to true if this node is a bootnode
+  usesBootnodes: false
+  besu:
+    envBesuOpts: ""  
+    metrics:
+      serviceMonitorEnabled: true
+    resources:
+      cpuLimit: 1
+      cpuRequest: 0.5
+      memLimit: "2G"
+      memRequest: "1G"
