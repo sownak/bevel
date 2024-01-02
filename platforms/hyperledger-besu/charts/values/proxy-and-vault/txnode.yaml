@@ -8,14 +8,15 @@ global:
     cloudNativeServices: false
   vault:
     type: hashicorp
-    address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
-    authPath: besunode1
+    network: besu
+    address: http://vault.demo.com:8200
+    authPath: supplychain
     secretEngine: secretsv2
-    secretPrefix: "data/abesutest"
+    secretPrefix: "data/supplychain"
     role: vault-role
   proxy:
     provider: ambassador
-    externalUrlSuffix: bes.demo.aws.blockchaincloudpoc.com
+    externalUrlSuffix: test.yourdomain.com
 
 storage:
   size: "2Gi"

@@ -1,22 +1,16 @@
 ---
-#helm install member-2 -f values/proxy-and-vault/txnode-sec.yml -n carrier-bes --set global.proxy.p2p=15016 besu-node
+#helm install member-2 -f values/noproxy-and-novault/txnode-sec.yml -n carrier-bes besu-node
 global:
-  serviceAccountName: vault-auth
+  serviceAccountName: bevel-auth
   cluster:
     provider: aws
     cloudNativeServices: false
-    kubernetes_url: https://34D2F36E71F0880BE63D943D2E503A9B.gr7.eu-west-1.eks.amazonaws.com
   vault:
-    type: hashicorp
+    type: kubernetes
     network: besu
-    address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
-    authPath: besunode2
-    secretEngine: secretsv2
-    secretPrefix: "data/carrier"
-    role: vault-role
   proxy:
-    provider: ambassador
-    externalUrlSuffix: bes.demo.aws.blockchaincloudpoc.com
+    provider: none
+    externalUrlSuffix: svc.cluster.local
 
 storage:
   size: "2Gi"
@@ -24,9 +18,9 @@ storage:
 tessera:
   enabled: true
   tessera:
-    port: 443
+    tlsMode: "OFF"
     peerNodes: 
-      - url: "https://member-1.bes.demo.aws.blockchaincloudpoc.com"
+      - url: "http://tessera-member-1.besu:9000"
   resources:
     cpuLimit: 1
     cpuRequest: 0.5
@@ -41,10 +35,10 @@ tessera:
       enabled: false
   
   tls:
-    enabled: true
-    settings:
-      certSubject: CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB
-      tmTls: true
+    enabled: false
+    # settings:
+    #   certSubject: CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB
+    #   tmTls: true
 
 node:
   removeKeysOnDelete: false # this will erase keys - so be careful with this on validators
@@ -61,7 +55,3 @@ node:
       memRequest: "1G"
     account:
       password: 'password'
-image:
-  besu:
-    repository: hyperledger/besu
-    tag: 22.10.2

@@ -11,8 +11,8 @@ global:
     provider: aws  # choose from: local | aws
     cloudNativeServices: false # 'false' is implemented, 'true' to use Cloud Native Services (SecretsManager and IAM for AWS) is in future
     #Provide the kubernetes host url
-    #Eg. kubernetes_url: https://10.3.8.5:6443
-    kubernetes_url: 
+    #Eg. kubernetesUrl: https://10.3.8.5:6443
+    kubernetesUrl: 
   vault:
     type: hashicorp
     #Provide the vaultrole for an organization

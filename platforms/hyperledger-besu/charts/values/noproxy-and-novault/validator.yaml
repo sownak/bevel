@@ -8,14 +8,9 @@ global:
     cloudNativeServices: false
   vault:
     type: kubernetes
-    # address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
-    # authPath: besunode1
-    # secretEngine: secretsv2
-    # secretPrefix: "data/abesutest"
-    # role: vault-role
   proxy:
     provider: none
-    externalUrlSuffix: svc.local
+    externalUrlSuffix: svc.cluster.local
 
 storage:
   enabled: true

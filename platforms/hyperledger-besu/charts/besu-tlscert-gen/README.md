@@ -59,7 +59,7 @@ These parameters are refered to as same in each parent or chold chart
 |`global.serviceAccountName` | The serviceaccount name that will be created for Vault Auth management| `vault-auth` |
 | `global.cluster.provider` | Kubernetes cluster provider. Only `aws` is supported for now | `aws`  |
 | `global.cluster.cloudNativeServices` | only `false` is implemented, `true` to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure) is for future  | `false`  |
-| `global.cluster.kubernetes_url` | Kubernetes server URL | "" |
+| `global.cluster.kubernetesUrl` | Kubernetes server URL | "" |
 | `global.vault.type`  | Type of Vault to support other providers. Currently, only `hashicorp` is supported. | `hashicorp`    |
 | `global.vault.role`  | Role used for authentication with Vault | `vault-role`    |
 | `global.vault.address`| URL of the Vault server.    | `""`            |

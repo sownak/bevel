@@ -36,8 +36,8 @@ global:
     provider: aws  # choose from: local | aws
     cloudNativeServices: false # 'false' is implemented
     #Provide the kubernetes host url
-    #Eg. kubernetes_url: https://10.3.8.5:6443
-    kubernetes_url: 
+    #Eg. kubernetesUrl: https://10.3.8.5:6443
+    kubernetesUrl: 
   proxy:
     # Provide external URL for cert generation
     externalUrlSuffix: test.blockchaincloudpoc.com

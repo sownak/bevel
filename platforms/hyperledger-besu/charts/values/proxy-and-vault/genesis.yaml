@@ -4,15 +4,15 @@ global:
   vault:
     type: hashicorp
     network: besu
-    address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
-    authPath: besunode1
+    address: http://vault.demo.com:8200
+    authPath: supplychain
     secretEngine: secretsv2
-    secretPrefix: "data/abesutest"
+    secretPrefix: "data/supplychain"
     role: vault-role
   cluster:
     provider: aws
     cloudNativeServices: false
-    kubernetes_url: https://34D2F36E71F0880BE63D943D2E503A9B.gr7.eu-west-1.eks.amazonaws.com
+    kubernetesUrl: https://kubernetes.url
 
 rawGenesisConfig:
   genesis:
@@ -31,5 +31,3 @@ rawGenesisConfig:
       generate: true
       count: 4
     accountPassword: 'password'
-vault:
-  enabled: true
