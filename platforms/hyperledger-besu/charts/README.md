@@ -33,51 +33,56 @@ global:
 - Kubernetes Cluster (either Managed cloud option like EKS or local like minikube)
 - Accessible and unsealed Hahsicorp Vault (if using Vault)
 - Configured Ambassador AES (if using Ambassador as proxy)
+- Update the dependencies
+  ```
+  helm dependency update besu-genesis
+  helm dependency update besu-node
+  ```
 
 ### _Without Proxy or Vault_
 
 ```bash
-helm install genesis ./besu-genesis --namespace supplychain --create-namespace --values ./values/noproxy-and-novault/genesis.yaml
+helm install genesis ./besu-genesis --namespace supplychain-bes --create-namespace --values ./values/noproxy-and-novault/genesis.yaml
 
 # Install the validators
-helm install validator-1 ./besu-node --namespace supplychain --values ./values/noproxy-and-novault/validator.yaml
-helm install validator-2 ./besu-node --namespace supplychain --values ./values/noproxy-and-novault/validator.yaml
-helm install validator-3 ./besu-node --namespace supplychain --values ./values/noproxy-and-novault/validator.yaml
-helm install validator-4 ./besu-node --namespace supplychain --values ./values/noproxy-and-novault/validator.yaml
+helm install validator-1 ./besu-node --namespace supplychain-bes --values ./values/noproxy-and-novault/validator.yaml
+helm install validator-2 ./besu-node --namespace supplychain-bes --values ./values/noproxy-and-novault/validator.yaml
+helm install validator-3 ./besu-node --namespace supplychain-bes --values ./values/noproxy-and-novault/validator.yaml
+helm install validator-4 ./besu-node --namespace supplychain-bes --values ./values/noproxy-and-novault/validator.yaml
 
 # spin up a besu and tessera node pair
-helm install member-1 ./besu-node --namespace supplychain --values ./values/noproxy-and-novault/txnode.yaml
+helm install member-1 ./besu-node --namespace supplychain-bes --values ./values/noproxy-and-novault/txnode.yaml
 ```
 ### To setup another member in a different namespace
 
 ```bash
 # Get the genesis and static nodes from existing member and place in besu-genesis/files
 cd ./besu-genesis/files/
-kubectl --namespace supplychain get configmap besu-peers -o jsonpath='{.data.static-nodes\.json}' > static-nodes.json
-kubectl --namespace supplychain get configmap besu-genesis  -o jsonpath='{.data.genesis\.json}' > genesis.json
+kubectl --namespace supplychain-bes get configmap besu-peers -o jsonpath='{.data.static-nodes\.json}' > static-nodes.json
+kubectl --namespace supplychain-bes get configmap besu-genesis  -o jsonpath='{.data.genesis\.json}' > genesis.json
 
 # Run secondary genesis
 cd ../..
-helm install genesis ./besu-genesis --namespace carrier --create-namespace --values ./values/noproxy-and-novault/genesis-sec.yaml
+helm install genesis ./besu-genesis --namespace carrier-bes --create-namespace --values ./values/noproxy-and-novault/genesis-sec.yaml
 
-helm install member-2 ./besu-node --namespace carrier --values ./values/noproxy-and-novault/txnode-sec.yaml
+helm install member-2 ./besu-node --namespace carrier-bes --values ./values/noproxy-and-novault/txnode-sec.yaml
 ```
 
 ### _With Ambassador proxy and Vault_
 Replace the `global.vault.address`, `global.cluster.kubernetesUrl` and `global.proxy.externalUrlSuffix` in all the files in `./values/proxy-and-vault/` folder.
 
 ```bash
-helm install genesis ./besu-genesis --namespace supplychain --create-namespace --values ./values/proxy-and-vault/genesis.yaml
+helm install genesis ./besu-genesis --namespace supplychain-bes --create-namespace --values ./values/proxy-and-vault/genesis.yaml
 
 # !! IMPORTANT !! - If you use bootnodes, please set `quorumFlags.usesBootnodes: true` in the override yaml files
 # for validator.yaml, txnode.yaml
-helm install validator-1 ./besu-node --namespace supplychain --values ./values/proxy-and-vault/validator.yaml
-helm install validator-2 ./besu-node --namespace supplychain --values ./values/proxy-and-vault/validator.yaml
-helm install validator-3 ./besu-node --namespace supplychain --values ./values/proxy-and-vault/validator.yaml
-helm install validator-4 ./besu-node --namespace supplychain --values ./values/proxy-and-vault/validator.yaml
+helm install validator-1 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/validator.yaml
+helm install validator-2 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/validator.yaml
+helm install validator-3 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/validator.yaml
+helm install validator-4 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/validator.yaml
 
 # spin up a besu and tessera node pair
-helm install member-1 ./besu-node --namespace supplychain --values ./values/proxy-and-vault/txnode.yaml
+helm install member-1 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/txnode.yaml
 
 ```
 ### To setup another member in a different namespace
@@ -86,14 +91,14 @@ Update the `global.proxy.externalUrlSuffix` and `tessera.tessera.peerNodes` in f
 ```bash
 # Get the genesis and static nodes from existing member and place in besu-genesis/files
 cd ./besu-genesis/files/
-kubectl --namespace supplychain get configmap besu-peers -o jsonpath='{.data.static-nodes\.json}' > static-nodes.json
-kubectl --namespace supplychain get configmap besu-genesis  -o jsonpath='{.data.genesis\.json}' > genesis.json
+kubectl --namespace supplychain-bes get configmap besu-peers -o jsonpath='{.data.static-nodes\.json}' > static-nodes.json
+kubectl --namespace supplychain-bes get configmap besu-genesis  -o jsonpath='{.data.genesis\.json}' > genesis.json
 
 # Run secondary genesis
 cd ../..
-helm install genesis ./besu-genesis --namespace carrier --create-namespace --values ./values/proxy-and-vault/genesis-sec.yaml
+helm install genesis ./besu-genesis --namespace carrier-bes --create-namespace --values ./values/proxy-and-vault/genesis-sec.yaml
 
-helm install member-2 ./besu-node --namespace carrier --values ./values/proxy-and-vault/txnode-sec.yaml
+helm install member-2 ./besu-node --namespace carrier-bes --values ./values/proxy-and-vault/txnode-sec.yaml
 ```
 
 ### API Calls
@@ -115,14 +120,14 @@ curl -v -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","me
 
 To clean up, just uninstall the helm releases.
 ```bash
-helm uninstall --namespace supplychain validator-1
-helm uninstall --namespace supplychain validator-2
-helm uninstall --namespace supplychain validator-3
-helm uninstall --namespace supplychain validator-4
-helm uninstall --namespace supplychain member-1
-helm uninstall --namespace supplychain genesis
+helm uninstall --namespace supplychain-bes validator-1
+helm uninstall --namespace supplychain-bes validator-2
+helm uninstall --namespace supplychain-bes validator-3
+helm uninstall --namespace supplychain-bes validator-4
+helm uninstall --namespace supplychain-bes member-1
+helm uninstall --namespace supplychain-bes genesis
 
-helm uninstall --namespace carrier member-2
-helm uninstall --namespace carrier genesis
+helm uninstall --namespace carrier-bes member-2
+helm uninstall --namespace carrier-bes genesis
 
 ```

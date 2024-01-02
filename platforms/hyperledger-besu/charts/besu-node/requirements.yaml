@@ -1,13 +1,13 @@
 dependencies:
   - name: bevel-storageclass
     alias: storage
-    repository: "file://../../../shared/charts/bevel-storageclass"
+    repository: "https://sownak.github.io/bevel"
     tags:
       - storage
     version: ~0.15.0
   - name: besu-tessera-node
     alias: tessera
-    repository: "file://../besu-tessera-node"
+    repository: "https://sownak.github.io/bevel"
     tags:
       - tessera
     version: ~0.15.0
