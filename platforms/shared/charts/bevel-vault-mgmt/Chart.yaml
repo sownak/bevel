@@ -6,7 +6,7 @@
 apiVersion: v2
 name: bevel-vault-mgmt
 description: Bevel Chart for vault and kubernetes configuration
-version: 0.15.6
+version: 0.15.4
 appVersion: "latest"
 keywords:
   - bevel
