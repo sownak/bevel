@@ -40,3 +40,4 @@
 *_custom.tpl
 **/charts/*.tgz
 **/files/*.json
+requirements.lock
