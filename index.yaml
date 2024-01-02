@@ -194,6 +194,31 @@ entries:
     urls:
     - https://github.com/hyperledger/bevel/releases/download/besu-tlscert-cert-gen-0.15.0/besu-tlscert-cert-gen-0.15.0.tgz
     version: 0.15.0
+  besu-tlscert-gen:
+  - apiVersion: v1
+    appVersion: latest
+    created: "2024-01-02T15:35:41.032476024Z"
+    description: 'Hyperledger Besu: Generates and stores TLS certificates for nodes
+      and tessera'
+    digest: 902c4acbce3c44604706fe35a228b9a1093a25dab22146a43d7f585d685986d3
+    home: https://hyperledger-bevel.readthedocs.io/en/latest/
+    keywords:
+    - bevel
+    - hyperledger
+    - besu
+    - enterprise
+    - blockchain
+    - deployment
+    - accenture
+    maintainers:
+    - email: bevel@lists.hyperledger.org
+      name: Hyperledger Bevel maintainers
+    name: besu-tlscert-gen
+    sources:
+    - https://github.com/hyperledger/bevel
+    urls:
+    - https://github.com/sownak/bevel/releases/download/besu-tlscert-gen-0.15.0/besu-tlscert-gen-0.15.0.tgz
+    version: 0.15.0
   besu-validator-node:
   - apiVersion: v1
     appVersion: 21.10.6
@@ -400,4 +425,4 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/letsencrypt-issuer-0.15.0/letsencrypt-issuer-0.15.0.tgz
     version: 0.15.0
-generated: "2024-01-02T15:28:34.780301157Z"
+generated: "2024-01-02T15:35:41.032509586Z"
