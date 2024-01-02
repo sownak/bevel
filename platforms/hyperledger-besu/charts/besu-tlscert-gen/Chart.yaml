@@ -7,7 +7,7 @@
 apiVersion: v1
 name: besu-tlscert-gen
 description: "Hyperledger Besu: Generates and stores TLS certificates for nodes and tessera"
-version: 0.15.2
+version: 0.15.0
 appVersion: latest
 keywords:
   - bevel
