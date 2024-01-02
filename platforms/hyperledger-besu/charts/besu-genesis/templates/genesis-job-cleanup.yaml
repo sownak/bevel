@@ -40,7 +40,7 @@ spec:
           args:
             - |
 
-{{- if .Values.quorumFlags.removeGenesisOnDelete }}
+{{- if .Values.settings.removeGenesisOnDelete }}
 
               echo "Deleting genesis configmap in k8s ..."
               kubectl delete configmap --namespace {{ .Release.Namespace }} besu-genesis

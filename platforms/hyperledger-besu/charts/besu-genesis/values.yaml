@@ -40,9 +40,11 @@ image:
   #Pull policy to be used for the Docker image
   pullPolicy: IfNotPresent
 
-quorumFlags:
+settings:
   # Flag to ensure the genesis configmap is removed on helm uninstall
   removeGenesisOnDelete: true
+  # Flag to copy genesis and static nodes from files for secondary members
+  secondaryGenesis: false
 
 # the raw Genesis config
 # rawGenesisConfig.blockchain.nodes set the number of validators/signers

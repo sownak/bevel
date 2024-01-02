@@ -115,8 +115,11 @@ spec:
                   kubectl create configmap --namespace {{ .Release.Namespace }} besu-genesis --from-file=genesis.json=$FOLDER_PATH/besu/genesis.json
                 fi
               }
+              {{- if .Values.settings.secondaryGenesis }}
+              echo "Secondary Genesis, config maps are created from local files."
 
-              echo "Creating config ..."
+              {{- else }}
+              echo "Primary Genesis, Creating config ..."
               FOLDER_PATH=$(quorum-genesis-tool --consensus {{ .Values.rawGenesisConfig.genesis.config.algorithm.consensus }} {{ if .Values.rawGenesisConfig.blockchain.nodes.generate }} --validators {{ .Values.rawGenesisConfig.blockchain.nodes.count }} {{ else }} --validators 0 {{ end }} --members 0 --bootnodes 0 --chainID {{ .Values.rawGenesisConfig.genesis.config.chainId }} --blockperiod {{ .Values.rawGenesisConfig.genesis.config.algorithm.blockperiodseconds }} --epochLength {{ .Values.rawGenesisConfig.genesis.config.algorithm.epochlength }} --requestTimeout {{ .Values.rawGenesisConfig.genesis.config.algorithm.requesttimeoutseconds }} --difficulty {{ .Values.rawGenesisConfig.genesis.difficulty }} --gasLimit {{ .Values.rawGenesisConfig.genesis.gasLimit }} --coinbase {{ .Values.rawGenesisConfig.genesis.coinbase }} {{ if .Values.rawGenesisConfig.blockchain.accountPassword }} --accountPassword {{ .Values.rawGenesisConfig.blockchain.accountPassword }} {{ end }} --quickstartDevAccounts {{ .Values.rawGenesisConfig.genesis.includeQuickStartAccounts }} --outputPath /generated-config | tail -1 | sed -e "s/^Artifacts in folder: //")
 
               echo "Creating bootnodes configmap in k8s ..."
@@ -167,7 +170,7 @@ spec:
               # remove the extra comma to make it valid json
               sed -i '0,/,/s///' $FOLDER_PATH/static-nodes.json
               safeWriteBesuPeersConfigmap $FOLDER_PATH
-
+              {{- end }}
               echo "Completed ..."
           
       volumes:
