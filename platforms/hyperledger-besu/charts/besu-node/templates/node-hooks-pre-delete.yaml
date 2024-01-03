@@ -104,7 +104,7 @@ spec:
 
 {{- if .Values.node.removeKeysOnDelete }}
 
-{{- if and (ne .Values.global.cluster.provider "local") (.Values.global.cluster.cloudNativeServices) }}
+{{- if and (ne .Values.global.cluster.provider "minikube") (.Values.global.cluster.cloudNativeServices) }}
 
               deleteSecret {{ template "besu-node.fullname" . }}-nodekey
               deleteSecret {{ template "besu-node.fullname" . }}-nodekeypub

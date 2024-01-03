@@ -20,7 +20,7 @@ tessera:
   tessera:
     tlsMode: "OFF"
     peerNodes: 
-      - url: "http://tessera-member-1.besu:9000"
+      - url: "http://tessera-member-1.supplychain-bes:9000"
   resources:
     cpuLimit: 1
     cpuRequest: 0.5

@@ -29,9 +29,9 @@ spec:
     spec:
       serviceAccountName: {{ .Values.global.serviceAccountName }}      
       restartPolicy: "Never"
-      {{ if .Values.images.pullSecret  }}
+      {{ if .Values.image.pullSecret  }}
       imagePullSecrets:
-        - name: {{ $.Values.images.pullSecret }}
+        - name: {{ $.Values.image.pullSecret }}
       {{ end }}
       volumes:
       {{ if .Values.global.vault.tls  }}
@@ -44,7 +44,7 @@ spec:
       {{ end }}
       containers:
         - name: vault-cleanup
-          image: {{ $.Values.images.alpineutils }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: IfNotPresent
           env:
           - name: VAULT_ADDR

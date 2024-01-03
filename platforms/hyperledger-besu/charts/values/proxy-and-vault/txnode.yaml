@@ -1,6 +1,6 @@
 ---
-#helm install member-1 -f values/proxy-and-vault/txnode.yml -n besu --set global.proxy.p2p=15015 besu-node 
-#helm upgrade member-1 -f values/proxy-and-vault/txnode.yml -n besu --set global.proxy.p2p=15015 besu-node
+#helm install member-1 -f values/proxy-and-vault/txnode.yml -n supplychain-bes --set global.proxy.p2p=15015 besu-node 
+#helm upgrade member-1 -f values/proxy-and-vault/txnode.yml -n supplychain-bes --set global.proxy.p2p=15015 besu-node
 global:
   serviceAccountName: vault-auth
   cluster:

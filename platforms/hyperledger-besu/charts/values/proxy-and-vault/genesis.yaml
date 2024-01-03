@@ -1,4 +1,4 @@
-#helm install genesis -f values/proxy-and-vault/genesis.yaml -n besu besu-genesis
+#helm install genesis -f values/proxy-and-vault/genesis.yaml -n supplychain-bes --create-namespace besu-genesis
 global:
   serviceAccountName: vault-auth
   vault:

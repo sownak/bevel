@@ -1,6 +1,6 @@
 ---
-#helm install validator-1 -f values/noproxy-and-novault/validator.yml -n besu besu-node
-#helm upgrade validator-1 -f values/noproxy-and-novault/validator.yml -n besu besu-node
+#helm install validator-1 -f values/noproxy-and-novault/validator.yml -n supplychain-bes besu-node
+#helm upgrade validator-1 -f values/noproxy-and-novault/validator.yml -n supplychain-bes besu-node
 global:
   serviceAccountName: bevel-auth
   cluster:

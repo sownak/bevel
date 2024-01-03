@@ -22,8 +22,8 @@ global:
     #Eg. address: http://54.226.163.39:8200
     address:
     #Provide the vault authPath configured to be used.
-    #Eg. authPath: besunode1
-    authPath: besunode1
+    #Eg. authPath: supplychain
+    authPath: supplychain
     #Provide the network type
     network: besu
     #Provide the secret engine.
@@ -31,13 +31,7 @@ global:
     secretEngine: secretsv2
     #Provide the vault path where the tls certificates will be stored
     #Eg. secretPrefix: data/warehouse-bes/crypto/warehouse/tls MUST use data/
-    secretPrefix: "data/besunode1"
-  cluster:
-    provider: aws  # choose from: local | aws
-    cloudNativeServices: false # 'false' is implemented
-    #Provide the kubernetes host url
-    #Eg. kubernetesUrl: https://10.3.8.5:6443
-    kubernetesUrl: 
+    secretPrefix: "data/supplychain"
   proxy:
     # Provide external URL for cert generation
     externalUrlSuffix: test.blockchaincloudpoc.com

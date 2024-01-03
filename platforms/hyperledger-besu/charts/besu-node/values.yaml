@@ -2,7 +2,7 @@
 global:
   serviceAccountName: vault-auth
   cluster:
-    provider: aws  # choose from: local | aws | azure | gcp
+    provider: aws  # choose from: minikube | aws | azure | gcp
     cloudNativeServices: false # set to true to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure)
   vault:
     type: hashicorp
@@ -37,7 +37,7 @@ tessera:
 
 # fixes permissions of volumes because besu runs as user `besu` and volumes prefer `root`
 volumePermissionsFix:
-  - local
+  - minikube
   - aws
 
 node:

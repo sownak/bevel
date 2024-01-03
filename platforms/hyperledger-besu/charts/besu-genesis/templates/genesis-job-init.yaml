@@ -139,7 +139,7 @@ spec:
                   echo $f
                   echo "Creating keys in vault for validator-${i} ..."
 
-{{- if and (ne .Values.global.cluster.provider "local") (.Values.global.cluster.cloudNativeServices) }}
+{{- if and (ne .Values.global.cluster.provider "minikube") (.Values.global.cluster.cloudNativeServices) }}
 
                   safeWriteSecret besu-node-validator-${i}-nodekey $FOLDER_PATH/${f}/nodekey
                   safeWriteSecret besu-node-validator-${i}-nodekeypub $FOLDER_PATH/${f}/nodekey.pub 

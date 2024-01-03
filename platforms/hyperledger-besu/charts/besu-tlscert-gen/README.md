@@ -5,7 +5,7 @@
 
 # besu-tlscert-gen
 
-This chart is a component of Hyperledger Bevel. The besu-tlscert-gen chart generates the TLS certificates needed for accessing Besu and tessera nodes outside the cluster. If enabled, the certificates are then stored on the configured vault and also stored as Kuberneets secrtes. See [Bevel documentation](https://hyperledger-bevel.readthedocs.io/en/latest/) for details.
+This chart is a component of Hyperledger Bevel. The besu-tlscert-gen chart generates the TLS certificates needed for accessing Besu and tessera nodes outside the cluster. If enabled, the certificates are then stored on the configured vault and also stored as Kubernetes secrets. See [Bevel documentation](https://hyperledger-bevel.readthedocs.io/en/latest/) for details.
 
 ## TL;DR
 
@@ -21,9 +21,6 @@ helm install my-release bevel/besu-tlscert-gen
 
 If Hashicorp Vault is used, then
 - HashiCorp Vault Server 1.13.1+
-- Vault Root token available.
-
-> **Important**: Also check the dependent charts.
 
 ## Installing the Chart
 
@@ -50,30 +47,26 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ## Parameters
 
-Also check dependent chart [bevel-vault-mgmt](../../../shared/charts/bevel-vault-mgmt/README.md) details.
-
 ### Global parameters
 These parameters are refered to as same in each parent or chold chart
 | Name   | Description  | Default Value |
 |--------|---------|-------------|
 |`global.serviceAccountName` | The serviceaccount name that will be created for Vault Auth management| `vault-auth` |
-| `global.cluster.provider` | Kubernetes cluster provider. Only `aws` is supported for now | `aws`  |
-| `global.cluster.cloudNativeServices` | only `false` is implemented, `true` to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure) is for future  | `false`  |
-| `global.cluster.kubernetesUrl` | Kubernetes server URL | "" |
 | `global.vault.type`  | Type of Vault to support other providers. Currently, only `hashicorp` is supported. | `hashicorp`    |
 | `global.vault.role`  | Role used for authentication with Vault | `vault-role`    |
 | `global.vault.address`| URL of the Vault server.    | `""`            |
-| `global.vault.authPath`    | Authentication path for Vault  | `besunode1`            |
+| `global.vault.authPath`    | Authentication path for Vault  | `supplychain`            |
 | `global.vault.network` | Network type which will determine the vault policy | `besu` |
-| `secretEngine` | Provide the value for vault secret engine name   | `secretsv2`  |
-| `secretPrefix` | Provide the value for vault secret prefix which must start with `data/`   | `data/besunode1`  |
-| `tls` | Enable or disable TLS for vault communication if value present or not | `""`  |
+| `global.vault.secretEngine` | Provide the value for vault secret engine name   | `secretsv2`  |
+| `global.vault.secretPrefix` | Provide the value for vault secret prefix which must start with `data/`   | `data/supplychain`  |
+| `global.proxy.externalUrlSuffix` | Provide the External URL suffix which will be used as CN to generate certificate | `test.blockchaincloudpoc.com`  |
 
 ### Image
 
 | Name  | Description| Default Value   |
 |------------|-----------|---------|
-| `image.alpineutils`    | Docker image name and tag which will be used for this job | `ghcr.io/hyperledger/bevel-alpine:latest`  |
+| `image.repository`    | Docker repository which will be used for this job | `ghcr.io/hyperledger/bevel-alpine`  |
+| `image.tag`    | Docker image tag which will be used for this job | `latest`  |
 | `image.pullSecret` | Provide the docker secret name  | `""`  |
 | `image.pullPolicy` | The pull policy for the image  | `IfNotPresent`  |
 
@@ -82,14 +75,11 @@ These parameters are refered to as same in each parent or chold chart
 | ------------| -------------- | --------------- |
 | `settings.tmTls`   | Set value to true when transaction manager like tessera uses tls. This enables TLS for the transaction manager and Besu node. | `True` |
 | `settings.certSubject`  | Provide the X.509 subject for root CA | `"CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"`            |
-| `settings.externalUrlSuffix`   | Provide the external URL of the besu node | `test.blockchaincloudpoc.com` |
 
 ### Common parameters
 
 | Name   | Description  | Default Value |
 |--------|---------|-------------|
-| `vault.enabled` | Enable `bevel-vault-mgmt` subchart  | `true`  |
-| `vault.nameOverride` | String to partially override bevel-vault-mgmt.fullname template (will maintain the release name)| `""` |
 | `labels.service` | Custom labels in yaml k-v format  | `[]`  |
 | `labels.pvc` | Custom labels in yaml k-v format  | `[]`  |
 | `labels.deployment` | Custom labels in yaml k-v format  | `[]`  |

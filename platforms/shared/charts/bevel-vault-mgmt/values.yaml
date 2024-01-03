@@ -8,22 +8,21 @@ global:
   # The name of the ServiceAccount that will be created.
   serviceAccountName: vault-auth
   cluster:
-    provider: aws  # choose from: local | aws
     cloudNativeServices: false # 'false' is implemented, 'true' to use Cloud Native Services (SecretsManager and IAM for AWS) is in future
     #Provide the kubernetes host url
     #Eg. kubernetesUrl: https://10.3.8.5:6443
     kubernetesUrl: 
   vault:
-    type: hashicorp
+    type: hashicorp # chose from hashicorp | kubernetes
     #Provide the vaultrole for an organization
     #Eg. vaultrole: org1-vault-role
     role: vault-role
     #Provide the vault server address
-    #Eg. address: http://vault-884963190.eu-west-1.elb.amazonaws.com
+    #Eg. address: http://vault-884963190.eu-west-1.elb.amazonaws.com:8200
     address:
     #Provide the kubernetes auth backed configured in vault for an organization
-    #Eg. authPath: fra-demo-hlkube-cluster-org1
-    authPath:
+    #Eg. authPath: supplychain
+    authPath: supplychain
     #Provide the network type for which the policy will be configured
     #Eg. network: besu
     network: besu # choose from: besu | corda | fabric | corda-ent | quorum
@@ -38,10 +37,11 @@ global:
     #Eg. tls: vaultca
     tls:
 
-images:
+image:
   #Provide the valid image name and version to read certificates from vault server
-  #Eg.alpineutils: ghcr.io/hyperledger/bevel-alpine:latest
-  alpineutils: ghcr.io/hyperledger/bevel-alpine:latest
+  #Eg.repository: ghcr.io/hyperledger/bevel-alpine:latest
+  repository: ghcr.io/hyperledger/bevel-alpine
+  tag: latest
   #Provide the pullSecret for vault
   #Eg. pullSecret: regcred
   pullSecret: ""

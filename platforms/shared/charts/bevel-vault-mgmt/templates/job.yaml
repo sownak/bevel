@@ -30,9 +30,9 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }} 
     spec:
       restartPolicy: OnFailure
-      {{ if .Values.images.pullSecret  }}
+      {{ if .Values.image.pullSecret  }}
       imagePullSecrets:
-        - name: {{ $.Values.images.pullSecret }}
+        - name: {{ $.Values.image.pullSecret }}
       {{ end }}
       serviceAccountName: {{ .Values.global.serviceAccountName }}
       volumes:
@@ -55,7 +55,7 @@ spec:
               path: policies-config.json
       containers:
         - name: "vault-kubernetes"
-          image: {{ $.Values.images.alpineutils }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: IfNotPresent
           env:
           - name: VAULT_ADDR

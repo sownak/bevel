@@ -26,7 +26,7 @@ global:
     #Provide the vault path where the secrets will be stored
     secretPrefix: "data/supplychain"
   cluster:
-    provider: aws  # choose from: local | aws
+    provider: aws  # choose from: minikube | aws
     cloudNativeServices: false # 'false' is implemented
     #Provide the kubernetes host url
     #Eg. kubernetesUrl: https://10.3.8.5:6443

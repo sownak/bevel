@@ -222,6 +222,13 @@ spec:
       - name: tessera
         image: {{ .Values.image.tessera.repository }}:{{ .Values.image.tessera.tag }}
         imagePullPolicy: {{ .Values.image.PullPolicy }}
+        resources:
+          requests:
+            cpu: "{{ .Values.tessera.resources.cpuRequest }}"
+            memory: "{{ .Values.tessera.resources.memRequest }}"
+          limits:
+            cpu: "{{ .Values.tessera.resources.cpuLimit }}"
+            memory: "{{ .Values.tessera.resources.memLimit }}"
         ports:
           - name: tessera
             containerPort: {{ .Values.tessera.port }}

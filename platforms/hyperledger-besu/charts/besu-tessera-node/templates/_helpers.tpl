@@ -34,7 +34,7 @@ Create tessera url depending on tls mode
 {{- define "besu-tessera-node.tesseraURL" -}}
 {{- $fullname := include "besu-tessera-node.fullname" . -}}
 {{- $port := .Values.tessera.port | int -}}
-{{- $extport := .Values.global.proxy.tm | int -}}
+{{- $extport := .Values.global.proxy.tmport | int -}}
 {{- if eq .Values.tessera.tlsMode "STRICT" -}}
 {{- if eq .Values.global.proxy.provider "ambassador" -}}
     {{- printf "https://%s.%s:%d" .Release.Name .Values.global.proxy.externalUrlSuffix $extport | quote }}

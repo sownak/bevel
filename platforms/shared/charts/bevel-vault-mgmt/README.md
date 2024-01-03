@@ -51,23 +51,24 @@ These parameters are refered to as same in each parent or child chart
 | Name   | Description  | Default Value |
 |--------|---------|-------------|
 |`global.serviceAccountName` | The serviceaccount name that will be created for Vault Auth management| `vault-auth` |
-| `global.cluster.provider` | Kubernetes cluster provider. Only `aws` is supported for now | `aws`  |
 | `global.cluster.cloudNativeServices` | only `false` is implemented, `true` to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure) is for future  | `false`  |
-| `global.cluster.kubernetesUrl` | Kubernetes server URL | "" |
+| `global.cluster.kubernetesUrl` | Kubernetes server URL | `""` |
+| `global.vault.type`  | The Vault type that is used. Can be `hashicorp` or `kubernetes` as of now | `hashicorp`    |
 | `global.vault.role`  | Role used for authentication with Vault | `vault-role`    |
 | `global.vault.address`| URL of the Vault server.    | `""`            |
-| `global.vault.authPath`    | Authentication path for Vault  | `""`            |
+| `global.vault.authPath`    | Authentication path for Vault  | `supplychain`            |
 | `global.vault.network` | Network type which will determine the vault policy | `besu` |
-| `secretEngine` | Provide the value for vault secret engine name   | `secretsv2`  |
-| `secretPrefix` | Provide the value for vault secret prefix which must start with `data/`   | `data/supplychain`  |
-| `tls` | Enable or disable TLS for vault communication if value present or not | `""`  |
+| `global.vault.secretEngine` | Provide the value for vault secret engine name   | `secretsv2`  |
+| `global.vault.secretPrefix` | Provide the value for vault secret prefix which must start with `data/`   | `data/supplychain`  |
+| `global.vault.tls` | Enable or disable TLS for vault communication if value present or not | `""`  |
 
-### Images
+### Image
 
 | Name  | Description| Default Value   |
 |------------|-----------|---------|
-| `images.alpineutils`    | Docker image name and tag which will be used for this job | `ghcr.io/hyperledger/bevel-alpine:latest`  |
-| `images.pullSecret` | Provide the docker secret name  | `""`  |
+| `image.repository`    | Docker image repo which will be used for this job | `ghcr.io/hyperledger/bevel-alpine`  |
+| `image.tag` |  Docker image tag which will be used for this job | `latest` |
+| `image.pullSecret` | Provide the docker secret name  | `""`  |
 
 ### Common parameters
 

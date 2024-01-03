@@ -75,7 +75,7 @@ spec:
 
 {{- if .Values.tessera.removeKeysOnDelete }}
 
-{{- if and (ne .Values.global.cluster.provider "local") (.Values.global.cluster.cloudNativeServices) }}
+{{- if and (ne .Values.global.cluster.provider "minikube") (.Values.global.cluster.cloudNativeServices) }}
               deleteSecret {{ template "besu-tessera-node.fullname" . }}-tmkey
               deleteSecret {{ template "besu-tessera-node.fullname" . }}-tmkeypub
               deleteSecret {{ template "besu-tessera-node.fullname" . }}-tmpassword

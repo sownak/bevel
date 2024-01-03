@@ -89,7 +89,7 @@ data:
     # Privacy
     privacy-enabled={{ .Values.tessera.enabled }}
     privacy-url="{{ .Values.node.besu.privacy.scheme }}://tessera-{{ .Release.Name }}:{{ .Values.node.besu.privacy.clientport }}"
-    {{- if and (ne .Values.global.cluster.provider "local") (.Values.global.cluster.cloudNativeServices) }}
+    {{- if and (ne .Values.global.cluster.provider "minikube") (.Values.global.cluster.cloudNativeServices) }}
     privacy-public-key-file="{{ .Values.node.besu.keysPath }}/{{ .Values.node.besu.privacy.pubkeyFile }}"
     {{ else }}
     privacy-public-key-file="{{ .Values.node.besu.privacy.pubkeysPath }}/{{ .Values.node.besu.privacy.pubkeyFile }}"

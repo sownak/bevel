@@ -9,25 +9,24 @@
 global:
   serviceAccountName: vault-auth
   cluster:
-    provider: aws  # choose from: local | aws | azure | gcp
+    provider: aws  # choose from: minikube | aws | azure | gcp
     cloudNativeServices: false # set to true to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure)
   vault:
     type: hashicorp
-    address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
-    authPath: besunode1
+    role: vault-role
+    address: 
+    authPath: supplychain
     secretEngine: secretsv2
     secretPrefix: "data/supplychain"
-    role: vault-role
   proxy:
     #This will be the proxy/ingress provider. Can have values "ambassador" or "none"
     #Eg. provider: "ambassador"
     provider: "ambassador"
     #This field contains the external URL of the node
-    #Eg. externalUrlSuffix: test.besu.blockchaincloudpoc.com
-    externalUrlSuffix: test.besu.blockchaincloudpoc.com
+    #Eg. externalUrlSuffix: test.blockchaincloudpoc.com
+    externalUrlSuffix: test.blockchaincloudpoc.com
     # Following are the ports that are exposed externally via the proxy
-    tm: 443
-    client: 15023
+    tmport: 443
 
 storage:
   enabled: true
@@ -83,11 +82,9 @@ tessera:
   peerNodes:
   resources:
     cpuLimit: 1
-    cpuRequest: 0.5
+    cpuRequest: 0.25
     memLimit: "2G"
     memRequest: "1G"
-  tmkey: ""
-  tmpub: ""
   password: "password"
   passwordPath: "/keys/tm.password"
   dataPath: "/data/tessera"
@@ -111,18 +108,18 @@ tessera:
   ##     still possible. This should only be used if another transport security
   ##     mechanism like WireGuard is in place.
   #Eg. tlsMode: 'STRICT'
-  tlsMode: STRICT
+  tlsMode: "STRICT"
   #Provide the server/client  trust configuration for transaction manager nodes. 
   # options are: "WHITELIST", "CA_OR_TOFU", "CA", "TOFU"
   # Eg: trust: "TOFU"
-  trust: CA_OR_TOFU
+  trust: "CA_OR_TOFU"
 
 tls:
-  enabled: true # must be enabled for tlsMode=STRICT
+  enabled: true
   settings:
     #Set value to true when transaction manager like tessera uses tls
     #Eg. tmTls: True
-    tmTls: True
+    tmTls: True # must be enabled for tlsMode=STRICT
     #Provide the X.509 subject for root CA.
     #Eg. certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"
     certSubject: "CN=DLT Root CA,OU=DLT,O=DLT,L=London,C=GB"

@@ -19,7 +19,7 @@ global:
     type: hashicorp # choose from hashicorp | kubernetes
     network: besu   # must be besu for these charts
     # Following are necessary only when hashicorp vault is used.
-    address: http://vault.url:9001
+    address: http://vault.url:8200
     authPath: supplychain
     secretEngine: secretsv2
     secretPrefix: "data/supplychain"
@@ -72,17 +72,21 @@ helm install member-2 ./besu-node --namespace carrier-bes --values ./values/nopr
 Replace the `global.vault.address`, `global.cluster.kubernetesUrl` and `global.proxy.externalUrlSuffix` in all the files in `./values/proxy-and-vault/` folder.
 
 ```bash
-helm install genesis ./besu-genesis --namespace supplychain-bes --create-namespace --values ./values/proxy-and-vault/genesis.yaml
+helm create namespace supplychain-bes # if the namespace does not exist already
+# Create the roottoken secret
+kubectl -n supplychain-bes create secret generic roottoken --from-literal=token=<VAULT_ROOT_TOKEN>
 
-# !! IMPORTANT !! - If you use bootnodes, please set `quorumFlags.usesBootnodes: true` in the override yaml files
+helm install genesis ./besu-genesis --namespace supplychain-bes --values ./values/proxy-and-vault/genesis.yaml
+
+# !! IMPORTANT !! - If you use bootnodes, please set `nodes.usesBootnodes: true` in the override yaml files
 # for validator.yaml, txnode.yaml
-helm install validator-1 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/validator.yaml
-helm install validator-2 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/validator.yaml
-helm install validator-3 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/validator.yaml
-helm install validator-4 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/validator.yaml
+helm install validator-1 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/validator.yaml --set global.proxy.p2p=15011
+helm install validator-2 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/validator.yaml --set global.proxy.p2p=15012
+helm install validator-3 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/validator.yaml --set global.proxy.p2p=15013
+helm install validator-4 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/validator.yaml --set global.proxy.p2p=15014
 
 # spin up a besu and tessera node pair
-helm install member-1 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/txnode.yaml
+helm install member-1 ./besu-node --namespace supplychain-bes --values ./values/proxy-and-vault/txnode.yaml --set global.proxy.p2p=15015
 
 ```
 ### To setup another member in a different namespace
@@ -96,9 +100,13 @@ kubectl --namespace supplychain-bes get configmap besu-genesis  -o jsonpath='{.d
 
 # Run secondary genesis
 cd ../..
-helm install genesis ./besu-genesis --namespace carrier-bes --create-namespace --values ./values/proxy-and-vault/genesis-sec.yaml
+helm create namespace carrier-bes # if the namespace does not exist already
+# Create the roottoken secret
+kubectl -n carrier-bes create secret generic roottoken --from-literal=token=<VAULT_ROOT_TOKEN>
 
-helm install member-2 ./besu-node --namespace carrier-bes --values ./values/proxy-and-vault/txnode-sec.yaml
+helm install genesis ./besu-genesis --namespace carrier-bes --values ./values/proxy-and-vault/genesis-sec.yaml
+
+helm install member-2 ./besu-node --namespace carrier-bes --values ./values/proxy-and-vault/txnode-sec.yaml --set global.proxy.p2p=15016
 ```
 
 ### API Calls
@@ -112,7 +120,7 @@ curl -v -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","me
 {
   "jsonrpc" : "2.0",
   "id" : 1,
-  "result" : "0x4e9"
+  "result" : "0x64"
 }
 ```
 
