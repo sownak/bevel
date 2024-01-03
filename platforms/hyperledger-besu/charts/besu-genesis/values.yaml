@@ -10,6 +10,12 @@
 global:
   #Provide the service account name which will be created.
   serviceAccountName: vault-auth
+  cluster:
+    provider: aws  # choose from: minikube | aws
+    cloudNativeServices: false # 'false' is implemented
+    #Provide the kubernetes host url
+    #Eg. kubernetesUrl: https://10.3.8.5:6443
+    kubernetesUrl: 
   vault:
     #Provide the type of vault
     type: hashicorp
@@ -20,17 +26,12 @@ global:
     #Provide the vault server address
     address: 
     #Provide the vault authPath configured to be used.
-    authPath: besunode1
+    authPath: supplychain
     #Provide the secret engine.
     secretEngine: secretsv2
     #Provide the vault path where the secrets will be stored
     secretPrefix: "data/supplychain"
-  cluster:
-    provider: aws  # choose from: minikube | aws
-    cloudNativeServices: false # 'false' is implemented
-    #Provide the kubernetes host url
-    #Eg. kubernetesUrl: https://10.3.8.5:6443
-    kubernetesUrl: 
+  
 image:
   #Provide the image for the job/hook container
   genesisUtils:
@@ -55,7 +56,7 @@ rawGenesisConfig:
     config:
       chainId: 1337
       algorithm:
-        consensus: qbft
+        consensus: qbft   # choose from: ibft2 | qbft | clique
         blockperiodseconds: 10
         epochlength: 30000
         requesttimeoutseconds: 20

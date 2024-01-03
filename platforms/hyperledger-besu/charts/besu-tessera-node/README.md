@@ -87,7 +87,7 @@ These parameters are refered to as same in each parent or child chart
 | `image.mysql.repository`  | MySQL image repository. This is used as the DB for TM  | `mysql/mysql-server` |
 | `image.mysql.tag`  | MySQL image tag  | `5.7` |
 | `image.hooks.repository`  | Quorum/Besu hooks image repository  | `ghcr.io/hyperledger/bevel-k8s-hooks` |
-| `image.mysql.tag`  | Quorum/Besu hooks image tag  | `qgt-0.2.12` |
+| `image.hooks.tag`  | Quorum/Besu hooks image tag  | `qgt-0.2.12` |
 | `image.pullSecret`    | Provide the docker secret name in the namespace  | `""`            |
 | `image.pullPolicy`  | Pull policy to be used for the Docker images    | `IfNotPresent`    |
 

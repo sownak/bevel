@@ -6,19 +6,20 @@ global:
     cloudNativeServices: false # set to true to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure)
   vault:
     type: hashicorp
-    address: http://vault.internal.demo.aws.blockchaincloudpoc.com:9001
-    authPath: besunode1
+    role: vault-role
+    address: 
+    authPath: supplychain
     secretEngine: secretsv2
     secretPrefix: "data/supplychain"
-    role: vault-role
+    
   # This section contains the proxy ports.
   proxy:
     # Mention the proxy provider. Currently ambassador or none is supported.
     # Eg. provider: ambassador
     provider: ambassador
     # Provide the external URL of the proxy. This is not used because Besu does not support DNS names.
-    # Eg. externalUrlSuffix: test.besu.blockchaincloudpoc.com
-    externalUrlSuffix: test.besu.blockchaincloudpoc.com
+    # Eg. externalUrlSuffix: test.blockchaincloudpoc.com
+    externalUrlSuffix: test.blockchaincloudpoc.com
     # Mention the p2p port configured on proxy.
     # NOTE: Make sure that the port is enabled and not already used.
     # Eg. p2p: 15010
@@ -35,10 +36,15 @@ storage:
 tessera:
   enabled: false
 
-# fixes permissions of volumes because besu runs as user `besu` and volumes prefer `root`
-volumePermissionsFix:
-  - minikube
-  - aws
+image:
+  pullSecret: 
+  pullPolicy: IfNotPresent
+  besu:
+    repository: hyperledger/besu
+    tag: 22.10.2
+  hooks:
+    repository: ghcr.io/hyperledger/bevel-k8s-hooks
+    tag: qgt-0.2.12
 
 node:
   removeKeysOnDelete: false # this will erase keys - so be careful with this on validators
@@ -126,16 +132,11 @@ node:
       accountsContract:
         enabled: false
         address: "0x0000000000000000000000000000000000008888"
-image:
-  pullSecret: 
-  pullPolicy: IfNotPresent
-  besu:
-    repository: hyperledger/besu
-    tag: 22.10.2
-  hooks:
-    repository: ghcr.io/hyperledger/bevel-k8s-hooks
-    tag: qgt-0.2.12
 
+# fixes permissions of volumes because besu runs as user `besu` and volumes prefer `root`
+volumePermissionsFix:
+  - minikube
+  - aws
 labels:
   service: []
   pvc: []
