@@ -389,6 +389,28 @@ entries:
   bevel-scripts:
   - apiVersion: v2
     appVersion: latest
+    created: "2024-01-16T14:10:58.072926559Z"
+    description: 'Shared: Create configmaps of scripts used in Bevel'
+    digest: 0e3d3a78be00bf8403ee29f3c6013163c039a7c8626ee57b0864a9549d86fb50
+    home: https://hyperledger-bevel.readthedocs.io/en/latest/
+    keywords:
+    - bevel
+    - hyperledger
+    - enterprise
+    - blockchain
+    - deployment
+    - accenture
+    maintainers:
+    - email: bevel@lists.hyperledger.org
+      name: Hyperledger Bevel maintainers
+    name: bevel-scripts
+    sources:
+    - https://github.com/hyperledger/bevel
+    urls:
+    - https://github.com/sownak/bevel/releases/download/bevel-scripts-0.15.3/bevel-scripts-0.15.3.tgz
+    version: 0.15.3
+  - apiVersion: v2
+    appVersion: latest
     created: "2024-01-02T14:40:37.420282514Z"
     description: 'Shared: Create configmaps of scripts used in Bevel'
     digest: b043a484d033fc632dd6a0a303d1060a99ca9376dfa4c49e002cc1d32d24264a
@@ -434,6 +456,16 @@ entries:
   bevel-storageclass:
   - apiVersion: v1
     appVersion: latest
+    created: "2024-01-16T14:10:58.199595086Z"
+    description: 'Shared: Deploys a StorageClass that can be used to provision persistent
+      volumes for nodes.'
+    digest: 0f06c8cc005f90878494154146da863936fea0ab7fc344a4323448585fe52563
+    name: bevel-storageclass
+    urls:
+    - https://github.com/sownak/bevel/releases/download/bevel-storageclass-0.15.3/bevel-storageclass-0.15.3.tgz
+    version: 0.15.3
+  - apiVersion: v1
+    appVersion: latest
     created: "2024-01-02T14:40:37.621826771Z"
     description: 'Shared: Deploys a StorageClass that can be used to provision persistent
       volumes for nodes.'
@@ -453,6 +485,28 @@ entries:
     - https://github.com/sownak/bevel/releases/download/bevel-storageclass-0.15.0/bevel-storageclass-0.15.0.tgz
     version: 0.15.0
   bevel-vault-mgmt:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2024-01-16T14:10:58.333294123Z"
+    description: 'Shared: Vault and Kubernetes configuration'
+    digest: 56e6fd7d8c9d2a1c10944205528f2165f2a25ef042161d73b1229f23280947d2
+    home: https://hyperledger-bevel.readthedocs.io/en/latest/
+    keywords:
+    - bevel
+    - hyperledger
+    - enterprise
+    - blockchain
+    - deployment
+    - accenture
+    maintainers:
+    - email: bevel@lists.hyperledger.org
+      name: Hyperledger Bevel maintainers
+    name: bevel-vault-mgmt
+    sources:
+    - https://github.com/hyperledger/bevel
+    urls:
+    - https://github.com/sownak/bevel/releases/download/bevel-vault-mgmt-0.15.6/bevel-vault-mgmt-0.15.6.tgz
+    version: 0.15.6
   - apiVersion: v2
     appVersion: latest
     created: "2024-01-03T11:55:03.113666744Z"
@@ -575,6 +629,15 @@ entries:
     version: 0.15.0
   letsencrypt-issuer:
   - apiVersion: v2
+    created: "2024-01-16T14:10:58.463070297Z"
+    description: Create clusterissuer for letsencrypt
+    digest: 019155eee531640b213aeee52fd55a3e348549549783084879e1d518f63842d6
+    name: letsencrypt-issuer
+    type: application
+    urls:
+    - https://github.com/sownak/bevel/releases/download/letsencrypt-issuer-0.15.1/letsencrypt-issuer-0.15.1.tgz
+    version: 0.15.1
+  - apiVersion: v2
     created: "2023-12-14T17:23:58.164242749Z"
     description: A Helm chart for creating clusterissuer
     digest: 14173ac22e089ce4345d69bea74a722c1a8128050a97e2ed000ef2f87d1e06be
@@ -583,4 +646,4 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/letsencrypt-issuer-0.15.0/letsencrypt-issuer-0.15.0.tgz
     version: 0.15.0
-generated: "2024-01-03T11:56:25.846007608Z"
+generated: "2024-01-16T14:10:58.463141029Z"
