@@ -379,6 +379,15 @@ entries:
   bevel-image-automation:
   - apiVersion: v2
     appVersion: 0.2.3
+    created: "2024-02-29T13:54:11.555968135Z"
+    description: 'Shared: Bevel Image Automation using Flux V2'
+    digest: 7c54e0a794a1feb19ad0dd319acac406222724718c761f470b39bdda912d1f3b
+    name: bevel-image-automation
+    urls:
+    - https://github.com/sownak/bevel/releases/download/bevel-image-automation-1.0.0/bevel-image-automation-1.0.0.tgz
+    version: 1.0.0
+  - apiVersion: v2
+    appVersion: 0.2.3
     created: "2023-12-14T17:23:57.445453684Z"
     description: Bevel Image Automation using Flux V2
     digest: a1e48dafbfd80239c0d978f07c47625d8b2e904fb3f37d82759aecb2bde2de3b
@@ -387,6 +396,28 @@ entries:
     - https://github.com/sownak/bevel/releases/download/bevel-image-automation-0.2.3/bevel-image-automation-0.2.3.tgz
     version: 0.2.3
   bevel-scripts:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2024-02-29T13:54:11.649470789Z"
+    description: 'Shared: Create configmaps of scripts used in Bevel'
+    digest: 240506abfd6a28cdabf0848129383fb1db0d4bb7da14eae01fee8373b1af6f38
+    home: https://hyperledger-bevel.readthedocs.io/en/latest/
+    keywords:
+    - bevel
+    - hyperledger
+    - enterprise
+    - blockchain
+    - deployment
+    - accenture
+    maintainers:
+    - email: bevel@lists.hyperledger.org
+      name: Hyperledger Bevel maintainers
+    name: bevel-scripts
+    sources:
+    - https://github.com/hyperledger/bevel
+    urls:
+    - https://github.com/sownak/bevel/releases/download/bevel-scripts-1.0.0/bevel-scripts-1.0.0.tgz
+    version: 1.0.0
   - apiVersion: v2
     appVersion: latest
     created: "2024-01-16T14:10:58.072926559Z"
@@ -456,6 +487,16 @@ entries:
   bevel-storageclass:
   - apiVersion: v1
     appVersion: latest
+    created: "2024-02-29T13:54:11.767782803Z"
+    description: 'Shared: Deploys a StorageClass that can be used to provision persistent
+      volumes for nodes.'
+    digest: 91030485c08bc774c094e5eb7b1e36e3f3efebc5dd0beb96dd0addbd57608834
+    name: bevel-storageclass
+    urls:
+    - https://github.com/sownak/bevel/releases/download/bevel-storageclass-1.0.0/bevel-storageclass-1.0.0.tgz
+    version: 1.0.0
+  - apiVersion: v1
+    appVersion: latest
     created: "2024-01-16T14:10:58.199595086Z"
     description: 'Shared: Deploys a StorageClass that can be used to provision persistent
       volumes for nodes.'
@@ -485,6 +526,28 @@ entries:
     - https://github.com/sownak/bevel/releases/download/bevel-storageclass-0.15.0/bevel-storageclass-0.15.0.tgz
     version: 0.15.0
   bevel-vault-mgmt:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2024-02-29T13:54:11.869704952Z"
+    description: 'Shared: Vault and Kubernetes configuration'
+    digest: 5fe02e433717a0b06243b2e3298db703f50e640a5397b2be5addb1329cf9b16e
+    home: https://hyperledger-bevel.readthedocs.io/en/latest/
+    keywords:
+    - bevel
+    - hyperledger
+    - enterprise
+    - blockchain
+    - deployment
+    - accenture
+    maintainers:
+    - email: bevel@lists.hyperledger.org
+      name: Hyperledger Bevel maintainers
+    name: bevel-vault-mgmt
+    sources:
+    - https://github.com/hyperledger/bevel
+    urls:
+    - https://github.com/sownak/bevel/releases/download/bevel-vault-mgmt-1.0.0/bevel-vault-mgmt-1.0.0.tgz
+    version: 1.0.0
   - apiVersion: v2
     appVersion: latest
     created: "2024-01-16T14:10:58.333294123Z"
@@ -627,7 +690,26 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/leteencrypt-cert-0.15.0/leteencrypt-cert-0.15.0.tgz
     version: 0.15.0
+  letsencrypt-cert:
+  - apiVersion: v2
+    created: "2024-02-29T13:54:12.010916219Z"
+    description: Creates TLS certificates using letencrypt CA
+    digest: aee1f2723b349030e2ffeac5a15c720a1368cf72bcd3502b4dbd75ebb71e77e2
+    name: letsencrypt-cert
+    type: application
+    urls:
+    - https://github.com/sownak/bevel/releases/download/letsencrypt-cert-1.0.0/letsencrypt-cert-1.0.0.tgz
+    version: 1.0.0
   letsencrypt-issuer:
+  - apiVersion: v2
+    created: "2024-02-29T13:54:12.115986768Z"
+    description: Create clusterissuer for letsencrypt
+    digest: cfa9c421e63d08b2149ada148b6d2d035c87165ad042a03a334976d38dbf5167
+    name: letsencrypt-issuer
+    type: application
+    urls:
+    - https://github.com/sownak/bevel/releases/download/letsencrypt-issuer-1.0.0/letsencrypt-issuer-1.0.0.tgz
+    version: 1.0.0
   - apiVersion: v2
     created: "2024-01-16T14:10:58.463070297Z"
     description: Create clusterissuer for letsencrypt
@@ -646,4 +728,4 @@ entries:
     urls:
     - https://github.com/sownak/bevel/releases/download/letsencrypt-issuer-0.15.0/letsencrypt-issuer-0.15.0.tgz
     version: 0.15.0
-generated: "2024-01-16T14:10:58.463141029Z"
+generated: "2024-02-29T13:54:12.116078891Z"
