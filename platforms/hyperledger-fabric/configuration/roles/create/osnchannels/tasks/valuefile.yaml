@@ -23,7 +23,7 @@
     name: create/refresh_certs/reset_pod
   vars:
     pod_name: "osn-createchannel-{{ channel_name }}"
-    file_path: "{{playbook_dir}}/../../../{{org.gitops.release_dir}}/{{ org.name | lower }}/{{ org.name | lower }}/{{ channel_name }}.yaml"
+    file_path: "{{playbook_dir}}/../../../{{org.gitops.component_dir}}/{{ org.name | lower }}/{{ org.name | lower }}/{{ channel_name }}.yaml"
     gitops_value: "{{ org.gitops }}"
     component_ns: "{{ org.name | lower }}-net"
     kubernetes: "{{ org.k8s }}"
@@ -46,9 +46,17 @@
     vault: "{{ org.vault }}"
     k8s: "{{ org.k8s }}"
     orderers_list: "{{ org.services.orderers }}"
-    values_dir: "{{playbook_dir}}/../../../{{org.gitops.release_dir}}/{{ org.name | lower }}"
+    values_dir: "{{playbook_dir}}/../../../{{org.gitops.component_dir}}/{{ org.name | lower }}"
     add_orderer_value: "{{ add_orderer | default('false') }}"
   when: add_orderer is not defined or add_orderer == false
+
+- name: Delete Helm releases
+  kubernetes.core.helm:
+    kubeconfig: "{{ kubernetes.config_file }}"
+    name: "{{ channel_name }}"
+    release_namespace: "{{ org.name | lower }}-net"
+    state: absent
+  when: add_orderer is defined and add_orderer == 'true'
 
 # Create the value file for creator Organization
 - name: "Create Create_Channel value file osnadmin"
@@ -65,6 +73,8 @@
     charts_dir: "{{ org.gitops.chart_source }}"
     vault: "{{ org.vault }}"
     k8s: "{{ org.k8s }}"
+    existing_orderer: "{{ network.orderers | first }}"
+    existingOrdererAddress: "{{ existing_orderer.uri }}"
     orderers_list: "{{ org.services.orderers }}"
     first_orderer: "{{ org.services.orderers | first }}"
     values_dir: "{{playbook_dir}}/../../../{{org.gitops.release_dir}}/{{ org.name | lower }}"

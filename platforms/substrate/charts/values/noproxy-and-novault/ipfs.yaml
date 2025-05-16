@@ -10,7 +10,7 @@ global:
     provider: azure
     cloudNativeServices: false
   vault:
-    type: kubernetes # kubernetes | hashicorp
+    type: "kubernetes" # kubernetes | hashicorp
 
 proxy:
   provider: none # none | ambassador

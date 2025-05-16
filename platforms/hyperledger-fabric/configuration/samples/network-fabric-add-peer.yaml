@@ -11,7 +11,7 @@ network:
   # Network level configuration specifies the attributes required for each organization
   # to join an existing network.
   type: fabric
-  version: 2.2.2                # currently tested 1.4.8, 2.2.2 and 2.5.4
+  version: 2.2.2                # currently tested 2.2.2 and 2.5.4
   frontend: enabled #Flag for frontend to enabled for nodes/peers
 
   #Environment section for Kubernetes setup
@@ -60,6 +60,8 @@ network:
     consortium: SupplyChainConsortium
     channel_name: AllChannel
     channel_status: new
+    osn_creator_org: # Organization name, whose orderers will create the channel. This field is only used with version 2.5
+      name: supplychain 
     chaincodes:
       - "chaincode_name"
     orderers: 
@@ -72,15 +74,35 @@ network:
       peers:
       - peer:
         name: peer0
+        type: anchor
         peerstatus: existing    # old peers should have status as existing
         gossipAddress: peer1.carrier-net.org3proxy.blockchaincloudpoc.com:443  # Must include port, External or internal URI of the gossip peer
         peerAddress: peer0.carrier-net.org3proxy.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
       - peer:
         name: peer1
+        type: nonanchor
         peerstatus: new         # new peers should have status as new
         gossipAddress: peer0.carrier-net.org3proxy.blockchaincloudpoc.com:443  # Must include port, External or internal URI of the gossip peer
         peerAddress: peer1.carrier-net.org3proxy.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
-      ordererAddress: orderer1.supplychain-net.org1proxy.blockchaincloudpoc.com:443             # Must include port, External or internal URI of the orderer    
+      ordererAddress: orderer1.supplychain-net.org1proxy.blockchaincloudpoc.com:443             # Must include port, External or internal URI of the orderer   
+    - organization:
+      name: supplychain
+      type: joiner
+      org_status: existing
+      peers:
+      - peer:
+        name: peer0
+        type: anchor
+        peerstatus: existing    
+        gossipAddress: peer1.supplychain-net.org1proxy.hlf.blockchaincloudpoc-develop.com:443
+        peerAddress: peer0.supplychain-net.org1proxy.hlf.blockchaincloudpoc-develop.com:443
+      - peer:
+        name: peer1
+        type: nonanchor
+        peerstatus: existing    
+        gossipAddress: peer0.supplychain-net.org1proxy.hlf.blockchaincloudpoc-develop.com:443
+        peerAddress: peer1.supplychain-net.org1proxy.hlf.blockchaincloudpoc-develop.com:443
+      ordererAddress: orderer1.supplychain-net.org1proxy.hlf.blockchaincloudpoc-develop.com:443 
 
   # Allows specification of one or many organizations that will be connecting to a network.
   # If an organization is also hosting the root of the network (e.g. doorman, membership service, etc),
@@ -127,7 +149,8 @@ network:
         git_url: "https://github.com/<username>/bevel.git"         # Gitops https or ssh url for flux value files 
         branch: "develop"           # Git branch where release is being made
         # When adding peer on new cluster, if using same git branch, ensure release_dir is different
-        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        component_dir: "platforms/hyperledger-fabric/releases/k8sComponent" # Relative path where values files are stored. 
         chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: "github.com/<username>/bevel.git"   # Gitops git repository URL for git push  (without https://)
         username: "git_username"          # Git Service user who has rights to check-in in all branches
@@ -138,7 +161,7 @@ network:
       services:
         ca:
           name: ca
-          subject: "/C=GB/ST=London/L=London/O=Carrier/CN=ca.carrier-net.org3proxy.blockchaincloudpoc.com"
+          subject: "/C=GB/ST=London/L=London/O=Carrier"
           type: ca
           grpc:
             port: 7054      
@@ -246,7 +269,8 @@ network:
         git_protocol: "https" # Option for git over https or ssh
         git_url: "https://github.com/<username>/bevel.git"         # Gitops https or ssh url for flux value files 
         branch: "develop"           # Git branch where release is being made
-        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        component_dir: "platforms/hyperledger-fabric/releases/k8sComponent" # Relative path where values files are stored.y 
         chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: "github.com/<username>/bevel.git"   # Gitops git repository URL for git push  (without https://)
         username: "git_username"          # Git Service user who has rights to check-in in all branches
@@ -259,7 +283,7 @@ network:
       services:
         ca:
           name: ca
-          subject: "/C=GB/ST=London/L=London/O=Orderer/CN=ca.supplychain-net.org1proxy.blockchaincloudpoc.com"
+          subject: "/C=GB/ST=London/L=London/O=Orderer"
           type: ca
           grpc:
             port: 7054
@@ -292,3 +316,43 @@ network:
           grpc:
             port: 7050
           ordererAddress: orderer3.supplychain-net.org1proxy.blockchaincloudpoc.com:443
+
+        peers:
+        - peer:
+          name: peer0          
+          type: anchor    # This can be anchor/nonanchor. Atleast one peer should be anchor peer.    
+          gossippeeraddress: peer1.supplychain-net.org1proxy.hlf.blockchaincloudpoc-develop.com:443 # Internal Address of the other peer in same Org for gossip, same peer if there is only one peer
+          peerAddress: peer0.supplychain-net.org1proxy.hlf.blockchaincloudpoc-develop.com:443 # External URI of the peer
+          peerstatus: existing  
+          cli: enabled      # Creates a peer cli pod depending upon the (enabled/disabled) tag.          
+          grpc:
+            port: 7051         
+          events:
+            port: 7053
+          couchdb:
+            port: 5984
+          restserver:
+            targetPort: 20001
+            port: 20001 
+          expressapi:
+            targetPort: 3000
+            port: 3000
+        - peer:
+          name: peer1         
+          type: nonanchor    # This can be anchor/nonanchor. Atleast one peer should be anchor peer.    
+          gossippeeraddress: peer0.supplychain-net.org1proxy.hlf.blockchaincloudpoc-develop.com:443 # External address of the existing anchor peer
+          peerAddress: peer1.supplychain-net.org1proxy.hlf.blockchaincloudpoc-develop.com:443 # External URI of the peer
+          peerstatus: existing    
+          cli: enabled       # Creates a peer cli pod depending upon the (enabled/disabled) tag.          
+          grpc:
+            port: 7051         
+          events:
+            port: 7053
+          couchdb:
+            port: 5984
+          restserver:
+            targetPort: 20001
+            port: 20001 
+          expressapi:
+            targetPort: 3000
+            port: 3000

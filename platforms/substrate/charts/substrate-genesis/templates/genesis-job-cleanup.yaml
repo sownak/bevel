@@ -44,13 +44,7 @@ spec:
         args:
         - |
             {{- if .Values.removeGenesisOnDelete.enabled }}
-                secret_names=$(kubectl get secret -n {{ .Release.Namespace }} | grep substrate-node | awk '{print $1}')
-                
-                while IFS= read -r nodeKeys; do
-                    kubectl delete secret "$nodeKeys" --namespace {{ .Release.Namespace }}
-                done <<< "$secret_names"
-                
                 if kubectl get configmap "substrate-genesis" --namespace {{ .Release.Namespace }}  &> /dev/null; then
-                        kubectl delete configmap "substrate-genesis" --namespace {{ .Release.Namespace }}
+                  kubectl delete configmap "substrate-genesis" --namespace {{ .Release.Namespace }}
                 fi
             {{- end}}

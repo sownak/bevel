@@ -26,59 +26,103 @@ global:
     role: vault-role
 ```
 
-## Usage
+<hr style="border: 10px solid green;">
 
-### Pre-requisites
+## `Usage`
+
+### Pre-requisites:
 
 - Kubernetes Cluster (either Managed cloud option like EKS or local like minikube)
 - Accessible and unsealed Hahsicorp Vault (if using Vault)
 - Configured Ambassador AES (if using Ambassador as proxy)
 - Update the dependencies
-  ```
-  helm dependency update quorum-genesis
-  helm dependency update quorum-node
-  ```
+   ```
+   helm dependency update quorum-genesis
+   helm dependency update quorum-node
+   ```
 
+<hr style="border: 10px solid green;">
 
 ## `Without Proxy and Vault`
 
 ### 1. Install Genesis Node
 ```bash
-# Install the genesis node
 helm install genesis ./quorum-genesis --namespace supplychain-quo --create-namespace --values ./values/noproxy-and-novault/genesis.yaml
 ```
 
 ### 2. Install Validator Nodes
 ```bash
 # Install validator nodes
+helm install validator-0 ./quorum-node --namespace supplychain-quo --values ./values/noproxy-and-novault/validator.yaml
 helm install validator-1 ./quorum-node --namespace supplychain-quo --values ./values/noproxy-and-novault/validator.yaml
 helm install validator-2 ./quorum-node --namespace supplychain-quo --values ./values/noproxy-and-novault/validator.yaml
 helm install validator-3 ./quorum-node --namespace supplychain-quo --values ./values/noproxy-and-novault/validator.yaml
-helm install validator-4 ./quorum-node --namespace supplychain-quo --values ./values/noproxy-and-novault/validator.yaml
 ```
 
 ### 3. Deploy Member and Tessera Node Pair
 ```bash
-# Deploy Quorum and Tessera node pair
-helm install member-1 ./quorum-node --namespace supplychain-quo --values ./values/noproxy-and-novault/txnode.yaml
+helm install member-0 ./quorum-node --namespace supplychain-quo --values ./values/noproxy-and-novault/txnode.yaml
 ```
 
 ### Setting Up Another Member in a Different Namespace
 
 ```bash
-# Get the genesis and static nodes from existing member and and place them in the directory 'besu-genesis/files'
+# Get the genesis and static nodes from existing member and place them in the directory 'besu-genesis/files'
 cd ./quorum-genesis/files/
 kubectl --namespace supplychain-quo get configmap quorum-peers -o jsonpath='{.data.static-nodes\.json}' > static-nodes.json
 kubectl --namespace supplychain-quo get configmap quorum-genesis  -o jsonpath='{.data.genesis\.json}' > genesis.json
 
 # Install secondary genesis node
-helm install genesis ./quorum-genesis --namespace carrier-quo --values ./values/noproxy-and-novault/genesis-sec.yaml
+helm install genesis ./quorum-genesis --namespace carrier-quo --create-namespace --values ./values/noproxy-and-novault/genesis-sec.yaml
 
 # Install secondary member node
-helm install member-2 ./quorum-node --namespace carrier-quo --values ./values/noproxy-and-novault/txnode-sec.yaml
+helm install member-1 ./quorum-node --namespace carrier-quo --values ./values/noproxy-and-novault/txnode-sec.yaml
 ```
 
----
+<hr style="border: 10px solid green;">
+
+## `Without Proxy and AWS-Secret-Manager`
+
+### 1. Prerequisite:
+- To securely integrate AWS Secrets Manager with an EKS Cluster, refer to the guide available [here.](../../../docs/source/concepts/integrate-aws-secrets-manager-with-eks.md)
+- After completing all the steps mentioned in the guide, keep the IAM Role ARN handy. For example, it should look something like this: `arn:aws:iam::<account-id>:role/BevelEKSSecretsRole`
+
+### 2. Install genesis node:
+```bash
+helm install genesis ./quorum-genesis --namespace supplychain-quo --create-namespace --values ./values/noproxy-and-novault/genesis.yaml --set global.cluster.cloudNativeServices=true,global.cluster.secretManagerArn="<YOUR_AWS_SECRET_MANAGER_ROLE_ARN>",global.cluster.secretManagerRegion="<YOUR_AWS_REGION>"
+```
+
+### 3. Install validator nodes:
+```bash
+helm install validator-0 ./quorum-node --namespace supplychain-quo --values ./values/noproxy-and-novault/validator.yaml --set global.cluster.cloudNativeServices=true,global.cluster.secretManagerRegion="<YOUR_AWS_REGION>"
+helm install validator-1 ./quorum-node --namespace supplychain-quo --values ./values/noproxy-and-novault/validator.yaml --set global.cluster.cloudNativeServices=true,global.cluster.secretManagerRegion="<YOUR_AWS_REGION>"
+helm install validator-2 ./quorum-node --namespace supplychain-quo --values ./values/noproxy-and-novault/validator.yaml --set global.cluster.cloudNativeServices=true,global.cluster.secretManagerRegion="<YOUR_AWS_REGION>"
+helm install validator-3 ./quorum-node --namespace supplychain-quo --values ./values/noproxy-and-novault/validator.yaml --set global.cluster.cloudNativeServices=true,global.cluster.secretManagerRegion="<YOUR_AWS_REGION>"
+```
+
+### 4. Install member node:
+```bash
+helm install member-0 ./quorum-node --namespace supplychain-quo --values ./values/noproxy-and-novault/txnode.yaml --set global.cluster.cloudNativeServices=true,global.cluster.secretManagerRegion="<YOUR_AWS_REGION>",tessera.enabled=false
+```
+
+### 5. Setting Up Another Member in a Different Namespace
+
+```bash
+# 5.1. Get the genesis and static nodes from existing member and place them in the directory 'besu-genesis/files'
+cd ./quorum-genesis/files/
+
+kubectl --namespace supplychain-quo get configmap quorum-peers -o jsonpath='{.data.static-nodes\.json}' > static-nodes.json
+
+kubectl --namespace supplychain-quo get configmap quorum-genesis  -o jsonpath='{.data.genesis\.json}' > genesis.json
+
+# 5.2. Install secondary genesis node
+helm install genesis ./quorum-genesis --namespace carrier-quo --create-namespace --values ./values/noproxy-and-novault/genesis-sec.yaml --set global.cluster.cloudNativeServices=true,global.cluster.secretManagerArn="<YOUR_AWS_SECRET_MANAGER_ROLE_ARN>"
+
+# 5.3. Install secondary member node
+helm install member-1 ./quorum-node --namespace carrier-quo --values ./values/noproxy-and-novault/txnode-sec.yaml --set global.cluster.cloudNativeServices=true,global.cluster.secretManagerRegion="<YOUR_AWS_REGION>",tessera.enabled=false
+```
+
+<hr style="border: 10px solid green;">
 
 ## `With Ambassador Proxy and Vault`
 
@@ -100,16 +144,16 @@ helm install genesis ./quorum-genesis --namespace supplychain-quo --values ./val
 ### 3. Install Validator Nodes
 ```bash
 # Install validator nodes
-helm install validator-1 ./quorum-node --namespace supplychain-quo --values ./values/proxy-and-vault/validator.yaml --set global.proxy.p2p=15011
-helm install validator-2 ./quorum-node --namespace supplychain-quo --values ./values/proxy-and-vault/validator.yaml --set global.proxy.p2p=15012
-helm install validator-3 ./quorum-node --namespace supplychain-quo --values ./values/proxy-and-vault/validator.yaml --set global.proxy.p2p=15013
-helm install validator-4 ./quorum-node --namespace supplychain-quo --values ./values/proxy-and-vault/validator.yaml --set global.proxy.p2p=15014
+helm install validator-0 ./quorum-node --namespace supplychain-quo --values ./values/proxy-and-vault/validator.yaml --set global.proxy.p2p=15011
+helm install validator-1 ./quorum-node --namespace supplychain-quo --values ./values/proxy-and-vault/validator.yaml --set global.proxy.p2p=15012
+helm install validator-2 ./quorum-node --namespace supplychain-quo --values ./values/proxy-and-vault/validator.yaml --set global.proxy.p2p=15013
+helm install validator-3 ./quorum-node --namespace supplychain-quo --values ./values/proxy-and-vault/validator.yaml --set global.proxy.p2p=15014
 ```
 
 ### 4. Deploy Member and Tessera Node Pair
 ```bash
 # Deploy Quorum and Tessera node pair
-helm install supplychain ./quorum-node --namespace supplychain-quo --values ./values/proxy-and-vault/txnode.yaml --set global.proxy.p2p=15015
+helm install member-0 ./quorum-node --namespace supplychain-quo --values ./values/proxy-and-vault/txnode.yaml --set global.proxy.p2p=15015
 ```
 
 ### Setting Up Another Member in a Different Namespace
@@ -127,11 +171,13 @@ kubectl create namespace carrier-quo
 kubectl -n carrier-quo create secret generic roottoken --from-literal=token=<VAULT_ROOT_TOKEN>
 
 # Install secondary genesis node
-helm install genesis ./quorum-genesis --namespace carrier-quo --values ./values/proxy-and-vault/genesis-sec.yaml
+helm install genesis ./quorum-genesis --namespace carrier-quo --create-namespace --values ./values/proxy-and-vault/genesis-sec.yaml
 
 # Install secondary member node
-helm install carrier ./quorum-node --namespace carrier-quo --values ./values/proxy-and-vault/txnode-sec.yaml --set global.proxy.p2p=15016
+helm install member-0 ./quorum-node --namespace carrier-quo --values ./values/proxy-and-vault/txnode-sec.yaml --set global.proxy.p2p=15016
 ```
+
+<hr style="border: 10px solid green;">
 
 ## `API call`
 
@@ -171,6 +217,8 @@ Once your services are deployed, they can be accessed using the domain name prov
 
    This confirms that your node is syncing as expected.
 
+<hr style="border: 10px solid green;">
+
 ## `Managing IBFT Validators Deployment`
 
 To deploy the proposed validator chart for IBFT, you first need to set up the Quorum DLT network. Below are the steps you can follow:
@@ -187,7 +235,7 @@ To deploy the proposed validator chart for IBFT, you first need to set up the Qu
    Utilize Helm for installing the validator chart. Ensure to adjust values accordingly:
 
    ```bash
-   helm install validator-5 ./quorum-propose-validator --namespace supplychain-quo --values quorum-propose-validator/values.yaml
+   helm install validator-4 ./quorum-propose-validator --namespace supplychain-quo --values quorum-propose-validator/values.yaml
    ```
 
    This chart facilitates the addition or removal of validators through majority voting.
@@ -203,20 +251,21 @@ To deploy the proposed validator chart for IBFT, you first need to set up the Qu
 
 	Replace `<SOURCE-HOST>` with the appropriate host address.
 
+<hr style="border: 10px solid green;">
 
 ## `Clean-up`
 
 To clean up, simply uninstall the Helm releases. It's important to uninstall the genesis Helm chart at the end to prevent any cleanup failure.
 
 ```bash
+helm uninstall --namespace supplychain-quo validator-0
 helm uninstall --namespace supplychain-quo validator-1
 helm uninstall --namespace supplychain-quo validator-2
 helm uninstall --namespace supplychain-quo validator-3
 helm uninstall --namespace supplychain-quo validator-4
-helm uninstall --namespace supplychain-quo validator-5
-helm uninstall --namespace supplychain-quo supplychain
+helm uninstall --namespace supplychain-quo member-0
 helm uninstall --namespace supplychain-quo genesis
 
-helm uninstall --namespace carrier-quo carrier
+helm uninstall --namespace carrier-quo member-0
 helm uninstall --namespace carrier-quo genesis
 ```

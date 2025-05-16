@@ -14,28 +14,28 @@
 # The following are for overriding global values
 global:
   # Provide the service account name which will be created.
-  serviceAccountName: vault-auth
+  serviceAccountName: global-vault-sa
   cluster:
-    provider: azure  # choose from: minikube | aws
+    provider: # choose from: minikube | aws | azure
     cloudNativeServices: false # 'false' is implemented
     #Provide the kubernetes host url
     #Eg. kubernetesUrl: https://10.3.8.5:6443
     kubernetesUrl:
   vault:
     # Provide the type of vault
-    type: kubernetes # hashicorp | kubernetes
+    type: hashicorp # hashicorp | kubernetes
     # Provide the vault role used.
-    role: vault-role
+    role: # global-vault-role
     # Provide the network type
     network: substrate
     # Provide the vault server address
     address: # "http://vault_url"
     # Provide the vault authPath configured to be used.
-    authPath: supplychain
+    authPath: oem
     # Provide the secret engine.
     secretEngine: secretsv2
     # Provide the vault path where the secrets will be stored
-    secretPrefix: "data/supplychain"
+    secretPrefix: "data/oem"
 
 removeGenesisOnDelete:
   enabled: true
@@ -59,8 +59,23 @@ node:
   # Command to be invoked to perform operations on the node
   # Eg. command: substrate
   command: ./dscp-node
-  validator:
-    count: 4
   member:
-    count: 1
     balance: 1152921504606846976
+
+org_namespaces:
+  - oem-subs:
+      validator:
+        - oem-validator-1
+        - oem-validator-2
+      member:
+        - oem-member-1
+  - tierone-subs:
+      validator:
+        - tierone-validator-3
+        - tierone-validator-4
+      member:
+        - tierone-member-2
+  - tiertwo-subs:
+      validator:
+      member:
+        - tiertwo-member-3

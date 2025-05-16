@@ -46,7 +46,7 @@ Use this [sample configuration file](https://github.com/hyperledger/bevel/blob/m
 
 <a name="type"></a>
 type
-: `type` defines the platform choice like corda/fabric/quorum, here in the example its **Fabric**.
+: `type` defines the platform choice like corda/fabric/quorum, here in the example it's **Fabric**.
 
 <a name="version"></a>
 version
@@ -162,9 +162,10 @@ Each `organization` field under `participants` field of the channel contains the
 |---------------------------------|------------------------------------------------------------|
 | name               | Organization name of the peer participating in the channel |
 | type               | This field can be creator/joiner of channel                |
-| org_status         | `new` (for inital setup) or `existing` (for add new org) | 
+| org_status         | `new` (for initial setup) or `existing` (for add new org) | 
 | ordererAddress     | URL of the orderer this peer connects to, including port                  |
 | peer.name          | Name of the peer                                           |
+| peer.type                          | Type can be `anchor` and `nonanchor` for Peer                                                                    |
 | peer.gossipAddress | Gossip address of the peer, including port                               |
 | peer.peerAddress | External address of the peer, including port                                  |
 
@@ -201,7 +202,7 @@ Each `organization` under the `organizations` section has the following fields.
 | location                                    |  Location of the organization                                                                                    |
 | subject                                     | Subject format can be referred at [OpenSSL Subject](https://www.openssl.org/docs/man1.0.2/man1/openssl-req.html) |
 | external_url_suffix                         | Public url suffix of the cluster.         |
-| org_status         | `new` (for inital setup) or `existing` (for add new org) |
+| org_status         | `new` (for initial setup) or `existing` (for add new org) |
 | orderer_org        |  Ordering service provider.                              |  
 | ca_data                                     | Contains the certificate path; this has not been implemented yet |
 | cloud_provider                              | Cloud provider of the Kubernetes cluster for this organization. This field can be aws, azure, gcp or minikube |
@@ -209,7 +210,7 @@ Each `organization` under the `organizations` section has the following fields.
 | k8s                                         | Kubernetes cluster deployment variables.|
 | vault                                       | Contains Hashicorp Vault server address and root-token in the example |
 | gitops                                      | Git Repo details which will be used by GitOps/Flux. |
-| services                                    | Contains list of services which could ca/peer/orderers/concensus based on the type of organization |
+| services                                    | Contains list of services which could ca/peer/orderers/consensus based on the type of organization |
 
 For the aws and k8s field the snapshot with sample values is below
 
@@ -242,7 +243,7 @@ The `vault` field under each organization contains
 For gitops fields the snapshot from the sample configuration file with the example values is below
 
 ```yaml
---8<-- "platforms/hyperledger-fabric/configuration/samples/network-fabricv2.yaml:203:215"
+--8<-- "platforms/hyperledger-fabric/configuration/samples/network-fabricv2.yaml:203:216"
 ```
 
 The gitops field under each organization contains
@@ -253,6 +254,7 @@ The gitops field under each organization contains
 | git_url                              | SSH or HTTPs url of the repository where flux should be synced                                                            |
 | branch                               | Branch of the repository where the Helm Charts and value files are stored                                        |
 | release_dir                          | Relative path where flux should sync files                                                                       |
+| component_dir                        | Relative path where values files are stored.files                                                                       |
 | chart_source                         | Relative path where the helm charts are stored                                                                   |
 | git_repo                         | Gitops git repo URL https URL for git push like "github.com/hyperledger/bevel.git"             |
 | username                             | Username which has access rights to read/write on repository                                                     |
@@ -263,7 +265,7 @@ The gitops field under each organization contains
 For Hyperledger Fabric, you can also generate different user certificates and pass the names and attributes in the specific section for `users`. This is only applicable if using Fabric CA. An example is below:
 
 ```yaml
---8<-- "platforms/hyperledger-fabric/configuration/samples/network-fabricv2.yaml:338:344"
+--8<-- "platforms/hyperledger-fabric/configuration/samples/network-fabricv2.yaml:340:346"
 ```
 
 The fields under `user` are
@@ -271,7 +273,7 @@ The fields under `user` are
 | Field       | Description                                              |
 |-------------|----------------------------------------------------------|
 | identity          | The name of the user        |
-| attribute   | key value pair for the different attributes supported in Fabric, details about the attribues are [here](https://hyperledger-fabric-ca.readthedocs.io/en/latest/users-guide.html#attribute-based-access-control) |
+| attribute   | key value pair for the different attributes supported in Fabric, details about the attributes are [here](https://hyperledger-fabric-ca.readthedocs.io/en/latest/users-guide.html#attribute-based-access-control) |
 
 
 The services field for each organization under `organizations` section of Fabric contains list of `services` which could be ca/orderers/consensus/peers based on if the type of organization. 
@@ -279,7 +281,7 @@ The services field for each organization under `organizations` section of Fabric
 Each organization will have a CA service under the service field. The snapshot of CA service with example values is below
 
 ```yaml
---8<-- "platforms/hyperledger-fabric/configuration/samples/network-fabricv2.yaml:217:225"
+--8<-- "platforms/hyperledger-fabric/configuration/samples/network-fabricv2.yaml:218:226"
 ```
 
 The fields under `ca` service are
@@ -295,7 +297,7 @@ The fields under `ca` service are
 Example of peer service. Below is a snapshot of the peer service with example values.
 
 ```yaml
---8<-- "platforms/hyperledger-fabric/configuration/samples/network-fabricv2.yaml:354:387"
+--8<-- "platforms/hyperledger-fabric/configuration/samples/network-fabricv2.yaml:356:389"
 ```
 
 The fields under `peer` service are
@@ -339,10 +341,10 @@ The chaincodes section contains the list of chaincode for the peer, the fields u
 | image | Mandatory for external_chaincode, the container from docker registry applicable for this chaincode. For private registry, ensure password is passed in `network.docker` section |
 | crypto_mount_path | Required only when `tls: true`, the path where the crypto materials will be stored |
 
-The organization with orderer type will have concensus service. The snapshot of consensus service with example values is below
+The organization with orderer type will have consensus service. The snapshot of consensus service with example values is below
 
 ```yaml
---8<-- "platforms/hyperledger-fabric/configuration/samples/network-fabricv2.yaml:227:228"
+--8<-- "platforms/hyperledger-fabric/configuration/samples/network-fabricv2.yaml:228:229"
 ```
 
 The fields under `consensus` service are
@@ -357,7 +359,7 @@ The fields under `consensus` service are
 Example of ordering service. The snapshot of orderers service with example values is below
 
 ```yaml
---8<-- "platforms/hyperledger-fabric/configuration/samples/network-fabricv2.yaml:229:253"
+--8<-- "platforms/hyperledger-fabric/configuration/samples/network-fabricv2.yaml:230:254"
 ```
 
 The fields under `orderer` service are
